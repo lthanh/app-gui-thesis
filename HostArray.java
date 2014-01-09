@@ -27,16 +27,28 @@ public class HostArray {
         if (isNull()) {
             hosts = new Connection[1];
             hosts[0] = c;
-         //   Searcher.updateAddedConnection(c);
-           AppGUI.lbFriendNameList1.setText(Searcher.updateAddedConnection(c));
-           AppGUI.lbFriendNameList2.setText(Searcher.updateAddedConnection(c));
+            //   Searcher.updateAddedConnection(c);
+            //////////////////////////////////////////////////////////////// Thanh
+            AppGUI.lbFriendNameList1.setText(Searcher.updateAddedConnection(c) + " 1");
+            String test = AppGUI.lbFriendNameList1.getText();
+            if (test.isEmpty() || test.equals("")) {
+                AppGUI.lbFriendNameList2.setText(Searcher.updateAddedConnection(c) + "2");
+            }
+            //////////////////////////////////////////////////////////////// Thanh
+
         } else if (!isLive(c)) {
             Connection[] temp = new Connection[hosts.length + 1];
             System.arraycopy(hosts, 0, temp, 0, hosts.length);
             temp[hosts.length] = c;
             hosts = temp;
-           // Searcher.updateAddedConnection(c);
+            // Searcher.updateAddedConnection(c);
+            //////////////////////////////////////////////////////////////// Thanh
             AppGUI.lbFriendNameList1.setText(Searcher.updateAddedConnection(c));
+            String test = AppGUI.lbFriendNameList1.getText();
+            if (test.isEmpty() || test.equals("")) {
+                AppGUI.lbFriendNameList2.setText(Searcher.updateAddedConnection(c));
+            }
+            //////////////////////////////////////////////////////////////// Thanh
         }
     }
 
@@ -56,7 +68,7 @@ public class HostArray {
                 j++;
             }
             hosts = temp;
-       //     Searcher.updateRemovedConnection(ip);
+            AppGUI.lbFriendNameList1.setText(Searcher.updateRemovedConnection(ip));
         }
     }
 
