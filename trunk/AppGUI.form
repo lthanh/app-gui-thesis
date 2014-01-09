@@ -368,7 +368,7 @@
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <Group type="103" groupAlignment="1" attributes="0">
-                                  <Component id="txtContentPost" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="lbContentPost" alignment="0" max="32767" attributes="0"/>
                                   <Component id="lbFriendName" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -382,7 +382,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="lbFriendName" max="32767" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="txtContentPost" max="32767" attributes="0"/>
+                      <Component id="lbContentPost" max="32767" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="lbComment" alignment="1" max="32767" attributes="0"/>
@@ -413,12 +413,12 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JLabel" name="txtContentPost">
+            <Component class="javax.swing.JLabel" name="lbContentPost">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Content Post"/>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="9"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JButton" name="btnLike">

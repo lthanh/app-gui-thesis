@@ -27,7 +27,7 @@ class Server extends Thread {
                 Packet header = new Packet(temp);
 
                 if ((header.identify() != Packet.PONG) && (header.identify() != Packet.PING)
-                        && (header.identify() != Packet.QUERY) && (header.identify() != Packet.QUERYHIT)) {
+                        && (header.identify() != Packet.QUERY) && (header.identify() != Packet.QUERYHIT) && (header.identify() != Packet.POST)) {
                     break; // If the data is not something we expect, die.
                 }
                 byte[] newpacket = new byte[(header.length() + Packet.HEADER_LENGTH)]; /* The syntax here is unfortunate, because headers don't store
@@ -65,7 +65,7 @@ class Server extends Thread {
                     int[] ipints = new int[23];
                     for (int i = 0; i < newpacket.length; i++) {
                         ipints[i] = ((int) (test[i]) & 0xff);
-                        System.out.print("\n ### Server : Packet == PING -- " + i + ":"+ + ipints[i]);
+                        System.out.print("\n ### Server : Packet == PING -- " + i + ":" + +ipints[i]);
                     }
                     // end cat chuoi
                     handler.start();
@@ -89,12 +89,18 @@ class Server extends Thread {
                     QHandler handler = new QHandler(mine, query);
                     handler.start();
                     continue;
+                } else if (header.identify() == Packet.POST) {
+                    Post postMessage = new Post(newpacket);
+                    System.out.println("\n ### Server : Packet == POST -- " + newpacket.toString());
+                    PostHandler handler = new PostHandler(mine, postMessage);
+                    handler.start();
+                    continue;
                 } else {
                     QueryHit queryhit = new QueryHit(newpacket);
                     System.out.println("\n ### Server : Packet == QUERYHIT -- " + newpacket.toString());
                     QHitHandler handler = new QHitHandler(mine, queryhit);
                     handler.start();
-                    Searcher.inform(mine, queryhit);
+                    // AppGUI.inform(mine, queryhit);
                 }
             } catch (Exception e) // If there's a problem, we just die.
             {

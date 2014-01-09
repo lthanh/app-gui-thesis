@@ -6,6 +6,7 @@ class Packet {
     public static final byte PONG = 1;
     public static final byte QUERY = -128; // Twos complement for 128 -- could also try (byte)128
     public static final byte QUERYHIT = -127; // Likewise for 129 -- could also try (byte)129
+    public static final byte POST = 2; // Post message
     public static final byte TTL = 7; // Standard Time to Live for a new packet
     public static final byte HOPS = 0; // All new packets start at zero hops
     protected byte[] contents;

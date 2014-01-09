@@ -18,11 +18,9 @@ public class Searcher {
     static SearchPanel mypanel;
     static ConnectionPanel myconnectionpanel;
     static MonitorPanel mymonitorpanel;
-    static PostingServicePanel postpanel;
-    
+
     //added constructor
     public Searcher() {
-
     }
 
     public static void addSearch(Query search) // Called when the user presses the "Search" button
@@ -30,14 +28,9 @@ public class Searcher {
         searches.add(search);
     }
 
-
-
-
-
     public static void updateConnectionStatus(IPAddress ip, String name, String status) {
         mypanel.updateConnectionStatus(ip, name, status);
     }
-
 
     public static void inform(IPAddress ip, QueryHit qh) {
         Integer port = new Integer(qh.getPort());
@@ -62,16 +55,17 @@ public class Searcher {
         mymonitorpanel.addQuery(q.getIP().toString(), q.getIP().getPort(), q.getSearchString());
     }
 
-
-
     //////////////////////////////////////////////////////////////// THANH
     public static String updateAddedConnection(Connection c) {
-        return c.getIPAddress().toString() + ":" + c.getIPAddress().getPort() +  " - Online";
+        return c.getIPAddress().toString() + ":" + c.getIPAddress().getPort() + " - Online";
     }
+
+    public static String updateRemovedConnection(IPAddress ip) {
+        return "";
+    }
+
     //////////////////////////////////////////////////////////////// THANH
 }
-
-
 
 class ConnectionPanel extends JPanel {
 
@@ -148,8 +142,6 @@ class ConnectionPanel extends JPanel {
 
     }
 
-
-
     class ConnectAction implements ActionListener {
 
         public void actionPerformed(ActionEvent event) {
@@ -164,9 +156,6 @@ class ConnectionPanel extends JPanel {
             }
         }
     }
-
-
-    
 }
 
 class SearchPanel extends JPanel {
@@ -191,7 +180,7 @@ class SearchPanel extends JPanel {
         JButton clearButton = new JButton("Clear");
         add(clearButton);
         clearButton.setBounds(600, 25, 150, 25);
-       // clearButton.addActionListener(new ClearAction());
+        // clearButton.addActionListener(new ClearAction());
 
         JButton download = new JButton("Download");
         add(download);
@@ -238,8 +227,6 @@ class SearchPanel extends JPanel {
         searchModel.addRow(newRow);
     }
 
-   
-
     public static void updateConnectionStatus(IPAddress ip, String name, String status) {
         for (int i = 0; i < downloadtable.getRowCount(); i++) {
             if (((IPAddress) downloadtable.getValueAt(i, 0)).equals(ip) && ((String) downloadtable.getValueAt(i, 1)).equals(name)) {
@@ -262,6 +249,7 @@ class SearchPanel extends JPanel {
         }
     }
 
+    ///////////////////////////////////////////////////////////// THANH
     class SearchAction implements ActionListener {
 
         public void actionPerformed(ActionEvent event) {
@@ -270,8 +258,7 @@ class SearchPanel extends JPanel {
             Searcher.addSearch(a);
         }
     }
-
-
+///////////////////////////////////////////////////////////// THANH
 }
 
 class MonitorPanel extends JPanel {
@@ -303,12 +290,3 @@ class MonitorPanel extends JPanel {
         monitorModel.insertRow(0, newRow);
     }
 }
-
-///////////////////////////////////////////////// Thanh edited
-
-class PostingServicePanel extends JPanel{
-
-    
-}
-
-/////////////////////////////////////////////////

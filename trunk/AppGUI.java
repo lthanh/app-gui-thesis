@@ -1,8 +1,11 @@
+import java.awt.event.ActionEvent;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author admin
@@ -47,7 +50,7 @@ public class AppGUI extends javax.swing.JFrame {
         rdoPl = new javax.swing.JRadioButton();
         jPanel1 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        txtContentPost = new javax.swing.JLabel();
+        lbContentPost = new javax.swing.JLabel();
         btnLike = new javax.swing.JButton();
         btnComment = new javax.swing.JButton();
         lbContentComment = new javax.swing.JLabel();
@@ -181,7 +184,7 @@ public class AppGUI extends javax.swing.JFrame {
 
         jPanel4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        txtContentPost.setText("Content Post");
+        lbContentPost.setText("Content Post");
 
         btnLike.setText("Like");
         btnLike.addActionListener(new java.awt.event.ActionListener() {
@@ -242,7 +245,7 @@ public class AppGUI extends javax.swing.JFrame {
                         .addGap(152, 152, 152))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtContentPost, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lbContentPost, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(lbFriendName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addContainerGap())))
         );
@@ -251,7 +254,7 @@ public class AppGUI extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addComponent(lbFriendName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtContentPost, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lbContentPost, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lbComment, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -365,6 +368,12 @@ public class AppGUI extends javax.swing.JFrame {
 
     private void btnPostActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPostActionPerformed
         // TODO add your handling code here:
+
+        Post a = new Post(0, txtStatus.getText()); // All searches are minimum speed 0 for now...
+        System.out.println( "\n  ########## POST MESSGAE: "+ txtStatus.getText() );
+        NetworkManager.writeToAll(a);
+        addPOST(a);
+
     }//GEN-LAST:event_btnPostActionPerformed
 
     private void btnLikeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLikeActionPerformed
@@ -417,7 +426,7 @@ public class AppGUI extends javax.swing.JFrame {
         });
 
 
-        // Gnutella 
+        //////////////////////// Gnutella 
 
         System.out.println("Setting up hash tables...");
         QHandler.initQueryTable();
@@ -437,6 +446,23 @@ public class AppGUI extends javax.swing.JFrame {
         pinger.start(); // Start sending out periodic pings.
 
     }
+    //////////// POST MESSAGE
+    static LinkedList post = new LinkedList();
+
+    public static void addPOST(Post postMessage) // Called when the user presses the "Search" button
+    {
+        post.add(postMessage);
+    }
+
+    public static void inform(IPAddress ip, Post postMessage) {
+      
+        //Integer port = new Integer(ip.getPort());
+       // String myip = ip.toString();
+        System.out.println("\n AppGUI - Post: " + postMessage.toString());
+        lbContentPost.setText(postMessage.toString());
+       
+    }
+    //////////// END POST MESSAGE
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private static javax.swing.JButton btnComment;
@@ -456,6 +482,7 @@ public class AppGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private static javax.swing.JLabel lbComment;
     private static javax.swing.JLabel lbContentComment;
+    public static javax.swing.JLabel lbContentPost;
     private static javax.swing.JLabel lbFriendName;
     public static javax.swing.JLabel lbFriendNameList1;
     public static javax.swing.JLabel lbFriendNameList2;
@@ -468,7 +495,6 @@ public class AppGUI extends javax.swing.JFrame {
     private static javax.swing.JRadioButton rdoPl;
     private static javax.swing.JRadioButton rdoPr;
     private static javax.swing.JTextPane txtComment;
-    private static javax.swing.JLabel txtContentPost;
     private static javax.swing.JTextField txtSearch;
     private static javax.swing.JTextPane txtStatus;
     // End of variables declaration//GEN-END:variables

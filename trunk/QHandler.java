@@ -40,11 +40,12 @@ class QHandler extends Thread
 	//that does not necessarily mean it is in table, b/c two queries can have SAME HASHCODE VALUE.  I need to have some other means.
 	//Will talk to Rusty @ this on Monday.
 
+     
 	if (!qt.containsKey(query)) //check that query is not already in table
 	    {
-		Searcher.inform(query); // Give information to the Search Monitor panel
-		NetworkManager.writeButOne(query.getIP(), query);  /*Query is forwarded to all connected nodes
-								     except one from which query came. */
+	//	Searcher.inform(query); // Give information to the Search Monitor panel
+		NetworkManager.writeButOne(query.getIP(), query);  // Query is forwarded to all connected nodes except one from which query came. 
+								     
 		qt.put((Packet) query, query);    //add query to table, indexed by its unique MessageID
 		searchResult = SharedDirectory.search(query.getSearchString());  //check shared directory for query match
 		numHits = searchResult.getSize();
@@ -60,6 +61,7 @@ class QHandler extends Thread
 			NetworkManager.writeToOne(query.getIP(), queryHit);  //send qHit back to node that sent original query
 		    }
 	    }
+   
     }
 }
 
