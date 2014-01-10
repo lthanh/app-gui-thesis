@@ -56,13 +56,7 @@ public class Searcher {
     }
 
     //////////////////////////////////////////////////////////////// THANH
-    public static String updateAddedConnection(Connection c) {
-        return c.getIPAddress().toString() + ":" + c.getIPAddress().getPort() + " - Online";
-    }
-
-    public static String updateRemovedConnection(IPAddress ip) {
-        return "";
-    }
+   
 
     //////////////////////////////////////////////////////////////// THANH
 }

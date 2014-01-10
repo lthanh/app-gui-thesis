@@ -1,11 +1,16 @@
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
 
 public class HostArray {
 
     private static Connection[] hosts;
+    public static Vector<IPAddress> cacheConnection = new Vector<IPAddress>();  // store list of IP connection
+    public static Vector<String> showIP = new Vector<String>();
 
     public static boolean isNull() {
         if (hosts == null) {
@@ -27,13 +32,18 @@ public class HostArray {
         if (isNull()) {
             hosts = new Connection[1];
             hosts[0] = c;
-            //   Searcher.updateAddedConnection(c);
             //////////////////////////////////////////////////////////////// Thanh
-            AppGUI.lbFriendNameList1.setText(Searcher.updateAddedConnection(c) + " 1");
-            String test = AppGUI.lbFriendNameList1.getText();
-            if (test.isEmpty() || test.equals("")) {
-                AppGUI.lbFriendNameList2.setText(Searcher.updateAddedConnection(c) + "2");
+            //String showIP = c.getIPAddress().toString() + ":" + c.getIPAddress().getPort() + " - Online";
+            //  String showIP = showIPGUI(c.getIPAddress(), c.getTypeString());
+            boolean checkConnection = checkConnection(cacheConnection, c.getIPAddress());
+            if (checkConnection == true) {
+                System.out.println("IIIIIIIIIIIPPPPPPPPPPP: " + showIP);
+                cacheConnection.add(c.getIPAddress());
+                showIP.add(showIPGUI(c.getIPAddress(), c.getTypeString()));
             }
+           
+            System.out.println("\n\nADD CACHECONNECTION 1: " + cacheConnection.toString() + "SHOWIP: " + showIP.toString());
+            AppGUI.listFriends.setListData(showIP);
             //////////////////////////////////////////////////////////////// Thanh
 
         } else if (!isLive(c)) {
@@ -41,13 +51,18 @@ public class HostArray {
             System.arraycopy(hosts, 0, temp, 0, hosts.length);
             temp[hosts.length] = c;
             hosts = temp;
-            // Searcher.updateAddedConnection(c);
             //////////////////////////////////////////////////////////////// Thanh
-            AppGUI.lbFriendNameList1.setText(Searcher.updateAddedConnection(c));
-            String test = AppGUI.lbFriendNameList1.getText();
-            if (test.isEmpty() || test.equals("")) {
-                AppGUI.lbFriendNameList2.setText(Searcher.updateAddedConnection(c));
+            //String showIP = c.getIPAddress().toString() + ":" + c.getIPAddress().getPort() + " - Online";
+
+            //  String showIP = showIPGUI(c.getIPAddress(), c.getTypeString());
+            boolean checkConnection = checkConnection(cacheConnection, c.getIPAddress());
+            if (checkConnection == true) {
+                System.out.println("IIIIIIIIIIIPPPPPPPPPPP: " + showIP);
+                cacheConnection.add(c.getIPAddress());
+                showIP.add(showIPGUI(c.getIPAddress(), c.getTypeString()));
             }
+            System.out.println("\n\nADD CACHECONNECTION 2: " + cacheConnection.toString() + "SHOWIP: " + showIP.toString());
+            AppGUI.listFriends.setListData(showIP);
             //////////////////////////////////////////////////////////////// Thanh
         }
     }
@@ -68,7 +83,8 @@ public class HostArray {
                 j++;
             }
             hosts = temp;
-            AppGUI.lbFriendNameList1.setText(Searcher.updateRemovedConnection(ip));
+            System.out.println("\n\nADD CACHECONNECTION 3: " + cacheConnection.toString() + "SHOWIP: " + showIP.toString());
+            AppGUI.listFriends.setListData(updateRemovedConnection(ip));
         }
     }
 
@@ -118,5 +134,35 @@ public class HostArray {
             }
         }
         return false;
+    }
+
+    public static String updateAddedConnection(Connection c) {
+        return showIPGUI(c.getIPAddress(), c.getTypeString());
+    }
+
+    public static Vector<String> updateRemovedConnection(IPAddress ip) {
+        String removeIP = ip.toString();
+        for (int i = 0; i < cacheConnection.size(); i++) {
+            if (removeIP.equals(cacheConnection.get(i).toString())) {
+                cacheConnection.remove(i);
+                showIP.remove(i);
+                System.out.println("\n\nREMOVE CACHECONNECTION : " + cacheConnection.toString() + "SHOWIP: " + showIP.toString());
+            }
+        }
+        return showIP;
+    }
+
+    public static boolean checkConnection(Vector<IPAddress> listConnect, IPAddress ip) {
+        String checkIP = ip.toString();
+        for (int i = 0; i < listConnect.size(); i++) {
+            if (checkIP.equals(listConnect.get(i).toString())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static String showIPGUI(IPAddress ip, String type) {
+        return ip.toString() + ":" + ip.getPort() + type;
     }
 }
