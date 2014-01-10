@@ -10,10 +10,10 @@ public class Preferences {
     public static boolean AUTO_CONNECT = true;
     public static int PINGER_TIME = 10000;
     public static int CONNECTOR_TIME = 10000;
-//  public static String SHAREPATH = "/opt";
-//  public static String SAVEPATH = "/home/ccrick";
-    public static String SHAREPATH = "C:\\Users\\admin\\Desktop\\ShareFile";
-    public static String SAVEPATH = "C:\\Users\\admin\\Desktop\\DownloadFile";
+    public static String SHAREPATH = "";
+    public static String SAVEPATH = "";
+//    public static String SHAREPATH = "C:\\Users\\admin\\Desktop\\ShareFile";
+//    public static String SAVEPATH = "C:\\Users\\admin\\Desktop\\DownloadFile";
 
     public static void readFromFile() {
         try {

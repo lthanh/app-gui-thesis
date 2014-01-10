@@ -5,7 +5,7 @@ import java.util.*;
 
 class QHitHandler extends Thread
 {
-    //instance variables
+    //instance variables    Host: 192.168.6.129:6346  C:\Users\admin\Desktop\ShareFile C:\Users\admin\Desktop\DownloadFile
     QueryHit queryHit;
     IPAddress queryIP;   /**ipAddress of original query is what matters.  We need this
 		            to route queryHit appropriately*/
