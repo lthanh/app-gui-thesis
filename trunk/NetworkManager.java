@@ -29,9 +29,19 @@ public class NetworkManager {
         for (int i = 0; i < HostArray.getCount(); i++) {
             Connection c = HostArray.getConnection(i);
             try {
+                if (packet.getPayload() == 2) {
+                    System.out.println("PACKET CONTENT: Payload - " + packet.getPayload() + " Content: " + packet.contents().toString());
+                    System.out.println("PACKET TOTAL LENGTH: " + packet.totalLength());
+                    System.out.println("PACKET Content LENGTH: " + packet.contents.length);
+//                    for (int j = 0; j < packet.contents.length; j++) {
+//                        System.out.println("CONTEN PACKET NETWORK MANAGER [" + j + "]" + packet.contents[j]);
+//                    }
+                }
+
                 c.getByteWriter().write(packet.contents(), 0, packet.totalLength());
                 c.getByteWriter().flush();
             } catch (IOException e) {
+                e.printStackTrace();
                 try {
                     c.getSocket().close();
                     HostArray.removeConnection(c);

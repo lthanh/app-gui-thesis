@@ -24,7 +24,7 @@ class PingHandler extends Thread {
             Pong response = new Pong(Mine.getPort(), Mine.getIPAddress(), SharedDirectory.getOurNumFiles(),
                     SharedDirectory.getOurKb(), ping.getMessageID());
 
-            System.out.println("#### PingHandler: PONG -- " + response.toString());
+          //  System.out.println("#### PingHandler: PONG -- " + response.toString());
             NetworkManager.writeToOne(ping.getIP(), response);
         }
     }

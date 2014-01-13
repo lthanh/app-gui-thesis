@@ -54,7 +54,7 @@ class Server extends Thread {
                 {
                     Ping ping = new Ping(newpacket);
                     PingHandler handler = new PingHandler(mine, ping);
-                    System.out.println("\n ### Server : Packet == PING -- " + newpacket.toString());
+                 //   System.out.println("\n ### Server : Packet == PING -- " + newpacket.toString());
 
                     // Cat chuoi IP byte ra dang decimal *****************************************************
                     byte[] test = new byte[newpacket.length];
@@ -65,7 +65,7 @@ class Server extends Thread {
                     int[] ipints = new int[23];
                     for (int i = 0; i < newpacket.length; i++) {
                         ipints[i] = ((int) (test[i]) & 0xff);
-                        System.out.print("\n ### Server : Packet == PING -- " + i + ":" + +ipints[i]);
+                  //      System.out.print("\n ### Server : Packet == PING -- " + i + ":" + +ipints[i]);
                     }
                     // end cat chuoi
                     handler.start();
@@ -75,7 +75,7 @@ class Server extends Thread {
                 if (header.identify() == Packet.PONG) {
                     Pong pong = new Pong(newpacket);
 
-                    System.out.println("\n ### Server : Packet == PONG -- " + newpacket.toString());
+                //    System.out.println("\n ### Server : Packet == PONG -- " + newpacket.toString());
 
                     Host h = new Host(mine.toString(), mine.getPort());
                     HostCache.addHost(h);
@@ -85,19 +85,19 @@ class Server extends Thread {
                     continue;
                 } else if (header.identify() == Packet.QUERY) {
                     Query query = new Query(newpacket);
-                    System.out.println("\n ### Server : Packet == QUERY -- " + newpacket.toString());
+                 //   System.out.println("\n ### Server : Packet == QUERY -- " + newpacket.toString());
                     QHandler handler = new QHandler(mine, query);
                     handler.start();
                     continue;
                 } else if (header.identify() == Packet.POST) {
                     Post postMessage = new Post(newpacket);
-                    System.out.println("\n ### Server : Packet == POST -- " + newpacket.toString());
+                   // System.out.println("\n ### Server : Packet == POST -- " + newpacket.toString());
                     PostHandler handler = new PostHandler(mine, postMessage);
                     handler.start();
                     continue;
                 } else {
                     QueryHit queryhit = new QueryHit(newpacket);
-                    System.out.println("\n ### Server : Packet == QUERYHIT -- " + newpacket.toString());
+                  //  System.out.println("\n ### Server : Packet == QUERYHIT -- " + newpacket.toString());
                     QHitHandler handler = new QHitHandler(mine, queryhit);
                     handler.start();
                     // AppGUI.inform(mine, queryhit);

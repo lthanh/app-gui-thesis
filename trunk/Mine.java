@@ -20,16 +20,17 @@ public class Mine {
             System.out.println("Local address: " + ipString);
             byte[] ipbytes = s.getLocalAddress().getAddress();
             ipObject = new IPAddress(ipbytes[0], ipbytes[1], ipbytes[2], ipbytes[3], port);
+          
             for (int i = 0; i < 16; i++) {
                 serventID[i] = ipbytes[i % 4];
             }
-            System.out.println("Mine: SERVENT ID - " + serventID.toString());
+        //    System.out.println("Mine: SERVENT ID - " + serventID.toString());
 
             // print SERVENT ID
             int[] ipints = new int[16];
             for (int i = 0; i < 16; i++) {
                 ipints[i] = ((int) (serventID[i]) & 0xff);
-                System.out.println("\n" + "Mine: SERVENT ID - " + ipints[i]);
+           //     System.out.println("\n" + "Mine: SERVENT ID - " + ipints[i]);
             }
             //
 
