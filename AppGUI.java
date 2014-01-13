@@ -1,6 +1,9 @@
+
 import java.awt.event.ActionEvent;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Vector;
 
 /*
  * To change this template, choose Tools | Templates
@@ -19,7 +22,10 @@ public class AppGUI extends javax.swing.JFrame {
         initComponents();
         groupRadio.add(rdoPl);
         groupRadio.add(rdoPr);
+        rdoPl.setSelected(true);
     }
+    public byte prPl = 1;
+    public static byte[] userIDLogin = new byte[16];
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -47,19 +53,8 @@ public class AppGUI extends javax.swing.JFrame {
         rdoPr = new javax.swing.JRadioButton();
         rdoPl = new javax.swing.JRadioButton();
         jPanel1 = new javax.swing.JPanel();
-        feedPanel = new javax.swing.JPanel();
-        lbContentPost = new javax.swing.JLabel();
-        btnLike = new javax.swing.JButton();
-        btnComment = new javax.swing.JButton();
-        lbContentComment = new javax.swing.JLabel();
-        lbUserComment = new javax.swing.JLabel();
-        lbFriendName = new javax.swing.JLabel();
-        lbLike = new javax.swing.JLabel();
-        lbComment = new javax.swing.JLabel();
-        line = new javax.swing.JSeparator();
-        btnCommentPost = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        txtComment = new javax.swing.JTextPane();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        listStatus = new javax.swing.JList();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -122,15 +117,20 @@ public class AppGUI extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 411, Short.MAX_VALUE)
         );
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Status"));
 
+        txtStatus.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtStatusKeyPressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(txtStatus);
 
         btnPost.setText("Post");
@@ -159,9 +159,9 @@ public class AppGUI extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(rdoPl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(rdoPl, javax.swing.GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(rdoPr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(rdoPr, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
                 .addGap(103, 103, 103)
                 .addComponent(btnPost, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addComponent(jScrollPane1)
@@ -169,7 +169,7 @@ public class AppGUI extends javax.swing.JFrame {
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
                 .addGap(12, 12, 12)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(rdoPl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -180,119 +180,27 @@ public class AppGUI extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Friends' status"));
 
-        feedPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        lbContentPost.setText("Content Post");
-
-        btnLike.setText("Like");
-        btnLike.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLikeActionPerformed(evt);
+        listStatus.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        listStatus.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listStatusMouseClicked(evt);
             }
         });
-
-        btnComment.setText("Comment");
-        btnComment.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCommentActionPerformed(evt);
-            }
-        });
-
-        lbContentComment.setText("Content");
-
-        lbUserComment.setForeground(new java.awt.Color(0, 51, 255));
-        lbUserComment.setText("User commentted");
-
-        lbFriendName.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        lbFriendName.setForeground(new java.awt.Color(0, 51, 204));
-        lbFriendName.setText("Friend Name");
-
-        lbLike.setForeground(new java.awt.Color(204, 0, 102));
-        lbLike.setText("Counter Like");
-
-        lbComment.setForeground(new java.awt.Color(204, 0, 102));
-        lbComment.setText("Counter comment");
-
-        btnCommentPost.setText("Post");
-
-        jScrollPane2.setViewportView(txtComment);
-
-        javax.swing.GroupLayout feedPanelLayout = new javax.swing.GroupLayout(feedPanel);
-        feedPanel.setLayout(feedPanelLayout);
-        feedPanelLayout.setHorizontalGroup(
-            feedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(feedPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(feedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(feedPanelLayout.createSequentialGroup()
-                        .addComponent(jScrollPane2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnCommentPost)
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, feedPanelLayout.createSequentialGroup()
-                        .addComponent(lbUserComment, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbContentComment, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(19, 19, 19))
-                    .addGroup(feedPanelLayout.createSequentialGroup()
-                        .addGroup(feedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lbLike, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnLike, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(feedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lbComment, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnComment))
-                        .addGap(129, 129, 129))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, feedPanelLayout.createSequentialGroup()
-                        .addGroup(feedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(lbContentPost, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lbFriendName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap())
-                    .addComponent(line)))
-        );
-        feedPanelLayout.setVerticalGroup(
-            feedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(feedPanelLayout.createSequentialGroup()
-                .addComponent(lbFriendName, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lbContentPost, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(feedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lbLike)
-                    .addComponent(lbComment, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(feedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnLike, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnComment, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(10, 10, 10)
-                .addGroup(feedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(feedPanelLayout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
-                        .addGroup(feedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(lbUserComment, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
-                            .addComponent(lbContentComment, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(5, 5, 5))
-                    .addGroup(feedPanelLayout.createSequentialGroup()
-                        .addComponent(btnCommentPost, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addComponent(line, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(85, 85, 85))
-        );
-
-        feedPanelLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnCommentPost, jScrollPane2});
+        jScrollPane4.setViewportView(listStatus);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(feedPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(10, 10, 10))
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(feedPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jScrollPane4)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -337,7 +245,7 @@ public class AppGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -369,29 +277,58 @@ public class AppGUI extends javax.swing.JFrame {
 
     private void btnPostActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPostActionPerformed
         // TODO add your handling code here:
-
-        Post a = new Post(0, txtStatus.getText()); // All searches are minimum speed 0 for now...
-        System.out.println( "\n  ########## POST MESSGAE: "+ txtStatus.getText() );
-        NetworkManager.writeToAll(a);
-        addPOST(a);
-
+        String textPost = txtStatus.getText();
+        if (!textPost.trim().isEmpty()) {
+            System.out.println("\n  ########## POST MESSGAE: " + txtStatus.getText());
+            for (int i = 0; i < 16; i++) {
+                userIDLogin[i] += i;
+            }
+            txtStatus.setText(null);
+            prPl = 1;
+            String createdate = Utils.formatDate(new Date());
+            String friend = "192.168.0.110:6346;192.168.0.120:6346";
+            String sp = "192.168.0.110:6346;192.168.0.120:6346;192.168.1.122:6346;192.168.1.142:6346";
+            int liked = 0;
+            int commented = 0;
+            writePost(userIDLogin, prPl, liked, commented, createdate, friend, sp, textPost);
+        }
     }//GEN-LAST:event_btnPostActionPerformed
-
-    private void btnLikeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLikeActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnLikeActionPerformed
-
-    private void btnCommentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCommentActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnCommentActionPerformed
 
     private void rdoPlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoPlActionPerformed
         // TODO add your handling code here:
+        prPl = 1;
+        System.out.println("RADIO BUTTON: PUBLIC- " + prPl);
     }//GEN-LAST:event_rdoPlActionPerformed
 
     private void rdoPrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoPrActionPerformed
         // TODO add your handling code here:
+        prPl = 0;
+        System.out.println("RADIO BUTTON: Private- " + prPl);
     }//GEN-LAST:event_rdoPrActionPerformed
+
+    private void listStatusMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listStatusMouseClicked
+        // TODO add your handling code here:
+//        System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+//        evt.getID();
+    }//GEN-LAST:event_listStatusMouseClicked
+
+    private void txtStatusKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtStatusKeyPressed
+        // TODO add your handling code here:
+//        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+//            String textPost = txtStatus.getText();
+//            System.out.println("\n  ########## POST MESSGAE: " + txtStatus.getText());
+//            txtStatus.transferFocusBackward();
+//            txtStatus.setText(null);
+//            byte[] userID = Mine.getServentIdentifier();
+//            byte prpl = 1;  // byte[] userID, byte prpl, int like, int comment, int cDateLength, int groupdFriendIDLength, int groupdSuperPeerIDLength, String cDate, String idGroupFriends, String idGroupSP, String post
+//            String createdate = "cDate";
+//            String friend = "Friends Group";
+//            String sp = "SP Group";
+//            int liked = 0;
+//            int commented = 0;
+//            writePost(userID, prpl, liked, commented, createdate, friend, sp, textPost);
+//        }
+    }//GEN-LAST:event_txtStatusKeyPressed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -421,12 +358,22 @@ public class AppGUI extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 AppGUI app = new AppGUI();
+                app.setExtendedState(app.MAXIMIZED_BOTH);
                 app.setVisible(true);
                 app.setTitle("Posting Service");
+
+                /*
+                 frame = new JFrame("Test");  
+                 Toolkit tk = Toolkit.getDefaultToolkit();  
+                 int xSize = ((int) tk.getScreenSize().getWidth());  
+                 int ySize = ((int) tk.getScreenSize().getHeight());  
+                 frame.setSize(xSize,ySize);  
+                 frame.show();  
+                 */
             }
         });
 
-        
+
 
         //////////////////////// Gnutella 
 
@@ -446,8 +393,8 @@ public class AppGUI extends javax.swing.JFrame {
         periodicconnector.start();
         Pinger pinger = new Pinger();
         pinger.start(); // Start sending out periodic pings.
-        
-        
+
+
         lbUserName.setText("KAN");
     }
     //////////// POST MESSAGE
@@ -458,46 +405,54 @@ public class AppGUI extends javax.swing.JFrame {
         post.add(postMessage);
     }
 
-    public static void inform(IPAddress ip, Post postMessage) {
-      
+    public static void inform(IPAddress ip, Vector<String> listPostMessage) {
+
         //Integer port = new Integer(ip.getPort());
-       // String myip = ip.toString();
-        System.out.println("\n AppGUI - Post: " + postMessage.toString());
-       // Post message = new Post(postMessage);
-        lbContentPost.setText(postMessage.getSearchString());
-       
+        // String myip = ip.toString();
+        System.out.println("\n AppGUI - Post: " + listPostMessage.toString());
+        // Post message = new Post(postMessage);
+        // li.setText(postMessage.getSearchString());
+        listStatus.setListData(listPostMessage);
+
+    }
+
+    // send post to other one via Network and save into database
+    public static void writePost(byte[] userID, byte prpl, int like, int comment, String cDate, String idGroupFriends, String idGroupSP, String post) {
+        Post postMessage = new Post(userID, prpl, like, comment, cDate.length(), idGroupFriends.length(), idGroupSP.length(), cDate, idGroupFriends, idGroupSP, post);
+
+        // show status on news feed of user logging in when they have just written the status
+        PostHandler.recieveListPost.add(0, postMessage);
+        PostHandler.showListPost.add(0, Utils.formSHOWSTATUS(postMessage.getUserID().toString(), postMessage.getPostStatusContent(), postMessage.like(), postMessage.comment(), postMessage.createdDate()));
+        AppGUI.inform(PostHandler.myIP, PostHandler.showListPost);
+
+
+        // check user to store data
+        if (userID.equals(userIDLogin)) {
+            Preferences.statusWriteToFile(userIDLogin, postMessage.getMessageID(), prpl, like, comment, cDate, idGroupFriends, idGroupSP, post);
+        }
+
+        NetworkManager.writeToAll(postMessage);
+        addPOST(postMessage);
     }
     //////////// END POST MESSAGE
-    
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private static javax.swing.JButton btnComment;
-    private static javax.swing.JButton btnCommentPost;
     private static javax.swing.JButton btnFeed;
-    private static javax.swing.JButton btnLike;
     private static javax.swing.JButton btnNoti;
     private static javax.swing.JButton btnPost;
     private static javax.swing.JButton btnProfile;
     private static javax.swing.JButton btnSetting;
-    public static javax.swing.JPanel feedPanel;
     private javax.swing.ButtonGroup groupRadio;
     private javax.swing.JPanel jPanel1;
     public static javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private static javax.swing.JLabel lbComment;
-    private static javax.swing.JLabel lbContentComment;
-    public static javax.swing.JLabel lbContentPost;
-    private static javax.swing.JLabel lbFriendName;
-    private static javax.swing.JLabel lbLike;
-    private static javax.swing.JLabel lbUserComment;
+    private javax.swing.JScrollPane jScrollPane4;
     public static javax.swing.JLabel lbUserName;
-    private javax.swing.JSeparator line;
     public static javax.swing.JList listFriends;
+    public static javax.swing.JList listStatus;
     private static javax.swing.JRadioButton rdoPl;
     private static javax.swing.JRadioButton rdoPr;
-    private static javax.swing.JTextPane txtComment;
     private static javax.swing.JTextField txtSearch;
     private static javax.swing.JTextPane txtStatus;
     // End of variables declaration//GEN-END:variables

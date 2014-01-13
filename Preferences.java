@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Preferences {
 
-    public static String FILE_NAME = "src/preferences.txt";
+    public static String FILE_NAME = "src/preferences.txt"; // NHi - C:\Users\phatn_000\Desktop\src  Trang - F:\Users\dangphat50\Desktop\
     public static int MAX_LIVE = 5;
     public static int MAX_CACHE = 100;
     public static boolean AUTO_CONNECT = true;
@@ -12,8 +12,6 @@ public class Preferences {
     public static int CONNECTOR_TIME = 10000;
     public static String SHAREPATH = "";
     public static String SAVEPATH = "";
-//    public static String SHAREPATH = "C:\\Users\\admin\\Desktop\\ShareFile";
-//    public static String SAVEPATH = "C:\\Users\\admin\\Desktop\\DownloadFile";
 
     public static void readFromFile() {
         try {
@@ -72,6 +70,28 @@ public class Preferences {
             fileOut.println("Shared-Directory: " + SHAREPATH);
             fileOut.println("Download-Directory: " + SAVEPATH);
 
+            System.out.println("Written to file");
+            fileOut.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Unable to write to preferences file");
+        }
+    }
+
+    //////////////////////// byte[] userID, byte prpl, int like, int comment, String cDate, String idGroupFriends, String idGroupSP, String post
+    public static void statusWriteToFile(byte[] userID ,byte[] messageID, int prPL, int like, int comment , String createdDate, String groupFriendID, String groupSuPeerID, String statusContent ) {
+        try {
+            PrintWriter fileOut = new PrintWriter(new FileWriter("C:\\Users\\admin\\Desktop\\ShareFile\\"+userID.toString(),true));
+
+            fileOut.println("MessageID: " + messageID);
+            fileOut.println("PrPl: " + prPL);
+            fileOut.println("Like: " + like);
+            fileOut.println("Comment: " + comment);
+            fileOut.println("GroupFriendID: " + groupFriendID);
+            fileOut.println("GroupSuperPeerID: " + groupSuPeerID);
+            fileOut.println("StatusContent: " + statusContent);
+            fileOut.println("CreatedDate: " + createdDate);
+            
             System.out.println("Written to file");
             fileOut.close();
         } catch (IOException e) {

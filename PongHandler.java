@@ -31,7 +31,7 @@ class PongHandler extends Thread {
              */
             pingIP = pingMatch.getIP();
              NetworkManager.writeToOne(pingIP, pong);
-          
+            //System.out.println("PONG LENGHTH: " + po);
             
 //            Vector<IPAddress> check = HostArray.cacheConnection;
 //            String ipRePing = pingIP.toString();

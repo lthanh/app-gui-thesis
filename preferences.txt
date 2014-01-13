@@ -1,5 +1,4 @@
-Host: 192.168.0.104:6346
-Host: 192.168.0.103:6346
+Host: 192.168.0.101:6346
 Max-Live: 5
 Max-Cache: 100
 Auto-Connect: true

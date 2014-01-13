@@ -3,6 +3,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Vector;
 
 /*
  * To change this template, choose Tools | Templates
@@ -15,11 +16,11 @@ import java.util.Map;
 public class PostHandler extends Thread {
 
     //static variables
-    public static Map qt;  //query table
+    // public static Map qt;  //query table
     //instance variables
     Post postMessage;
     QueryHit queryHit;
-    IPAddress myIP;
+    public static IPAddress myIP;
     IPAddress queryIP;
     ResultSet searchResult;
     int numHits;
@@ -28,48 +29,31 @@ public class PostHandler extends Thread {
     ResultSet result;
     byte[] serventID;
     byte[] queryID;
+    public static Vector<Post> recieveListPost = new Vector<Post>(); // receive listPost from friends
+    public static Vector<String> showListPost = new Vector<String>();
 
     public PostHandler(IPAddress queryIP, Post postMessage) {
         this.postMessage = postMessage;
         postMessage.setIP(queryIP);  //set IPAddress of query
+        recieveListPost.add(0,postMessage);
+        showListPost.add(0, Utils.formSHOWSTATUS(postMessage.getUserID().toString(), postMessage.getPostStatusContent(), postMessage.like(), postMessage.comment(), postMessage.createdDate()));
     }
 
-    /////////////////////////////////////////////////////////////// **
-    public static void initQueryTable() {
-        qt = new Hashtable(5000);
-    }
-    /////////////////////////////////////////////////////////////// **
 
-    //QHandler handles incoming queries.  
     public void run() {
-        //hmmm.. this seems like potential bug.  I want to check that query is not in table.  But even if query table contains key,
-        //that does not necessarily mean it is in table, b/c two queries can have SAME HASHCODE VALUE.  I need to have some other means.
-        //Will talk to Rusty @ this on Monday.
 
-           AppGUI.inform(myIP, postMessage);
+        AppGUI.inform(myIP, showListPost);
+        NetworkManager.writeButOne(postMessage.getIP(), postMessage);  // Query is forwarded to all connected nodes except one from which query came.
+        // qt.put((Packet) postMessage, postMessage);
+        searchResult = SharedDirectory.search(postMessage.getSearchString());  //check shared directory for query match
+        queryID = postMessage.getMessageID();
+        port = Mine.getPort();
+        myIP = Mine.getIPAddress();
+        speed = Mine.getSpeed();
+        serventID = Mine.getServentIdentifier();
+        queryHit = new QueryHit(numHits, port, myIP, speed, searchResult, serventID, queryID);
+        NetworkManager.writeToOne(postMessage.getIP(), queryHit);  //send qHit back to node that sent original query
         
-        
-        /*
-        
-        if (!qt.containsKey(postMessage)) //check that query is not already in table
-        {
-            AppGUI.inform(postMessage); // Give information to the Search Monitor panel
-            NetworkManager.writeButOne(postMessage.getIP(), postMessage);  // Query is forwarded to all connected nodes except one from which query came.
-             
-            qt.put((Packet) postMessage, postMessage);    //add query to table, indexed by its unique MessageID
-            //searchResult = SharedDirectory.search(postMessage.getSearchString());  //check shared directory for query match
-            //numHits = searchResult.getSize();
-
-
-            queryID = postMessage.getMessageID();
-            port = Mine.getPort();
-            myIP = Mine.getIPAddress();
-            speed = Mine.getSpeed();
-            serventID = Mine.getServentIdentifier();
-            queryHit = new QueryHit(numHits, port, myIP, speed, searchResult, serventID, queryID);
-            NetworkManager.writeToOne(postMessage.getIP(), queryHit);  //send qHit back to node that sent original query
-
-        }
-        * */
+         
     }
 }

@@ -10,8 +10,11 @@ class Packet {
     public static final byte TTL = 7; // Standard Time to Live for a new packet
     public static final byte HOPS = 0; // All new packets start at zero hops
     protected byte[] contents;
+    public byte repayload;
 
     public Packet(byte payload, int length) {
+        repayload = payload;
+
         contents = new byte[length + HEADER_LENGTH]; // Length does _not_ include the length of the descriptor, so we have to put it in here.
 
         for (int i = 0; i < 16; i++) {
@@ -42,6 +45,8 @@ class Packet {
     }
 
     public int totalLength() {
+        System.out.println("PACKET: LENGTH OF CONTENT - " + this.length());
+        System.out.println("\nPACKET: CONTENT + HEADER: " + (HEADER_LENGTH + this.length()));
         return (this.length() + HEADER_LENGTH);
     }
 
@@ -99,5 +104,9 @@ class Packet {
             }
         }
         return (true);
+    }
+
+    public byte getPayload() {
+        return repayload;
     }
 }
