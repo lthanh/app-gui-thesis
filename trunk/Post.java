@@ -96,12 +96,20 @@ public class Post extends Packet {
         return (ip);
     }
 
-    public byte[] getUserID() {
-        byte[] userID = new byte[16];
+//    public byte[] getUserID() {
+//        byte[] userID = new byte[16];
+//        for (int i = 0; i < 16; i++) {
+//            userID[i] = contents[index + i];
+//        }
+//        return (userID);
+//    }
+    public String getUserID() {
+        StringBuilder userID = new StringBuilder();
         for (int i = 0; i < 16; i++) {
-            userID[i] = contents[index + i];
+            //temp[i] = contents[index + i];
+             userID.append(contents[index + i]);
         }
-        return (userID);
+        return userID.toString();
     }
 
     public int getPublicPrivate() {
@@ -165,7 +173,7 @@ public class Post extends Packet {
     public String getPostStatusContent() {
         String post = "";
         int k = contents.length;
-        System.out.println("Content length: "+ k);
+        System.out.println("Content length: " + k);
         for (int i = (47 + getCDateLength() + getGroupFriendIDLength() + getGroupSuPeerIDLength()); i < (contents.length); i++) {
             post = post + (char) (contents[i]);
         }
