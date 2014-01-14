@@ -79,22 +79,24 @@ public class Preferences {
     }
 
     //////////////////////// byte[] userID, byte prpl, int like, int comment, String cDate, String idGroupFriends, String idGroupSP, String post
-    public static void statusWriteToFile(byte[] userID ,byte[] messageID, int prPL, int like, int comment , String createdDate, String groupFriendID, String groupSuPeerID, String statusContent ) {
+    public static void statusWriteToFile(String userID, byte[] messageID, int prPL, int like, int comment, String createdDate, String groupFriendID, String groupSuPeerID, String statusContent) {
+// 0123456789101112131415
         try {
-            PrintWriter fileOut = new PrintWriter(new FileWriter("C:\\Users\\admin\\Desktop\\ShareFile\\"+userID.toString(),true));
+            FileWriter fw = new FileWriter("C:\\Users\\admin\\Desktop\\ShareFile\\" + userID + ".txt", true);
+            BufferedWriter writeStatus = new BufferedWriter(fw);
+            writeStatus.write("MessageID: " + messageID + "\n");
+            writeStatus.write("PrPl: " + prPL + "\n");
+            writeStatus.write("Like: " + like + "\n");
+            writeStatus.write("Comment: " + comment + "\n");
+            writeStatus.write("GroupFriendID: " + groupFriendID + "\n");
+            writeStatus.write("GroupSuperPeerID: " + groupSuPeerID + "\n");
+            writeStatus.write("StatusContent: " + statusContent + "\n");
+            writeStatus.write("CreatedDate: " + createdDate + "\n");
 
-            fileOut.println("MessageID: " + messageID);
-            fileOut.println("PrPl: " + prPL);
-            fileOut.println("Like: " + like);
-            fileOut.println("Comment: " + comment);
-            fileOut.println("GroupFriendID: " + groupFriendID);
-            fileOut.println("GroupSuperPeerID: " + groupSuPeerID);
-            fileOut.println("StatusContent: " + statusContent);
-            fileOut.println("CreatedDate: " + createdDate);
-            
+            writeStatus.newLine();
+            writeStatus.close();
             System.out.println("Written to file");
-            fileOut.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Unable to write to preferences file");
         }

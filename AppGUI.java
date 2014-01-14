@@ -1,7 +1,6 @@
 
 import java.awt.event.ActionEvent;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
 
@@ -18,14 +17,49 @@ public class AppGUI extends javax.swing.JFrame {
     /**
      * Creates new form AppGUI
      */
+    public byte prPl = 1;
+    public static byte[] userIDLoginToByte = new byte[16];
+    public static byte[] userNameLoginToByte = new byte[LoginForm.currentUser.getUserName().length()];
+
     public AppGUI() {
         initComponents();
+        setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
+        setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
+        setTitle("Posting Service");
+
         groupRadio.add(rdoPl);
         groupRadio.add(rdoPr);
         rdoPl.setSelected(true);
+
+        // get UserID to byte array
+        userIDLoginToByte = LoginForm.currentUser.getIdUserLogin().getBytes();
+
+        // Gnutella 
+        System.out.println("Login APP: " + LoginForm.currentUser.getIdUserLogin() + LoginForm.currentUser.getUserName());
+        System.out.println("Login APP: " + LoginForm.currentUser.getIdUserLogin() + LoginForm.currentUser.getUserName());
+        System.out.println("Login APP: " + LoginForm.currentUser.getIdUserLogin() + LoginForm.currentUser.getUserName());
+        System.out.println("Login APP: " + LoginForm.currentUser.getIdUserLogin() + LoginForm.currentUser.getUserName());
+        
+        System.out.println("Setting up hash tables...");
+        QHandler.initQueryTable();
+        PingHandler.initPingTable();
+        System.out.println("Determining network address...");
+        Mine.updateAddress();
+        System.out.println("Reading preferences file...");
+        new Searcher();
+        Preferences.readFromFile();
+        System.out.println("Setting up file table...");
+        new SharedDirectory(Preferences.SHAREPATH, Preferences.SAVEPATH);
+        Listener listener = new Listener();
+        listener.start(); // Beginning listening for network connections
+        PeriodicConnector periodicconnector = new PeriodicConnector(Preferences.AUTO_CONNECT); // Begin actively trying to connect
+        periodicconnector.start();
+        Pinger pinger = new Pinger();
+        pinger.start(); // Start sending out periodic pings.
+
+
+        lbUserName.setText(LoginForm.currentUser.getUserName());
     }
-    public byte prPl = 1;
-    public static byte[] userIDLogin = new byte[16];
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -104,11 +138,6 @@ public class AppGUI extends javax.swing.JFrame {
         jScrollPane3.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
         listFriends.setBackground(new java.awt.Color(240, 240, 240));
-        listFriends.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
         listFriends.setAlignmentX(0.0F);
         listFriends.setAlignmentY(0.0F);
         jScrollPane3.setViewportView(listFriends);
@@ -180,11 +209,6 @@ public class AppGUI extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Friends' status"));
 
-        listStatus.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
         listStatus.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 listStatusMouseClicked(evt);
@@ -279,37 +303,47 @@ public class AppGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         String textPost = txtStatus.getText();
         if (!textPost.trim().isEmpty()) {
-            System.out.println("\n  ########## POST MESSGAE: " + txtStatus.getText());
-            for (int i = 0; i < 16; i++) {
-                userIDLogin[i] += i;
-            }
+            // System.out.println("\n  ########## POST MESSGAE: " + txtStatus.getText());
             txtStatus.setText(null);
-            prPl = 1;
+            // prPl = 1;
             String createdate = Utils.formatDate(new Date());
             String friend = "192.168.0.110:6346;192.168.0.120:6346";
             String sp = "192.168.0.110:6346;192.168.0.120:6346;192.168.1.122:6346;192.168.1.142:6346";
             int liked = 0;
             int commented = 0;
-            writePost(userIDLogin, prPl, liked, commented, createdate, friend, sp, textPost);
+            writePost(userIDLoginToByte, prPl, liked, commented, createdate, friend, sp, textPost);
         }
     }//GEN-LAST:event_btnPostActionPerformed
 
     private void rdoPlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoPlActionPerformed
         // TODO add your handling code here:
         prPl = 1;
-        System.out.println("RADIO BUTTON: PUBLIC- " + prPl);
     }//GEN-LAST:event_rdoPlActionPerformed
 
     private void rdoPrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoPrActionPerformed
         // TODO add your handling code here:
         prPl = 0;
-        System.out.println("RADIO BUTTON: Private- " + prPl);
     }//GEN-LAST:event_rdoPrActionPerformed
 
     private void listStatusMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listStatusMouseClicked
         // TODO add your handling code here:
-//        System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
-//        evt.getID();
+        //listStatus.getSelectedIndex();
+        int indexSelected = listStatus.getSelectedIndex();
+        Post postSelected = PostHandler.recieveListPost.get(indexSelected);
+        StatusForm statusPOPUP = new StatusForm();
+        statusPOPUP.setTitle("UserName's status");
+        statusPOPUP.lbUseName.setText(postSelected.getUserID());
+//        statusPOPUP.txtContentPopUp.setText(postSelected.getPostStatusContent());
+        statusPOPUP.txtContentPopUp.setText(postSelected.getPostStatusContent());
+        // statusPOPUP.txtContentPopUp.disable();
+        statusPOPUP.lbLike.setText("1000");
+        statusPOPUP.lbComment.setText("1000");
+        // statusPOPUP.btnLike.
+//        statusPOPUP.btnComment
+//        statusPOPUP.txtComment
+        // statusPOPUP.listComment.setListData();
+
+        statusPOPUP.show();
     }//GEN-LAST:event_listStatusMouseClicked
 
     private void txtStatusKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtStatusKeyPressed
@@ -358,44 +392,15 @@ public class AppGUI extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 AppGUI app = new AppGUI();
-                app.setExtendedState(app.MAXIMIZED_BOTH);
                 app.setVisible(true);
-                app.setTitle("Posting Service");
 
-                /*
-                 frame = new JFrame("Test");  
-                 Toolkit tk = Toolkit.getDefaultToolkit();  
-                 int xSize = ((int) tk.getScreenSize().getWidth());  
-                 int ySize = ((int) tk.getScreenSize().getHeight());  
-                 frame.setSize(xSize,ySize);  
-                 frame.show();  
-                 */
+
             }
         });
 
 
 
-        //////////////////////// Gnutella 
 
-        System.out.println("Setting up hash tables...");
-        QHandler.initQueryTable();
-        PingHandler.initPingTable();
-        System.out.println("Determining network address...");
-        Mine.updateAddress();
-        System.out.println("Reading preferences file...");
-        new Searcher();
-        Preferences.readFromFile();
-        System.out.println("Setting up file table...");
-        new SharedDirectory(Preferences.SHAREPATH, Preferences.SAVEPATH);
-        Listener listener = new Listener();
-        listener.start(); // Beginning listening for network connections
-        PeriodicConnector periodicconnector = new PeriodicConnector(Preferences.AUTO_CONNECT); // Begin actively trying to connect
-        periodicconnector.start();
-        Pinger pinger = new Pinger();
-        pinger.start(); // Start sending out periodic pings.
-
-
-        lbUserName.setText("KAN");
     }
     //////////// POST MESSAGE
     static LinkedList post = new LinkedList();
@@ -413,7 +418,6 @@ public class AppGUI extends javax.swing.JFrame {
         // Post message = new Post(postMessage);
         // li.setText(postMessage.getSearchString());
         listStatus.setListData(listPostMessage);
-
     }
 
     // send post to other one via Network and save into database
@@ -426,9 +430,19 @@ public class AppGUI extends javax.swing.JFrame {
         AppGUI.inform(PostHandler.myIP, PostHandler.showListPost);
 
 
+        // convert userID login to String to check with String userID in post message receive
+        StringBuilder userIDAppend = new StringBuilder();
+        for (int i = 0; i < 16; i++) {
+            userIDAppend.append(userIDLoginToByte[i]);
+        }
+
+        System.out.println("AppGUI - User Login 2: " + userIDAppend);
+
+        System.out.println("AppGUI - userID in PostMessage: " + postMessage.getUserID());
+
         // check user to store data
-        if (userID.equals(userIDLogin)) {
-            Preferences.statusWriteToFile(userIDLogin, postMessage.getMessageID(), prpl, like, comment, cDate, idGroupFriends, idGroupSP, post);
+        if (userIDAppend.toString().equals(postMessage.getUserID())) {
+            Preferences.statusWriteToFile(postMessage.getUserID(), postMessage.getMessageID(), prpl, like, comment, cDate, idGroupFriends, idGroupSP, post);
         }
 
         NetworkManager.writeToAll(postMessage);
