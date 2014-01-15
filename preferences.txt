@@ -3,4 +3,4 @@ Max-Live: 5
 Max-Cache: 100
 Auto-Connect: true
 Shared-Directory: C:\Users\admin\Desktop\ShareFile
-Download-Directory: C:\Users\admin\Desktop\DownloadFile
+Download-Directory:  C:\Users\admin\Desktop\DownloadFile
