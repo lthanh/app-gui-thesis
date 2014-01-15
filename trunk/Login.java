@@ -35,10 +35,6 @@ public class Login {
                 continue;
             }
 
-            for (int i = 0; i < userLogin.size(); i++) {
-                System.out.println("List user login: " + userLogin.get(i).getIdUserLogin());
-                System.out.println("List user login: " + userLogin.get(i).getUserName());
-            }
             fileIn.close();
         } catch (IOException e) {
             e.printStackTrace();

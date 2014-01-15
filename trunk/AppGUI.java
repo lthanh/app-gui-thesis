@@ -1,5 +1,7 @@
 
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Vector;
@@ -17,16 +19,20 @@ public class AppGUI extends javax.swing.JFrame {
     /**
      * Creates new form AppGUI
      */
-    public byte prPl = 1;
+    public static byte prPl = 1;
     public static byte[] userIDLoginToByte = new byte[16];
-    public static byte[] userNameLoginToByte = new byte[LoginForm.currentUser.getUserName().length()];
+    public static String userNameLoginToByte = LoginForm.currentUser.getUserName();
 
     public AppGUI() {
         initComponents();
         setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
         setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
-        setTitle("Posting Service");
-
+        setTitle("Posting Message Service");
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
         groupRadio.add(rdoPl);
         groupRadio.add(rdoPr);
         rdoPl.setSelected(true);
@@ -35,11 +41,6 @@ public class AppGUI extends javax.swing.JFrame {
         userIDLoginToByte = LoginForm.currentUser.getIdUserLogin().getBytes();
 
         // Gnutella 
-        System.out.println("Login APP: " + LoginForm.currentUser.getIdUserLogin() + LoginForm.currentUser.getUserName());
-        System.out.println("Login APP: " + LoginForm.currentUser.getIdUserLogin() + LoginForm.currentUser.getUserName());
-        System.out.println("Login APP: " + LoginForm.currentUser.getIdUserLogin() + LoginForm.currentUser.getUserName());
-        System.out.println("Login APP: " + LoginForm.currentUser.getIdUserLogin() + LoginForm.currentUser.getUserName());
-        
         System.out.println("Setting up hash tables...");
         QHandler.initQueryTable();
         PingHandler.initPingTable();
@@ -209,6 +210,7 @@ public class AppGUI extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Friends' status"));
 
+        listStatus.setFixedCellHeight(50);
         listStatus.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 listStatusMouseClicked(evt);
@@ -224,7 +226,7 @@ public class AppGUI extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -242,8 +244,8 @@ public class AppGUI extends javax.swing.JFrame {
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(9, 9, 9)
-                        .addComponent(lbUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(39, 39, 39)
+                        .addComponent(lbUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtSearch)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnNoti, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -301,18 +303,7 @@ public class AppGUI extends javax.swing.JFrame {
 
     private void btnPostActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPostActionPerformed
         // TODO add your handling code here:
-        String textPost = txtStatus.getText();
-        if (!textPost.trim().isEmpty()) {
-            // System.out.println("\n  ########## POST MESSGAE: " + txtStatus.getText());
-            txtStatus.setText(null);
-            // prPl = 1;
-            String createdate = Utils.formatDate(new Date());
-            String friend = "192.168.0.110:6346;192.168.0.120:6346";
-            String sp = "192.168.0.110:6346;192.168.0.120:6346;192.168.1.122:6346;192.168.1.142:6346";
-            int liked = 0;
-            int commented = 0;
-            writePost(userIDLoginToByte, prPl, liked, commented, createdate, friend, sp, textPost);
-        }
+        showPost();
     }//GEN-LAST:event_btnPostActionPerformed
 
     private void rdoPlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoPlActionPerformed
@@ -332,7 +323,7 @@ public class AppGUI extends javax.swing.JFrame {
         Post postSelected = PostHandler.recieveListPost.get(indexSelected);
         StatusForm statusPOPUP = new StatusForm();
         statusPOPUP.setTitle("UserName's status");
-        statusPOPUP.lbUseName.setText(postSelected.getUserID());
+        statusPOPUP.lbUseName.setText(postSelected.getUserName());
 //        statusPOPUP.txtContentPopUp.setText(postSelected.getPostStatusContent());
         statusPOPUP.txtContentPopUp.setText(postSelected.getPostStatusContent());
         // statusPOPUP.txtContentPopUp.disable();
@@ -348,20 +339,9 @@ public class AppGUI extends javax.swing.JFrame {
 
     private void txtStatusKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtStatusKeyPressed
         // TODO add your handling code here:
-//        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-//            String textPost = txtStatus.getText();
-//            System.out.println("\n  ########## POST MESSGAE: " + txtStatus.getText());
-//            txtStatus.transferFocusBackward();
-//            txtStatus.setText(null);
-//            byte[] userID = Mine.getServentIdentifier();
-//            byte prpl = 1;  // byte[] userID, byte prpl, int like, int comment, int cDateLength, int groupdFriendIDLength, int groupdSuperPeerIDLength, String cDate, String idGroupFriends, String idGroupSP, String post
-//            String createdate = "cDate";
-//            String friend = "Friends Group";
-//            String sp = "SP Group";
-//            int liked = 0;
-//            int commented = 0;
-//            writePost(userID, prpl, liked, commented, createdate, friend, sp, textPost);
-//        }
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+            showPost();
+        }
     }//GEN-LAST:event_txtStatusKeyPressed
 
     public static void main(String args[]) {
@@ -415,38 +395,58 @@ public class AppGUI extends javax.swing.JFrame {
         //Integer port = new Integer(ip.getPort());
         // String myip = ip.toString();
         System.out.println("\n AppGUI - Post: " + listPostMessage.toString());
-        // Post message = new Post(postMessage);
-        // li.setText(postMessage.getSearchString());
         listStatus.setListData(listPostMessage);
     }
 
     // send post to other one via Network and save into database
-    public static void writePost(byte[] userID, byte prpl, int like, int comment, String cDate, String idGroupFriends, String idGroupSP, String post) {
-        Post postMessage = new Post(userID, prpl, like, comment, cDate.length(), idGroupFriends.length(), idGroupSP.length(), cDate, idGroupFriends, idGroupSP, post);
+    public static void writePost(byte[] userID, byte prpl, int like, int comment, int cDateLength, int groupdFriendIDLength, int groupdSuperPeerIDLength, int useNameLength, String userNamePost, String cDate, String idGroupFriends, String idGroupSP, String post) {
+        Post postMessage = new Post(userID, prpl, like, comment, cDateLength, groupdFriendIDLength, groupdSuperPeerIDLength, useNameLength, userNamePost, cDate, idGroupFriends, idGroupSP, post);
 
         // show status on news feed of user logging in when they have just written the status
         PostHandler.recieveListPost.add(0, postMessage);
-        PostHandler.showListPost.add(0, Utils.formSHOWSTATUS(postMessage.getUserID().toString(), postMessage.getPostStatusContent(), postMessage.like(), postMessage.comment(), postMessage.createdDate()));
+        PostHandler.showListPost.add(0, Utils.formSHOWSTATUS(postMessage.getUserName(), postMessage.getPostStatusContent(), postMessage.like(), postMessage.comment(), postMessage.createdDate()));
         AppGUI.inform(PostHandler.myIP, PostHandler.showListPost);
 
 
         // convert userID login to String to check with String userID in post message receive
-        StringBuilder userIDAppend = new StringBuilder();
+//        StringBuilder userIDAppend = new StringBuilder();
+//        for (int i = 0; i < 16; i++) {
+//            userIDAppend.append(userIDLoginToByte[i]);
+//        }
+        byte[] temp = new byte[16];
+        //StringBuilder userID = new StringBuilder();
         for (int i = 0; i < 16; i++) {
-            userIDAppend.append(userIDLoginToByte[i]);
+            //temp[i] = contents[index + i];
+            temp[i] = userIDLoginToByte[i];
         }
 
-        System.out.println("AppGUI - User Login 2: " + userIDAppend);
+        String usenID = new String(temp);
+        System.out.println("AppGUI - User Login 2: " + usenID);
 
         System.out.println("AppGUI - userID in PostMessage: " + postMessage.getUserID());
 
         // check user to store data
-        if (userIDAppend.toString().equals(postMessage.getUserID())) {
-            Preferences.statusWriteToFile(postMessage.getUserID(), postMessage.getMessageID(), prpl, like, comment, cDate, idGroupFriends, idGroupSP, post);
+        if (usenID.equals(postMessage.getUserID())) {
+            Preferences.statusWriteToFile(postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prpl, like, comment, cDate, idGroupFriends, idGroupSP, post);
         }
 
         NetworkManager.writeToAll(postMessage);
         addPOST(postMessage);
+    }
+
+    public static void showPost() {
+        String textPost = txtStatus.getText();
+        if (!textPost.trim().isEmpty()) {
+            txtStatus.setText(null);
+            // prPl = 1;
+            String createdate = Utils.formatDate(new Date());
+            String friend = "192.168.0.110:6346;192.168.0.120:6346";
+            String sp = "192.168.0.110:6346;192.168.0.120:6346;192.168.1.122:6346;192.168.1.142:6346";
+            int liked = 0;
+            int commented = 0;
+
+            writePost(userIDLoginToByte, prPl, liked, commented, createdate.length(), friend.length(), sp.length(), userNameLoginToByte.length(), userNameLoginToByte, createdate, friend, sp, textPost);
+        }
     }
     //////////// END POST MESSAGE
     // Variables declaration - do not modify//GEN-BEGIN:variables

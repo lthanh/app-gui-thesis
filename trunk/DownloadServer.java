@@ -29,7 +29,7 @@ public class DownloadServer extends Thread
 			if (SharedDirectory.validate(index, filename))
 			    {
 				File tosend = SharedDirectory.getFile(index);
-				int size = SharedDirectory.getFileSize(index);
+				int size = 0;// SharedDirectory.getFileSize(index);
 				String responsestring = ("HTTP 200 OK\r\nServer: Marmalade\r\nContent-type: application/binary\r\nContent-length: " +
 							 size + "\r\n\r\n");
 				byte[] response = responsestring.getBytes();

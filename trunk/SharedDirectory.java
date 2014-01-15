@@ -5,10 +5,11 @@ import java.util.*;
 public class SharedDirectory {
 
     static ArrayList filestoshare = new ArrayList();
-    static ArrayList filesizes = new ArrayList();
+    //  static ArrayList filesizes = new ArrayList();
     static File savepath;
     static int numfiles = 0;
-    static long bytes = 0;
+    static String listFileIDSaving = "";
+    //   static long bytes = 0;
 
     public SharedDirectory(String sharepath, String savepath) {
         generateFileList(new File(sharepath));
@@ -19,6 +20,8 @@ public class SharedDirectory {
         String[] filenames = directorytosearch.list(); // All of the files and directories in the current folder.
 
         for (int i = 0; i < filenames.length; i++) {
+            listFileIDSaving += filenames + "-"; // get list name of list file
+            
             File f = new File(directorytosearch.getPath(), filenames[i]); // All of the File objects in the current folder.
             if (f.isHidden() || !(f.canRead())) // Don't ever report the existence of hidden files or ones for which we have incorrect permissions.
             {
@@ -31,10 +34,10 @@ public class SharedDirectory {
                 filestoshare.add(f); // Each file will have a unique index in this ArrayList, which will become the Gnutella File Index for the Result Set.
                 Integer size = new Integer((int) (f.length()));
 
-                filesizes.add(size); // Sure wish ArrayLists could hold ints rather than Integers.
+                //filesizes.add(size); // Sure wish ArrayLists could hold ints rather than Integers.
 
                 numfiles++;
-                bytes += size.intValue();
+               // bytes += size.intValue();
             }
         }
     }
@@ -49,8 +52,8 @@ public class SharedDirectory {
             if ((((File) filestoshare.get(i)).getName()).indexOf(query) != -1) // Check to see if the query is a substring of the filename
             {
                 r.add(new Integer(i)); // File index
-                r.add(new Integer(((Integer) filesizes.get(i)).intValue())); /* This legerdemain is necessary because Integers are objects, but we want
-                 to copy their values, not their pointers. */
+                //r.add(new Integer(((Integer) filesizes.get(i)).intValue())); /* This legerdemain is necessary because Integers are objects, but we want
+                 //to copy their values, not their pointers. */
                 r.add(((File) filestoshare.get(i)).getName()); // Add the name of the matching file.
             }
         }
@@ -77,17 +80,12 @@ public class SharedDirectory {
         return ((File) filestoshare.get(index));
     }
 
-    public static int getFileSize(int index) // Call only after validating.
-    {
-        return (((Integer) filesizes.get(index)).intValue());
+   public static String getListFileIDSaving() {
+        return (listFileIDSaving);
     }
 
     public static int getOurNumFiles() {
         return (numfiles);
-    }
-
-    public static int getOurKb() {
-        return ((int) (bytes / 1000));
     }
 
     public static File getOurSavePath() {
