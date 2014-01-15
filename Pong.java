@@ -3,8 +3,9 @@ public class Pong extends Packet {
 
     private int index = HEADER_LENGTH;
 
-    public Pong(int port, IPAddress ip, int numberOfFiles, int kb, byte[] messageid) {
-        super(Packet.PONG, 14);
+    public Pong(int port, IPAddress ip, byte[] userID, int userNameLength, int listFileIDStoreLength, String listFileIDStore, String userNameOnline, byte[] messageid) {
+        super(Packet.PONG, (26 + listFileIDStore.length() + userNameOnline.length()));
+
 
         for (int i = 0; i < messageid.length; i++) // Pongs need the same Message IDs as the pings that generate them.
         {
@@ -22,17 +23,34 @@ public class Pong extends Packet {
         contents[index + 4] = (byte) ip.getThird();
         contents[index + 5] = (byte) ip.getFourth();
 
-        // convert number of files  to 4 bytes
-        contents[index + 9] = (byte) (numberOfFiles >>> 24);
-        contents[index + 8] = (byte) ((numberOfFiles & 0xffffff) >>> 16);
-        contents[index + 7] = (byte) ((numberOfFiles & 0xffff) >>> 8);
-        contents[index + 6] = (byte) (numberOfFiles & 0xff);
+        for (int i = 0; i < userID.length; i++) {
+            contents[index + 6 + i] = userID[i];
+        }
 
-        // convert total kilobytes to 4 bytes
-        contents[index + 13] = (byte) (kb >>> 24);
-        contents[index + 12] = (byte) ((kb & 0xffffff) >>> 16);
-        contents[index + 11] = (byte) ((kb & 0xffff) >>> 8);
-        contents[index + 10] = (byte) (kb & 0xff);
+        // convert userNameLength to byte array
+        contents[index + 6 + userID.length + 0] = (byte) userNameLength;
+
+        // convert listFileIDLength to byte array
+        contents[index + 6 + userID.length + 1] = (byte) listFileIDStoreLength;
+
+        // convert listFileIDStore to byte  
+        byte[] listFileID = new byte[listFileIDStore.length()];
+        listFileID = listFileIDStore.getBytes();
+        int i;
+        for (i = 0; i < listFileIDStore.length(); i++) {
+            contents[(i + 24)] = listFileID[i];
+        }
+        contents[(i + 24)] = 0;
+
+        // convert userNameOnline to byte  
+        byte[] tempUserName = new byte[userNameOnline.length()];
+        tempUserName = userNameOnline.getBytes();
+        int j;
+        for (j = 0; j < userNameOnline.length(); j++) {
+            contents[(j + 24 + listFileIDStore.length())] = tempUserName[j];
+        }
+        contents[(j + 24 + listFileIDStore.length())] = 0;
+
     }
 
     public Pong(byte[] rawdata) {
@@ -48,13 +66,39 @@ public class Pong extends Packet {
         return (new IPAddress((contents[index + 2] & 0xff), (contents[index + 3] & 0xff), (contents[index + 4] & 0xff), (contents[index + 5] & 0xff), getPort()));
     }
 
-    public int getNumFiles() {
-        int numfiles = (((contents[index + 9] & 0xff) << 24) | ((contents[index + 8] & 0xff) << 16) | ((contents[index + 7] & 0xff) << 8) | (contents[index + 6] & 0xff));
-        return (numfiles);
+    public String getUserIDOnline() {
+        byte[] temp = new byte[16];
+        //StringBuilder userID = new StringBuilder();
+        for (int i = 0; i < 16; i++) {
+            //temp[i] = contents[index + i];
+            temp[i] = contents[index + 6 + i];
+        }
+        
+        String usenName = new String(temp);
+        return usenName;
     }
 
-    public int getKb() {
-        int kb = (((contents[index + 13] & 0xff) << 24) | ((contents[index + 12] & 0xff) << 16) | ((contents[index + 11] & 0xff) << 8) | (contents[index + 10] & 0xff));
-        return (kb);
+    public int getUserNameLength() {
+        return contents[index + 6 + 16];
+    }
+
+    public int getListFileIDStoreLength() {
+        return contents[index + 6 + 16 + 1];
+    }
+
+    public String getListFileIDStore() {
+        String list = "";
+        for (int i = 24; i < 24 + getListFileIDStoreLength(); i++) {
+            list = list + (char) (contents[i]);
+        }
+        return list;
+    }
+
+    public String getUserNameOnline() {
+        String userName = "";
+        for (int i = (24 + getListFileIDStoreLength()); i < (24 + getListFileIDStoreLength() + getUserNameLength()); i++) {
+            userName = userName + (char) (contents[i]);
+        }
+        return userName;
     }
 }

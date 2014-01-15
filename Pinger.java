@@ -25,8 +25,8 @@ public class Pinger extends Thread {
     public static void inform(Pong pong) {
         if (pong.compare(myping)) {
             hosts++;
-            totalfiles += pong.getNumFiles();
-            totalkb += pong.getKb();
+//            totalfiles += pong.getNumFiles();
+//            totalkb += pong.getKb();
         }
     }
 }

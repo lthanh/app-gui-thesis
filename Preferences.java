@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Preferences {
 
-    public static String FILE_NAME = "src/preferences.txt"; // NHi - C:\Users\phatn_000\Desktop\src  Trang - F:\Users\dangphat50\Desktop\
+    public static String FILE_NAME = "src/preferences.txt"; // NHi - C:\Users\phatn_000\Desktop\src  Trang - F:\Users\dangphat50\Desktop\src\
     public static int MAX_LIVE = 5;
     public static int MAX_CACHE = 100;
     public static boolean AUTO_CONNECT = true;
@@ -12,6 +12,7 @@ public class Preferences {
     public static int CONNECTOR_TIME = 10000;
     public static String SHAREPATH = "";
     public static String SAVEPATH = "";
+    public static Vector<String> ipSuperPeer = new Vector<String>();
 
     public static void readFromFile() {
         try {
@@ -21,6 +22,9 @@ public class Preferences {
                 System.out.println("Preferences line: " + line);
                 if (line.startsWith("Host: ")) {
                     String address = line.substring(6);
+
+                    ipSuperPeer.add(0, address); // list server in preference file
+
                     System.out.println("address:" + address);
                     StringTokenizer t = new StringTokenizer(address, ":");
                     Host h = new Host(t.nextToken(), Integer.parseInt(t.nextToken()));
@@ -79,12 +83,12 @@ public class Preferences {
     }
 
     //////////////////////// byte[] userID, byte prpl, int like, int comment, String cDate, String idGroupFriends, String idGroupSP, String post
-    public static void statusWriteToFile(String userID, byte[] messageID, int prPL, int like, int comment, String createdDate, String groupFriendID, String groupSuPeerID, String statusContent) {
-// 0123456789101112131415
+    public static void statusWriteToFile(String userID,String userName, byte[] messageID, int prPL, int like, int comment, String createdDate, String groupFriendID, String groupSuPeerID, String statusContent) {
         try {
             FileWriter fw = new FileWriter("C:\\Users\\admin\\Desktop\\ShareFile\\" + userID + ".txt", true);
             BufferedWriter writeStatus = new BufferedWriter(fw);
             writeStatus.write("MessageID: " + messageID + "\n");
+            writeStatus.write("UserName: " + userName + "\n");
             writeStatus.write("PrPl: " + prPL + "\n");
             writeStatus.write("Like: " + like + "\n");
             writeStatus.write("Comment: " + comment + "\n");

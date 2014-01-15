@@ -29,7 +29,7 @@ public class Utils {
     }
 
     public static String formSHOWSTATUS(String userName, String post, int like, int comment, String cDate) {
-        String statusForm = userName + ":\n" + post + "\n" + like + " Like " + comment + " Comment - Created: " + cDate;
+        String statusForm = "< " + userName + " >:  " + post + " : " + like + " Like " + comment + " Comment : Created - " + cDate;
         return statusForm;
     }
 }
