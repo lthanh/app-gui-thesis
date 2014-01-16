@@ -45,8 +45,8 @@ class Packet {
     }
 
     public int totalLength() {
-//        System.out.println("PACKET: LENGTH OF CONTENT - " + this.length());
-//        System.out.println("\nPACKET: CONTENT + HEADER: " + (HEADER_LENGTH + this.length()));
+        System.out.println("PACKET: LENGTH OF CONTENT - " + this.length());
+        System.out.println("\nPACKET: CONTENT + HEADER: " + (HEADER_LENGTH + this.length()));
         return (this.length() + HEADER_LENGTH);
     }
 
@@ -70,14 +70,14 @@ class Packet {
         return (contents);
     }
 
-    public boolean compare(Packet tocompare) {
-        for (int i = 0; i < 16; i++) {
-            if (contents[i] != tocompare.contents[i]) {
-                return (false);
-            }
-        }
-        return (true);
-    }
+//    public boolean compare(Packet tocompare) {
+//        for (int i = 0; i < 16; i++) {
+//            if (contents[i] != tocompare.contents[i]) {
+//                return (false);
+//            }
+//        }
+//        return (true);
+//    }
 
     //method to obtain messageID from packet
     public byte[] getMessageID() {

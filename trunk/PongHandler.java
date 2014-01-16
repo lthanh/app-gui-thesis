@@ -24,6 +24,15 @@ class PongHandler extends Thread {
     public void run() {
         String ipname = pong.getIP().toString();
         int port = pong.getPort();
+
+//        System.out.println("#### PingHandler: PONG -- OUTCOMMING " + pong.toString());
+//        System.out.println("#### PingHandler: PONG -- " + pong.getUserIDOnline());
+//        System.out.println("#### PingHandler: PONG -- " + pong.getUserNameOnline());
+//        System.out.println("#### PingHandler: PONG -- " + pong.getListFileIDStore());
+//        System.out.println("#### PingHandler: PONG -- " + pong.getIP());
+//        System.out.println("#### PingHandler: PONG -- " + pong.getPort());
+
+
         Host newhost = new Host(ipname, port);
         HostCache.addHost(newhost);
         listPong.add(pong);

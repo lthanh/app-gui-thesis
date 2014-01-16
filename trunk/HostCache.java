@@ -47,14 +47,14 @@ public class HostCache {
             hosts = new Host[1];
             hosts[0] = h;
             System.out.println("Host added in HostCache " + h.getName() + " total hosts " + getCount());
-         //   Searcher.updateHostCache(h, true);
+            //   Searcher.updateHostCache(h, true);
         } else if (!isPresent(h)) {
             Host[] temp = new Host[hosts.length + 1];
             System.arraycopy(hosts, 0, temp, 0, hosts.length);
             temp[hosts.length] = h;
             hosts = temp;
             System.out.println("Host added in HostCache " + h.getName() + " total hosts " + getCount());
-        //    Searcher.updateHostCache(h, true);
+            //    Searcher.updateHostCache(h, true);
         }
     }
 
@@ -76,7 +76,7 @@ public class HostCache {
             }
             hosts = temp;
             System.out.println("Host removed in HostCache " + h.getName() + " Hosts left " + getCount());
-         //   Searcher.updateHostCache(h, false);
+            //   Searcher.updateHostCache(h, false);
         }
     }
 
@@ -93,8 +93,12 @@ public class HostCache {
         if (!isNull()) {
             System.out.println("Hosts in cache = " + getCount());
             System.out.println("Attempting to connect to " + getIP(i) + ":" + getPort(i));
-            Connector connector = new Connector(getIP(i), getPort(i), 20000);
-            connector.start();
+            try {
+                Connector connector = new Connector(getIP(i), getPort(i), 20000);
+                connector.start();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

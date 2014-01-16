@@ -14,7 +14,8 @@ public class Preferences {
     public static String SAVEPATH = "";
     public static String ONLINE = " - Online (^^)";
     public static String OFFLINE = " - Offline";
-    public static int COUNTER_OFFLINE = 0;
+    public static int COUNTER_OFFLINE = 3;
+    public static int COUNTER_ONLINE = 0;
     public static Vector<String> ipSuperPeer = new Vector<String>();
     public static Vector<Friends> friendList = new Vector<Friends>();
 
@@ -102,7 +103,11 @@ public class Preferences {
             writeStatus.write("GroupSuperPeerID: " + groupSuPeerID + "\n");
             writeStatus.write("StatusContent: " + statusContent + "\n");
             writeStatus.write("CreatedDate: " + createdDate + "\n");
-
+            
+            // update list file sharing after write file
+            new SharedDirectory(Preferences.SHAREPATH, Preferences.SAVEPATH); 
+            System.out.println("Update list sharing file successful");
+            
             writeStatus.newLine();
             writeStatus.close();
             System.out.println("Written to file");
@@ -116,7 +121,7 @@ public class Preferences {
     public static void readFriendFile() {
         try {
 
-            BufferedReader fileIn = new BufferedReader(new FileReader("src/listFriendPeer.txt"));
+            BufferedReader fileIn = new BufferedReader(new FileReader("src/listFriendPeer.txt")); // NHi - C:\Users\phatn_000\Desktop\src  Trang - F:\Users\dangphat50\Desktop\src\
             String line;
 
             while ((line = fileIn.readLine()) != null) {
@@ -128,9 +133,9 @@ public class Preferences {
                 user.setUserName(userNameID[1]);
                 user.setStatus(OFFLINE);
                 user.setCountOffline(COUNTER_OFFLINE);
-                System.out.println("user.setIdUserLogin: " + user.getIdUserLogin());
-                System.out.println("user.setUserName: " + user.getUserName());
-                System.out.println("user.setStatus: " + user.getStatus());
+//                System.out.println("user.setIdUserLogin: " + user.getIdUserLogin());
+//                System.out.println("user.setUserName: " + user.getUserName());
+//                System.out.println("user.setStatus: " + user.getStatus());
                 friendList.add(user);
                 continue; // 
             }
