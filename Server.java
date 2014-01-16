@@ -75,13 +75,14 @@ class Server extends Thread {
                 if (header.identify() == Packet.PONG) {
                     Pong pong = new Pong(newpacket);
 
-                //    System.out.println("\n ### Server : Packet == PONG -- " + newpacket.toString());
+                    System.out.println("\n ### Server : Packet == PONG -- " + newpacket.toString());
+                    System.out.println("\n ### Server : Packet == PONG Length newpacket-- " + newpacket.length);
 
                     Host h = new Host(mine.toString(), mine.getPort());
                     HostCache.addHost(h);
                     PongHandler handler = new PongHandler(mine, pong);
                     handler.start();
-                    Pinger.inform(pong);
+                 //   Pinger.inform(pong);
                     continue;
                 } else if (header.identify() == Packet.QUERY) {
                     Query query = new Query(newpacket);

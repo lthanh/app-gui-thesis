@@ -19,10 +19,10 @@ public class Pinger extends Thread {
             myping = new Ping();
             pingCounter++;
 
-            System.out.println("PINGer BEFORE times:  " + pingCounter);
+            System.out.println("\n PINGer BEFORE times:  " + pingCounter);
 
-            if (pingCounter == 3) {
-                System.out.println("PINGer 3 times: " + pingCounter);
+            if (pingCounter == 2) {
+                System.out.println("\n PINGer 3 times: " + pingCounter);
                 check.checkUserOnline();
                 
             }
@@ -30,11 +30,11 @@ public class Pinger extends Thread {
         }
     }
 
-    public static void inform(Pong pong) {
-        if (pong.compare(myping)) {
-            hosts++;
-//            totalfiles += pong.getNumFiles();
-//            totalkb += pong.getKb();
-        }
-    }
+//    public static void inform(Pong pong) {
+//        if (pong.compare(myping)) {
+//            hosts++;
+////            totalfiles += pong.getNumFiles();
+////            totalkb += pong.getKb();
+//        }
+//    }
 }

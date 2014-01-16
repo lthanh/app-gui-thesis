@@ -8,7 +8,7 @@ public class SharedDirectory {
     //  static ArrayList filesizes = new ArrayList();
     static File savepath;
     static int numfiles = 0;
-    static String listFileIDSaving = "";
+    public static String listFileIDSaving = "";
     //   static long bytes = 0;
 
     public SharedDirectory(String sharepath, String savepath) {
@@ -18,28 +18,39 @@ public class SharedDirectory {
 
     public static void generateFileList(File directorytosearch) {
         String[] filenames = directorytosearch.list(); // All of the files and directories in the current folder.
-
         for (int i = 0; i < filenames.length; i++) {
-            listFileIDSaving += filenames + "-"; // get list name of list file
-            
-            File f = new File(directorytosearch.getPath(), filenames[i]); // All of the File objects in the current folder.
-            if (f.isHidden() || !(f.canRead())) // Don't ever report the existence of hidden files or ones for which we have incorrect permissions.
-            {
-                continue;
-            }
-            if (f.isDirectory()) {
-                generateFileList(f);
-            } // Recurse through all subfolders.
-            else {
-                filestoshare.add(f); // Each file will have a unique index in this ArrayList, which will become the Gnutella File Index for the Result Set.
-                Integer size = new Integer((int) (f.length()));
-
-                //filesizes.add(size); // Sure wish ArrayLists could hold ints rather than Integers.
-
-                numfiles++;
-               // bytes += size.intValue();
-            }
+            listFileIDSaving +=filenames[i];
+           // System.out.println("\n filenames SHARE: " + listFileIDSaving);
         }
+        
+        
+
+        // get list file shareed
+//        for (int i = 0; i < filenames.length; i++) {
+//            listFileIDSaving += filenames[i].split(".")[0] + "-";
+//        }
+//        
+//        for (int i = 0; i < filenames.length; i++) {
+//            listFileIDSaving += filenames + "-"; // get list name of list file
+//
+//            File f = new File(directorytosearch.getPath(), filenames[i]); // All of the File objects in the current folder.
+//            if (f.isHidden() || !(f.canRead())) // Don't ever report the existence of hidden files or ones for which we have incorrect permissions.
+//            {
+//                continue;
+//            }
+//            if (f.isDirectory()) {
+//                generateFileList(f);
+//            } // Recurse through all subfolders.
+//            else {
+//                filestoshare.add(f); // Each file will have a unique index in this ArrayList, which will become the Gnutella File Index for the Result Set.
+//                Integer size = new Integer((int) (f.length()));
+//
+//                //filesizes.add(size); // Sure wish ArrayLists could hold ints rather than Integers.
+//
+//                numfiles++;
+//                // bytes += size.intValue();
+//            }
+//        }
     }
 
     public static ResultSet search(String query) // Eventually, this would be better as a wackadexy thing, but for now it's linear.
@@ -53,7 +64,7 @@ public class SharedDirectory {
             {
                 r.add(new Integer(i)); // File index
                 //r.add(new Integer(((Integer) filesizes.get(i)).intValue())); /* This legerdemain is necessary because Integers are objects, but we want
-                 //to copy their values, not their pointers. */
+                //to copy their values, not their pointers. */
                 r.add(((File) filestoshare.get(i)).getName()); // Add the name of the matching file.
             }
         }
@@ -80,8 +91,8 @@ public class SharedDirectory {
         return ((File) filestoshare.get(index));
     }
 
-   public static String getListFileIDSaving() {
+    public static String getListFileIDSaving() {
+        System.out.println("\n SHARE: " + listFileIDSaving);
         return (listFileIDSaving);
     }
-
 }

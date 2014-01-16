@@ -26,7 +26,13 @@ class PingHandler extends Thread {
             pt.put((Packet) ping, ping);
             Pong response = new Pong(Mine.getPort(), Mine.getIPAddress(), useIDOnlineToByte, userNameOnlineString.length(), SharedDirectory.getListFileIDSaving().length(), SharedDirectory.getListFileIDSaving(), userNameOnlineString, ping.getMessageID());
 
-            //  System.out.println("#### PingHandler: PONG -- " + response.toString());
+            System.out.println("#### PingHandler: PONG -- OUTCOMMING " + response.toString());
+            System.out.println("#### PingHandler: PONG -- " + response.getUserIDOnline());
+            System.out.println("#### PingHandler: PONG -- " + response.getUserNameOnline());
+            System.out.println("#### PingHandler: PONG -- " + response.getListFileIDStore());
+            System.out.println("#### PingHandler: PONG -- " + response.getIP());
+            System.out.println("#### PingHandler: PONG -- " + response.getPort());
+            
             NetworkManager.writeToOne(ping.getIP(), response);
         }
     }

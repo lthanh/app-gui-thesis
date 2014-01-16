@@ -39,15 +39,15 @@ public class Searcher {
         Iterator iter = searches.iterator();
         while (iter.hasNext()) {
             Query b = (Query) iter.next();
-            if (qh.compare(b)) {
-                ResultSet r = qh.getResults();
-                while (r.more()) {
-                    Integer index = new Integer(r.getIndex());
-                    Integer size = new Integer(r.getFilesize());
-                    String name = r.getName();
-                    mypanel.addQHit(index, name, size, myip, port);
-                }
-            }
+//            if (qh.compare(b)) {
+//                ResultSet r = qh.getResults();
+//                while (r.more()) {
+//                    Integer index = new Integer(r.getIndex());
+//                    Integer size = new Integer(r.getFilesize());
+//                    String name = r.getName();
+//                    mypanel.addQHit(index, name, size, myip, port);
+//                }
+//            }
         }
     }
 
@@ -238,8 +238,8 @@ class SearchPanel extends JPanel {
             String name = (String) table.getValueAt(rowIndex, 1);
             String ip = (String) table.getValueAt(rowIndex, 3);
             Integer port = (Integer) table.getValueAt(rowIndex, 4);
-            Downloader downloader = new Downloader(index.intValue(), name, ip, port.intValue());
-            downloader.start();
+            //Downloader downloader = new Downloader(index.intValue(), name, ip, port.intValue());
+           // downloader.start();
         }
     }
 
