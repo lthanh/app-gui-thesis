@@ -12,6 +12,15 @@ public class UserLoginObject {
     
     public String idUserLogin;
     public String userName;
+    public String status;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getIdUserLogin() {
         return idUserLogin;
