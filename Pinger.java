@@ -5,6 +5,8 @@ public class Pinger extends Thread {
     static int totalkb = 0;
     static int totalfiles = 0;
     static Ping myping;
+    static int pingCounter = 0;
+    checkUserOnlineAction check = new checkUserOnlineAction();
 
     public void run() {
         while (true) {
@@ -13,11 +15,17 @@ public class Pinger extends Thread {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-           // Searcher.updateInfo(hosts, totalkb, totalfiles);
+            // Searcher.updateInfo(hosts, totalkb, totalfiles);
             myping = new Ping();
-            hosts = 0;
-            totalkb = 0;
-            totalfiles = 0;
+            pingCounter++;
+
+            System.out.println("PINGer BEFORE times:  " + pingCounter);
+
+            if (pingCounter == 3) {
+                System.out.println("PINGer 3 times: " + pingCounter);
+                check.checkUserOnline();
+                
+            }
             NetworkManager.writeToAll(myping);
         }
     }

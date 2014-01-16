@@ -12,7 +12,11 @@ public class Preferences {
     public static int CONNECTOR_TIME = 10000;
     public static String SHAREPATH = "";
     public static String SAVEPATH = "";
+    public static String ONLINE = " - Online (^^)";
+    public static String OFFLINE = " - Offline";
+    public static int COUNTER_OFFLINE = 0;
     public static Vector<String> ipSuperPeer = new Vector<String>();
+    public static Vector<Friends> friendList = new Vector<Friends>();
 
     public static void readFromFile() {
         try {
@@ -24,6 +28,8 @@ public class Preferences {
                     String address = line.substring(6);
 
                     ipSuperPeer.add(0, address); // list server in preference file
+
+                    System.out.println("\n IP PEER:" + ipSuperPeer.get(0));
 
                     System.out.println("address:" + address);
                     StringTokenizer t = new StringTokenizer(address, ":");
@@ -83,9 +89,9 @@ public class Preferences {
     }
 
     //////////////////////// byte[] userID, byte prpl, int like, int comment, String cDate, String idGroupFriends, String idGroupSP, String post
-    public static void statusWriteToFile(String userID,String userName, byte[] messageID, int prPL, int like, int comment, String createdDate, String groupFriendID, String groupSuPeerID, String statusContent) {
+    public static void statusWriteToFile(String userID, String userName, byte[] messageID, int prPL, int like, int comment, String createdDate, String groupFriendID, String groupSuPeerID, String statusContent) {
         try {
-            FileWriter fw = new FileWriter("C:\\Users\\admin\\Desktop\\ShareFile\\" + userID + ".txt", true);
+            FileWriter fw = new FileWriter(SHAREPATH + userID + ".txt", true);
             BufferedWriter writeStatus = new BufferedWriter(fw);
             writeStatus.write("MessageID: " + messageID + "\n");
             writeStatus.write("UserName: " + userName + "\n");
@@ -103,6 +109,36 @@ public class Preferences {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Unable to write to preferences file");
+        }
+    }
+
+    // read friend file
+    public static void readFriendFile() {
+        try {
+
+            BufferedReader fileIn = new BufferedReader(new FileReader("src/listFriendPeer.txt"));
+            String line;
+
+            while ((line = fileIn.readLine()) != null) {
+                Friends user = new Friends();
+
+                String[] userNameID = line.split("-");
+
+                user.setIdUserLogin(userNameID[0]);
+                user.setUserName(userNameID[1]);
+                user.setStatus(OFFLINE);
+                user.setCountOffline(COUNTER_OFFLINE);
+                System.out.println("user.setIdUserLogin: " + user.getIdUserLogin());
+                System.out.println("user.setUserName: " + user.getUserName());
+                System.out.println("user.setStatus: " + user.getStatus());
+                friendList.add(user);
+                continue; // 
+            }
+
+            fileIn.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Unable to read readFriend Filepreferences file");
         }
     }
 }

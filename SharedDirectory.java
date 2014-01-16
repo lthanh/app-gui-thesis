@@ -84,11 +84,4 @@ public class SharedDirectory {
         return (listFileIDSaving);
     }
 
-    public static int getOurNumFiles() {
-        return (numfiles);
-    }
-
-    public static File getOurSavePath() {
-        return (savepath);
-    }
 }

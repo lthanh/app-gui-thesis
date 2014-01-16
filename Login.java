@@ -26,7 +26,7 @@ public class Login {
 
             while ((line = fileIn.readLine()) != null) {
                 UserLoginObject user = new UserLoginObject();
-                System.out.println("User line: " + line);
+               // System.out.println("User line: " + line);
                 String[] userNameID = line.split("-");
 
                 user.setIdUserLogin(userNameID[0]);

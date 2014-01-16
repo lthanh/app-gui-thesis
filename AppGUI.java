@@ -39,6 +39,7 @@ public class AppGUI extends javax.swing.JFrame {
 
         // get UserID to byte array
         userIDLoginToByte = LoginForm.currentUser.getIdUserLogin().getBytes();
+        lbUserName.setText(LoginForm.currentUser.getUserName());
 
         // Gnutella 
         System.out.println("Setting up hash tables...");
@@ -49,6 +50,13 @@ public class AppGUI extends javax.swing.JFrame {
         System.out.println("Reading preferences file...");
         new Searcher();
         Preferences.readFromFile();
+        Preferences.readFriendFile();
+
+        for (int i = 0; i < Preferences.friendList.size(); i++) {
+            checkUserOnlineAction.showUserNameFriend.add(Preferences.friendList.get(i).getUserName() + Preferences.friendList.get(i).getStatus());
+        }
+        listFriends.setListData(checkUserOnlineAction.showUserNameFriend);
+
         System.out.println("Setting up file table...");
         new SharedDirectory(Preferences.SHAREPATH, Preferences.SAVEPATH);
         Listener listener = new Listener();
@@ -59,7 +67,6 @@ public class AppGUI extends javax.swing.JFrame {
         pinger.start(); // Start sending out periodic pings.
 
 
-        lbUserName.setText(LoginForm.currentUser.getUserName());
     }
 
     /**
@@ -80,6 +87,8 @@ public class AppGUI extends javax.swing.JFrame {
         btnProfile = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
+        listServer = new javax.swing.JList();
+        jScrollPane5 = new javax.swing.JScrollPane();
         listFriends = new javax.swing.JList();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -132,26 +141,39 @@ public class AppGUI extends javax.swing.JFrame {
             }
         });
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Friends"));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Connection"));
         jPanel2.setAlignmentX(0.0F);
         jPanel2.setAlignmentY(0.0F);
 
         jScrollPane3.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
+        listServer.setBackground(new java.awt.Color(240, 240, 240));
+        listServer.setBorder(javax.swing.BorderFactory.createTitledBorder("Server"));
+        listServer.setAlignmentX(0.0F);
+        listServer.setAlignmentY(0.0F);
+        jScrollPane3.setViewportView(listServer);
+
+        jScrollPane5.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+
         listFriends.setBackground(new java.awt.Color(240, 240, 240));
+        listFriends.setBorder(javax.swing.BorderFactory.createTitledBorder("Friends"));
         listFriends.setAlignmentX(0.0F);
         listFriends.setAlignmentY(0.0F);
-        jScrollPane3.setViewportView(listFriends);
+        jScrollPane5.setViewportView(listFriends);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 411, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane5))
         );
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Status"));
@@ -189,9 +211,9 @@ public class AppGUI extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(rdoPl, javax.swing.GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE)
+                .addComponent(rdoPl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(rdoPr, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
+                .addComponent(rdoPr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(103, 103, 103)
                 .addComponent(btnPost, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addComponent(jScrollPane1)
@@ -222,11 +244,11 @@ public class AppGUI extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
+            .addComponent(jScrollPane4)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -235,13 +257,7 @@ public class AppGUI extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(9, 9, 9)
                         .addComponent(lbUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -254,7 +270,13 @@ public class AppGUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSetting)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnProfile)))
+                        .addComponent(btnProfile))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -462,8 +484,10 @@ public class AppGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     public static javax.swing.JLabel lbUserName;
     public static javax.swing.JList listFriends;
+    public static javax.swing.JList listServer;
     public static javax.swing.JList listStatus;
     private static javax.swing.JRadioButton rdoPl;
     private static javax.swing.JRadioButton rdoPr;

@@ -1,4 +1,5 @@
 
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -13,9 +14,7 @@ class PongHandler extends Thread {
     Ping pingMatch;
     byte[] useIDOnlineToByte = LoginForm.currentUser.getIdUserLogin().getBytes();
     String userNameOnlineString = LoginForm.currentUser.getUserName();
-    Friends friends = new Friends();
-   // public static Vector<String> showUserNameFriend = new Vector<String>();
-    public static Vector<Friends> friendObject = new Vector<Friends>();
+    public static Vector<Pong> listPong = new Vector<Pong>();
 
     public PongHandler(IPAddress ip, Pong pong) {
         this.pong = pong;
@@ -25,11 +24,9 @@ class PongHandler extends Thread {
     public void run() {
         String ipname = pong.getIP().toString();
         int port = pong.getPort();
-
         Host newhost = new Host(ipname, port);
         HostCache.addHost(newhost);
-
-        // showFriend
+        listPong.add(pong);
 
         if (PingHandler.pt.containsKey(pong)) {
             pingMatch = (Ping) PingHandler.pt.get((Packet) pong);
@@ -50,27 +47,12 @@ class PongHandler extends Thread {
 
         }
     }
-
-    public void showFriendInform(Pong pong) {
-        boolean checkFriend = checkFriendList(friendObject, pong.getUserNameOnline());
-        if (checkFriend) {
-            friends.setIdUserLogin(pong.getUserIDOnline());
-            friends.setUserName(pong.getUserNameOnline());
-            friends.setIp(pong.getIP());
-            friendObject.add(0, friends);
-            System.out.println("\n\n PONGHANDLER: SHOW FRIEND Name: " + friendObject.get(0).getUserName());
-            System.out.println("\n\n PONGHANDLER: SHOW FRIEND ID : " + friendObject.get(0).getIdUserLogin());
-            HostArray.showUserNameFriend.add(0, friendObject.get(0).getUserName());
-        }
-        AppGUI.listFriends.setListData(HostArray.showUserNameFriend);
-    }
-
-    public boolean checkFriendList(Vector<Friends> objectFriend, String pongFriend) {
-        for (int i = 0; i < objectFriend.size(); i++) {
-            if (objectFriend.get(i).getUserName().equals(pongFriend)) {
-                return false;
-            }
-        }
-        return true;
-    }
+//    public boolean checkFriendListToShow(Vector<Friends> objectFriend, String pongFriend) {
+//        for (int i = 0; i < objectFriend.size(); i++) {
+//            if (objectFriend.get(i).getUserName().equals(pongFriend)) {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
 }
