@@ -13,7 +13,7 @@ public class Marmalade
 	new Searcher();
 	Preferences.readFromFile();
 	System.out.println("Setting up file table...");
-	new SharedDirectory(Preferences.SHAREPATH, Preferences.SAVEPATH);
+	//new SharedDirectory(Preferences.SHAREPATH, Preferences.SAVEPATH);
 	Listener listener = new Listener();
 	listener.start(); // Beginning listening for network connections
 	PeriodicConnector periodicconnector = new PeriodicConnector(Preferences.AUTO_CONNECT); // Begin actively trying to connect

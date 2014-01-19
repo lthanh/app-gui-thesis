@@ -1,6 +1,6 @@
 package architecture;
 
-
+import architecture.*;
 import GUI.LoginForm;
 import java.util.*;
 
@@ -27,15 +27,20 @@ public class PingHandler extends Thread {
         {
             NetworkManager.writeButOne(ping.getIP(), ping);
             pt.put((Packet) ping, ping);
-            Pong response = new Pong(Mine.getPort(), Mine.getIPAddress(), useIDOnlineToByte, userNameOnlineString.length(), SharedDirectory.getListFileIDSaving().length(), SharedDirectory.getListFileIDSaving(), userNameOnlineString, ping.getMessageID());
-
-            System.out.println("#### PingHandler: PONG -- OUTCOMMING " + response.toString());
-            System.out.println("#### PingHandler: PONG -- " + response.getUserIDOnline());
-            System.out.println("#### PingHandler: PONG -- " + response.getUserNameOnline());
-            System.out.println("#### PingHandler: PONG -- " + response.getListFileIDStore());
-            System.out.println("#### PingHandler: PONG -- " + response.getIP());
-            System.out.println("#### PingHandler: PONG -- " + response.getPort());
             
+            System.out.println("PingHandler: User name-" + userNameOnlineString);
+            System.out.println("PingHandler: User name length -" + userNameOnlineString.length());
+            
+            Pong response = new Pong(Mine.getPort(), Mine.getIPAddress(), useIDOnlineToByte, userNameOnlineString.length(), SharedDirectory.getListFileIDSaving().length(), SharedDirectory.getListFileIDSaving(), userNameOnlineString, ping.getMessageID());
+            /*
+             System.out.println("#### PingHandler: PONG -- OUTCOMMING " + response.toString());
+             System.out.println("#### PingHandler: PONG -- " + response.getUserIDOnline());
+             System.out.println("#### PingHandler: PONG -- " + response.getUserNameOnline());
+             System.out.println("#### PingHandler: PONG -- " + response.getListFileIDStore());
+             System.out.println("#### PingHandler: PONG -- " + response.getIP());
+             System.out.println("#### PingHandler: PONG -- " + response.getPort());
+            
+             * */
             NetworkManager.writeToOne(ping.getIP(), response);
         }
     }

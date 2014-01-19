@@ -1,6 +1,7 @@
 package architecture;
 
 
+
 public class ResultSet {
 
     private int count = 0;

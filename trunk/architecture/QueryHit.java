@@ -1,6 +1,7 @@
 package architecture;
 
 
+
 public class QueryHit extends Packet // QueryHits are a little more complicated, because we'll need to generate a result set and use a ServentID.
 {
 

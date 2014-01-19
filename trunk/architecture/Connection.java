@@ -1,5 +1,6 @@
 package architecture;
 
+
 /**
    Connection object
    Socket, IPAddress, Reader, Writer

@@ -1,6 +1,7 @@
 package architecture;
 
 
+
 public class Query extends Packet {
 
     private IPAddress ip;

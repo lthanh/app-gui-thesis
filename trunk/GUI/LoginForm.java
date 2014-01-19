@@ -1,9 +1,7 @@
 package GUI;
 
-
+import architecture.*;
 import GUI.AppGUI;
-import architecture.Login;
-import architecture.UserLoginObject;
 import java.util.List;
 
 /*
