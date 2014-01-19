@@ -1,6 +1,7 @@
 package architecture;
 
 
+
 import java.io.*;
 import java.util.*;
 
@@ -10,7 +11,7 @@ public class SharedDirectory {
     //  static ArrayList filesizes = new ArrayList();
     static File savepath;
     static int numfiles = 0;
-    public static String listFileIDSaving = "";
+    public static String listFileIDSaving ;//= "";
     //   static long bytes = 0;
 
     public SharedDirectory(String sharepath, String savepath) {
@@ -19,6 +20,7 @@ public class SharedDirectory {
     }
 
     public static void generateFileList(File directorytosearch) {
+        listFileIDSaving = "";
         String[] filenames = directorytosearch.list(); // All of the files and directories in the current folder.
         for (int i = 0; i < filenames.length; i++) {
             listFileIDSaving +=filenames[i];

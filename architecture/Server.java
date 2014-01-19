@@ -1,10 +1,17 @@
 package architecture;
 
 
+import GUI.AppGUI;
+import GUI.LoginForm;
+import PeerAction.peerReceivePost;
+import SuperPeerAction.actionSuperPeer;
 import postService.PostHandler;
 import postService.Post;
 import java.io.*;
 import java.net.*;
+import static postService.PostHandler.myIP;
+import static postService.PostHandler.recieveListPost;
+import static postService.PostHandler.showListPost;
 
 class Server extends Thread {
 
@@ -58,7 +65,7 @@ class Server extends Thread {
                 {
                     Ping ping = new Ping(newpacket);
                     PingHandler handler = new PingHandler(mine, ping);
-                 //   System.out.println("\n ### Server : Packet == PING -- " + newpacket.toString());
+                    //   System.out.println("\n ### Server : Packet == PING -- " + newpacket.toString());
 
                     // Cat chuoi IP byte ra dang decimal *****************************************************
                     byte[] test = new byte[newpacket.length];
@@ -69,7 +76,7 @@ class Server extends Thread {
                     int[] ipints = new int[23];
                     for (int i = 0; i < newpacket.length; i++) {
                         ipints[i] = ((int) (test[i]) & 0xff);
-                  //      System.out.print("\n ### Server : Packet == PING -- " + i + ":" + +ipints[i]);
+                        //      System.out.print("\n ### Server : Packet == PING -- " + i + ":" + +ipints[i]);
                     }
                     // end cat chuoi
                     handler.start();
@@ -86,23 +93,39 @@ class Server extends Thread {
                     HostCache.addHost(h);
                     PongHandler handler = new PongHandler(mine, pong);
                     handler.start();
-                 //   Pinger.inform(pong);
+                    //   Pinger.inform(pong);
                     continue;
                 } else if (header.identify() == Packet.QUERY) {
                     Query query = new Query(newpacket);
-                 //   System.out.println("\n ### Server : Packet == QUERY -- " + newpacket.toString());
+                    //   System.out.println("\n ### Server : Packet == QUERY -- " + newpacket.toString());
                     QHandler handler = new QHandler(mine, query);
                     handler.start();
                     continue;
                 } else if (header.identify() == Packet.POST) {
                     Post postMessage = new Post(newpacket);
-                   // System.out.println("\n ### Server : Packet == POST -- " + newpacket.toString());
-                    PostHandler handler = new PostHandler(mine, postMessage);
-                    handler.start();
-                    continue;
+                    if (LoginForm.currentUser.getUserName().equals("Server")) {
+                        actionSuperPeer doActionOfSuperPeer = new actionSuperPeer();
+
+                        // forward post message to all connecting
+                        PostHandler handler = new PostHandler(mine, postMessage);
+                        handler.start();
+                        continue;
+                    } else {
+                        boolean isPeerFriends = PostHandler.serverCheckListFriendorPeer(postMessage, Preferences.idFriendsListString);
+                        if (isPeerFriends) {
+                            peerReceivePost peerReceive = new peerReceivePost();
+                            peerReceive.receivePost(postMessage);
+                        }
+                    }
+
+//                    Post postMessage = new Post(newpacket);
+//                    // System.out.println("\n ### Server : Packet == POST -- " + newpacket.toString());                    
+//                    PostHandler handler = new PostHandler(mine, postMessage);
+//                    handler.start();
+
                 } else {
                     QueryHit queryhit = new QueryHit(newpacket);
-                  //  System.out.println("\n ### Server : Packet == QUERYHIT -- " + newpacket.toString());
+                    //  System.out.println("\n ### Server : Packet == QUERYHIT -- " + newpacket.toString());
                     QHitHandler handler = new QHitHandler(mine, queryhit);
                     handler.start();
                     // AppGUI.inform(mine, queryhit);

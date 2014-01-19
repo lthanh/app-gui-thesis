@@ -1,5 +1,6 @@
 package architecture;
 
+
 /*
  Lame way to get local IP address. Java's localHost method returns
  127.0.0.1; s this opens a socket to Sun' web server.

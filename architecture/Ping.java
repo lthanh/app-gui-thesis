@@ -1,5 +1,6 @@
 package architecture;
 
+
 public class Ping extends Packet
 {
     private IPAddress ip;  /**need to store ip address in order to properly

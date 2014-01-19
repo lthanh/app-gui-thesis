@@ -1,7 +1,5 @@
 package GUI;
 
-
-
 import architecture.*;
 import PeerAction.checkUserOnlineAction;
 import java.awt.event.ActionEvent;
@@ -10,6 +8,10 @@ import java.awt.event.WindowEvent;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Element;
 import postService.Post;
 import postService.PostHandler;
 
@@ -55,9 +57,13 @@ public class AppGUI extends javax.swing.JFrame {
         System.out.println("Determining network address...");
         Mine.updateAddress();
         System.out.println("Reading preferences file...");
-        new Searcher();
+        //  new Searcher();
         Preferences.readFromFile();
         Preferences.readFriendFile();
+
+        if (LoginForm.currentUser.getUserName().equals("Server")) {
+            Preferences.readListPeerManage();
+        }
 
         for (int i = 0; i < Preferences.friendList.size(); i++) {
             checkUserOnlineAction.showUserNameFriend.add(Preferences.friendList.get(i).getUserName() + Preferences.friendList.get(i).getStatus());
@@ -65,7 +71,7 @@ public class AppGUI extends javax.swing.JFrame {
         listFriends.setListData(checkUserOnlineAction.showUserNameFriend);
 
         System.out.println("Setting up file table...");
-        new SharedDirectory(Preferences.SHAREPATH, Preferences.SAVEPATH);
+        new SharedDirectory(Login.SHAREPATH, Preferences.SAVEPATH);
         Listener listener = new Listener();
         listener.start(); // Beginning listening for network connections
         PeriodicConnector periodicconnector = new PeriodicConnector(Preferences.AUTO_CONNECT); // Begin actively trying to connect
@@ -98,11 +104,10 @@ public class AppGUI extends javax.swing.JFrame {
         jScrollPane5 = new javax.swing.JScrollPane();
         listFriends = new javax.swing.JList();
         jPanel3 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtStatus = new javax.swing.JTextPane();
         btnPost = new javax.swing.JButton();
         rdoPr = new javax.swing.JRadioButton();
         rdoPl = new javax.swing.JRadioButton();
+        txtStatus = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         listStatus = new javax.swing.JList();
@@ -185,13 +190,6 @@ public class AppGUI extends javax.swing.JFrame {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Status"));
 
-        txtStatus.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txtStatusKeyPressed(evt);
-            }
-        });
-        jScrollPane1.setViewportView(txtStatus);
-
         btnPost.setText("Post");
         btnPost.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -213,6 +211,12 @@ public class AppGUI extends javax.swing.JFrame {
             }
         });
 
+        txtStatus.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtStatusKeyPressed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -223,13 +227,13 @@ public class AppGUI extends javax.swing.JFrame {
                 .addComponent(rdoPr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(103, 103, 103)
                 .addComponent(btnPost, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addComponent(jScrollPane1)
+            .addComponent(txtStatus)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
-                .addGap(12, 12, 12)
+                .addComponent(txtStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(rdoPl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(rdoPr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -368,9 +372,11 @@ public class AppGUI extends javax.swing.JFrame {
 
     private void txtStatusKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtStatusKeyPressed
         // TODO add your handling code here:
+
         if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
             showPost();
         }
+
     }//GEN-LAST:event_txtStatusKeyPressed
 
     public static void main(String args[]) {
@@ -427,55 +433,63 @@ public class AppGUI extends javax.swing.JFrame {
         listStatus.setListData(listPostMessage);
     }
 
-    // send post to other one via Network and save into database
-    public static void writePost(byte[] userID, byte prpl, int like, int comment, int cDateLength, int groupdFriendIDLength, int groupdSuperPeerIDLength, int useNameLength, String userNamePost, String cDate, String idGroupFriends, String idGroupSP, String post) {
-        Post postMessage = new Post(userID, prpl, like, comment, cDateLength, groupdFriendIDLength, groupdSuperPeerIDLength, useNameLength, userNamePost, cDate, idGroupFriends, idGroupSP, post);
+    public static void showPost() {
+        String textPost = txtStatus.getText();
+        if (!textPost.trim().isEmpty()) {
+            txtStatus.setText(null);
+            String createdate = Utils.formatDate(new Date());
+            String friend = "12121212-21212121212";
+            String groupdSuperPeerID = "192.168.0.110:6346;192.168.0.120:6346"; // ignore
+            int liked = 0;
+            int commented = 0;
 
+            if (prPl == 0) {
+                privateWritePost(textPost, createdate, friend, groupdSuperPeerID, liked, commented);
+            } else {
+                writePostPublic(userIDLoginToByte, prPl, liked, commented, createdate.length(), friend.length(), groupdSuperPeerID.length(), userNameLoginToByte.length(), userNameLoginToByte, createdate, friend, groupdSuperPeerID, textPost);
+
+            }
+        }
+    }
+
+    // send post to other one via Network and save into database
+    public static void writePostPublic(byte[] userID, byte prpl, int like, int comment, int cDateLength, int groupdFriendIDLength, int groupdSuperPeerIDLength, int useNameLength, String userNamePost, String cDate, String idGroupFriends, String idGroupSP, String post) {
+        Post postMessage = new Post(userID, cDateLength, groupdFriendIDLength, groupdSuperPeerIDLength, useNameLength, userNamePost, cDate, idGroupFriends, idGroupSP, post);
+        System.out.println("POST MESSAGE : " + postMessage);
+        System.out.println("POST MESSAGE GET CONTENT BYTE: " + postMessage.contents());
         // show status on news feed of user logging in when they have just written the status
         PostHandler.recieveListPost.add(0, postMessage);
-        PostHandler.showListPost.add(0, Utils.formSHOWSTATUS(postMessage.getUserName(), postMessage.getPostStatusContent(), postMessage.like(), postMessage.comment(), postMessage.createdDate()));
+        PostHandler.showListPost.add(0, Utils.formSHOWSTATUS(postMessage.getUserName(), postMessage.getPostStatusContent(), postMessage.getCreatedDate()));
         AppGUI.inform(PostHandler.myIP, PostHandler.showListPost);
 
-
-        // convert userID login to String to check with String userID in post message receive
-//        StringBuilder userIDAppend = new StringBuilder();
+//        byte[] temp = new byte[16];
 //        for (int i = 0; i < 16; i++) {
-//            userIDAppend.append(userIDLoginToByte[i]);
+//            temp[i] = userIDLoginToByte[i];
 //        }
-        byte[] temp = new byte[16];
-        //StringBuilder userID = new StringBuilder();
-        for (int i = 0; i < 16; i++) {
-            //temp[i] = contents[index + i];
-            temp[i] = userIDLoginToByte[i];
-        }
-
-        String usenID = new String(temp);
-        System.out.println("AppGUI - User Login 2: " + usenID);
-
-        System.out.println("AppGUI - userID in PostMessage: " + postMessage.getUserID());
+//
+//        String usenID = new String(temp);
 
         // check user to store data
-        if (usenID.equals(postMessage.getUserID())) {
-            Preferences.statusWriteToFile(postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prpl, like, comment, cDate, idGroupFriends, idGroupSP, post);
-        }
+        Preferences.statusWriteToFilePeer("Post", postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prpl, like, comment, cDate, idGroupFriends, idGroupSP, post);
+
+//        if (usenID.equals(postMessage.getUserID())) {
+//            System.out.println("AppGUI - BEFORE");
+//            Preferences.statusWriteToFilePeer("Post", postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prpl, like, comment, cDate, idGroupFriends, idGroupSP, post);
+//            System.out.println("AppGUI - AFTER ");
+//        }
 
         NetworkManager.writeToAll(postMessage);
         addPOST(postMessage);
     }
 
-    public static void showPost() {
-        String textPost = txtStatus.getText();
-        if (!textPost.trim().isEmpty()) {
-            txtStatus.setText(null);
-            // prPl = 1;
-            String createdate = Utils.formatDate(new Date());
-            String friend = "192.168.0.110:6346;192.168.0.120:6346";
-            String sp = "192.168.0.110:6346;192.168.0.120:6346;192.168.1.122:6346;192.168.1.142:6346";
-            int liked = 0;
-            int commented = 0;
+    public static void privateWritePost(String postText, String createdate, String friend, String groupdSuperPeerID, int liked, int commented) {
+        Post postMessage = new Post(userIDLoginToByte, createdate.length(), friend.length(), groupdSuperPeerID.length(), userNameLoginToByte.length(), userNameLoginToByte, createdate, friend, groupdSuperPeerID, postText);
+        PostHandler.recieveListPost.add(0, postMessage);
+        PostHandler.showListPost.add(0, Utils.formSHOWSTATUS(postMessage.getUserName(), postMessage.getPostStatusContent(), postMessage.getCreatedDate()));
+        AppGUI.inform(PostHandler.myIP, PostHandler.showListPost);
 
-            writePost(userIDLoginToByte, prPl, liked, commented, createdate.length(), friend.length(), sp.length(), userNameLoginToByte.length(), userNameLoginToByte, createdate, friend, sp, textPost);
-        }
+        Preferences.statusWriteToFilePeer("Post", postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prPl, liked, commented, createdate, friend, groupdSuperPeerID, postText);
+
     }
     //////////// END POST MESSAGE
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -488,7 +502,6 @@ public class AppGUI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     public static javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
@@ -499,6 +512,6 @@ public class AppGUI extends javax.swing.JFrame {
     private static javax.swing.JRadioButton rdoPl;
     private static javax.swing.JRadioButton rdoPr;
     private static javax.swing.JTextField txtSearch;
-    private static javax.swing.JTextPane txtStatus;
+    public static javax.swing.JTextField txtStatus;
     // End of variables declaration//GEN-END:variables
 }

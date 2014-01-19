@@ -1,9 +1,12 @@
 package architecture;
 
-
-import GUI.LoginForm;
+import java.lang.*;
+import GUI.*;
+import PeerAction.peerReceivePost;
+import SuperPeerAction.actionSuperPeer;
 import java.util.List;
 import java.util.Vector;
+import postService.PostHandler;
 
 /**
  * Similar to QHitHandler, PongHandler will process pongs that match pings
@@ -38,7 +41,13 @@ public class PongHandler extends Thread {
 
         Host newhost = new Host(ipname, port);
         HostCache.addHost(newhost);
-        listPong.add(pong);
+
+        boolean isPeerFriends = PostHandler.checkListFriendORPeerInPong(pong, Preferences.idFriendsListString);
+
+        if (isPeerFriends) {
+            listPong.add(pong);
+        }
+
 
         if (PingHandler.pt.containsKey(pong)) {
             pingMatch = (Ping) PingHandler.pt.get((Packet) pong);

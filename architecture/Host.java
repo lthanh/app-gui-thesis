@@ -1,5 +1,6 @@
 package architecture;
 
+
 /**
    Host has a string IP address and int port
 */

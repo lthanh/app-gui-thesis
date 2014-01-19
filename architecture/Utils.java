@@ -1,6 +1,7 @@
 package architecture;
 
 
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -30,8 +31,8 @@ public class Utils {
         return formattedDate;
     }
 
-    public static String formSHOWSTATUS(String userName, String post, int like, int comment, String cDate) {
-        String statusForm = "< " + userName + " >:  " + post + " : " + like + " Like " + comment + " Comment : Created - " + cDate;
+    public static String formSHOWSTATUS(String userName, String post, String cDate) {
+        String statusForm = "< " + userName + " >:  " + post + "        : Created - " + cDate;
         return statusForm;
     }
 }

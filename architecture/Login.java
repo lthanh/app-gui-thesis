@@ -1,6 +1,5 @@
 package architecture;
 
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -15,26 +14,32 @@ import java.util.List;
  *
  * @author admin
  */
-public class Login {
+public  class Login {
 
     public static List<UserLoginObject> userLogin = new ArrayList<UserLoginObject>();
-    // public static String path = getClassLoader().getResource("listUser.txt").getPath();
+    public static String SHAREPATH = "";
 
     public static void readFileUserID() {
         try {
-
-            BufferedReader fileIn = new BufferedReader(new FileReader("src/architecture/userLogin.txt"));
+                                    //NHi - C:\Users\phatn_000\Desktop\src\  Trang - F:\Users\dangphat50\Desktop\src\   Thanh C:\Users\admin\Desktop\src\
+            BufferedReader fileIn = new BufferedReader(new FileReader("C:\\Users\\admin\\Desktop\\src\\userLogin.txt")); 
             String line;
 
             while ((line = fileIn.readLine()) != null) {
-                UserLoginObject user = new UserLoginObject();
-               // System.out.println("User line: " + line);
-                String[] userNameID = line.split("-");
+                if (line.startsWith("Shared-Directory: ")) {
+                    Login.SHAREPATH = line.substring(18);
+                    System.out.println("Shared-Directory is " + Login.SHAREPATH);
+                    continue;
+                } else {
+                    UserLoginObject user = new UserLoginObject();
+                    // System.out.println("User line: " + line);
+                    String[] userNameID = line.split("-");
 
-                user.setIdUserLogin(userNameID[0]);
-                user.setUserName(userNameID[1]);
-                userLogin.add(user);
-                continue;
+                    user.setIdUserLogin(userNameID[0]);
+                    user.setUserName(userNameID[1]);
+                    userLogin.add(user);
+                    continue;
+                }
             }
 
             fileIn.close();

@@ -1,5 +1,6 @@
 package architecture;
 
+
 public class IPAddress
 {
     int ip1 = 0;
