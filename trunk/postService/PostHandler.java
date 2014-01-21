@@ -1,4 +1,5 @@
 package postService;
+
 import architecture.*;
 import postService.Post;
 import GUI.AppGUI;
@@ -42,12 +43,12 @@ public class PostHandler extends Thread {
     public PostHandler(IPAddress queryIP, Post postMessage) {
         this.postMessage = postMessage;
         postMessage.setIP(queryIP);  //set IPAddress of query
-        recieveListPost.add(0, postMessage);
-        showListPost.add(0, Utils.formSHOWSTATUS(postMessage.getUserName(), postMessage.getPostStatusContent(), postMessage.getCreatedDate()));
+        //  recieveListPost.add(0, postMessage);
+        //  showListPost.add(0, Utils.formSHOWSTATUS(postMessage.getUserName(), postMessage.getPostStatusContent(), postMessage.getCreatedDate()));
     }
 
     public void run() {
-      
+
 
         boolean isFriends = serverCheckListFriendorPeer(postMessage, Preferences.idFriendsListString);
         boolean isPeer = serverCheckListFriendorPeer(postMessage, peerManageList);
@@ -58,7 +59,8 @@ public class PostHandler extends Thread {
         }
 
         if (isPeer) {
-            Preferences.statusWriteToFileSuperPeer(postMessage.getPostTypeString(), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), postMessage.getGroupFriendID(), postMessage.getPostStatusContent(), postMessage.getCreatedDate());
+          //  System.out.println("PostHandler: " + postMessage.getPayload() + "\n");
+            Preferences.statusWriteToFileSuperPeer(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), postMessage.getGroupFriendID(), postMessage.getPostStatusContent(), postMessage.getCreatedDate());
         }
 
         NetworkManager.writeButOne(postMessage.getIP(), postMessage);  // Query is forwarded to all connected nodes except one from which query came.

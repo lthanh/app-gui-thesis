@@ -20,7 +20,7 @@ public class Pong extends Packet {
         }
 
         // convert port to two bytes
-        System.out.println("\nPONG: port before - " + port);
+//        System.out.println("\nPONG: port before - " + port);
         ByteBuffer bBPort = ByteBuffer.allocate(2);
         bBPort.putShort((short) port);
         byte[] bytePort = bBPort.array();
@@ -28,9 +28,9 @@ public class Pong extends Packet {
         contents[index + 0] = bytePort[0];
         //System.out.println("bBPort Index: " + (index + 0));
         contents[index + 1] = bytePort[1];
-        System.out.println("bBPort Index: " + (index + 1));
-        System.out.println("\nPONG: port send - " + contents[index + 0]);
-        System.out.println("\nPONG: port send - " + contents[index + 1]);
+//        System.out.println("bBPort Index: " + (index + 1));
+//        System.out.println("\nPONG: port send - " + contents[index + 0]);
+//        System.out.println("\nPONG: port send - " + contents[index + 1]);
 
         // convert ip address to 4 bytes; need to check format of ip
         // address -- Little Endian????
@@ -47,7 +47,7 @@ public class Pong extends Packet {
         for (int i = 0; i < userID.length; i++) {
             contents[index + 6 + i] = userID[i];
              //System.out.println("userID Index: " + (index + 6 + i));
-               System.out.println("\nPONG: userID send - [" + i + "] " + contents[index + 6 + i]);
+//               System.out.println("\nPONG: userID send - [" + i + "] " + contents[index + 6 + i]);
         }
 
         //  System.out.println("port after: " +(((contents[index + 1] & 0xff) << 8) | (contents[index + 0] & 0xff)));
@@ -65,17 +65,17 @@ public class Pong extends Packet {
         contents[index + 6 + userID.length + 1] = bytes[1];
 //        System.out.println("userNameLength Index: " + (index + 6 + 16 + 0));
 //        System.out.println("userNameLength Index: " + (index + 6 + 16 + 1));
-        System.out.println("\nPONG: userNameLength send - " + contents[index + 6 + 16]);
-        System.out.println("\nPONG: userNameLength send - " + contents[index + 6 + 17]);
+//        System.out.println("\nPONG: userNameLength send - " + contents[index + 6 + 16]);
+//        System.out.println("\nPONG: userNameLength send - " + contents[index + 6 + 17]);
 
 
 
-          System.out.println("listFileIDStoreLength send: " + listFileIDStoreLength);
+//          System.out.println("listFileIDStoreLength send: " + listFileIDStoreLength);
         ByteBuffer bB = ByteBuffer.allocate(4);
         bB.putInt(listFileIDStoreLength);
         byte[] byteListFileIDStoreLength = bB.array();
-         System.out.println("listFileIDStoreLength length: " + byteListFileIDStoreLength.length);
-        System.out.println("listFileIDStoreLength convert: " + bB.getInt(0));
+//         System.out.println("listFileIDStoreLength length: " + byteListFileIDStoreLength.length);
+//        System.out.println("listFileIDStoreLength convert: " + bB.getInt(0));
 
         contents[index + 6 + userID.length + 2] = byteListFileIDStoreLength[0];
         contents[index + 6 + userID.length + 3] = byteListFileIDStoreLength[1];
@@ -85,10 +85,10 @@ public class Pong extends Packet {
 //        System.out.println("byteListFileIDStoreLength Index: " + (index + 6 + 16 + 3));
 //        System.out.println("byteListFileIDStoreLength Index: " + (index + 6 + 16 + 4));
 //        System.out.println("byteListFileIDStoreLength Index: " + (index + 6 + 16 + 5));
-        System.out.println("\nPONG: listFileIDLength send 2 -" + contents[index + userID.length + 6 + 2]);
-        System.out.println("\nPONG: listFileIDLength send 3 -" + contents[index + userID.length + 6 + 3]);
-        System.out.println("\nPONG: listFileIDLength send 4 -" + contents[index + userID.length + 6 + 4]);
-        System.out.println("\nPONG: listFileIDLength send 5 -" + contents[index + userID.length + 6 + 5]);
+//        System.out.println("\nPONG: listFileIDLength send 2 -" + contents[index + userID.length + 6 + 2]);
+//        System.out.println("\nPONG: listFileIDLength send 3 -" + contents[index + userID.length + 6 + 3]);
+//        System.out.println("\nPONG: listFileIDLength send 4 -" + contents[index + userID.length + 6 + 4]);
+//        System.out.println("\nPONG: listFileIDLength send 5 -" + contents[index + userID.length + 6 + 5]);
 
         byte[] bytesList = new byte[4];
         bytesList[0] = contents[index + 6 + userID.length + 2];
@@ -96,7 +96,7 @@ public class Pong extends Packet {
         bytesList[2] = contents[index + 6 + userID.length + 4];
         bytesList[3] = contents[index + 6 + userID.length + 5];
         
-        System.out.println("OK getListFileIDStoreLength after: " + ByteBuffer.wrap(bytesList).getInt(0));
+//        System.out.println("OK getListFileIDStoreLength after: " + ByteBuffer.wrap(bytesList).getInt(0));
 
 
 
@@ -105,7 +105,7 @@ public class Pong extends Packet {
         int i;
         for (i = 0; i < listFileIDStore.length(); i++) {
             contents[(index + i + 28)] = listFileID[i];
-            System.out.println("\nPONG: listFileIDStore send - [" + i + "] " + contents[(index + i + 29)]);
+//            System.out.println("\nPONG: listFileIDStore send - [" + i + "] " + contents[(index + i + 29)]);
 //             System.out.println("listFileIDStore Index: " + (index + i + 28));
         }
         contents[(index + i + 28)] = 0;
@@ -122,39 +122,39 @@ public class Pong extends Packet {
         }
         contents[(index + j + 28 + listFileIDStore.length())] = 0;
 
-        System.out.println("DECODE #############");
+      //  System.out.println("DECODE #############");
 
-        byte[] bytesPort = new byte[2];
-        bytesPort[0] = contents[index + 0];
-        System.out.println("DECODE bytesPort Index: " + (index + 0));
-
-        bytesPort[1] = contents[index + 1];
-        System.out.println("DECODE bytesPort Index: " + (index + 1));
-
-        ByteBuffer wrappedPort = ByteBuffer.wrap(bytesPort);
-        System.out.println("getPort after: " + wrappedPort.getShort());
-
-        byte[] bytesName = new byte[2];
-        bytesName[0] = contents[index + 6 + 16];
-        bytesName[1] = contents[index + 6 + 17];
+//        byte[] bytesPort = new byte[2];
+//        bytesPort[0] = contents[index + 0];
+//        System.out.println("DECODE bytesPort Index: " + (index + 0));
+//
+//        bytesPort[1] = contents[index + 1];
+//        System.out.println("DECODE bytesPort Index: " + (index + 1));
+//
+//        ByteBuffer wrappedPort = ByteBuffer.wrap(bytesPort);
+//        System.out.println("getPort after: " + wrappedPort.getShort());
+//
+//        byte[] bytesName = new byte[2];
+//        bytesName[0] = contents[index + 6 + 16];
+//        bytesName[1] = contents[index + 6 + 17];
 //        System.out.println("DECODE bytesName Index: " + (index + 6 + 16));
 //        System.out.println("DECODE bytesName Index: " + (index + 6 + 17));
-
-        ByteBuffer wrapped = ByteBuffer.wrap(bytesName);
-        System.out.println("getUserNameLength after: " + wrapped.getShort());
-
-
-        byte[] bytesList1 = new byte[4];
-        bytesList1[0] = contents[index + 6 + userID.length + 2];
-        bytesList1[1] = contents[index + 6 + userID.length + 3];
-        bytesList1[2] = contents[index + 6 + userID.length + 4];
-        bytesList1[3] = contents[index + 6 + userID.length + 5];
-//        System.out.println("DECODE bytesList1 Index: " + (index + 6 + userID.length + 2));
-//        System.out.println("DECODE bytesList1 Index: " + (index + 6 + userID.length + 3));
-//        System.out.println("DECODE bytesList1 Index: " + (index + 6 + userID.length + 4));
-//        System.out.println("DECODE bytesList1 Index: " + (index + 6 + userID.length + 5));
-
-        System.out.println("  getListFileIDStoreLength after: " + ByteBuffer.wrap(bytesList1).getInt(0));
+//
+//        ByteBuffer wrapped = ByteBuffer.wrap(bytesName);
+//        System.out.println("getUserNameLength after: " + wrapped.getShort());
+//
+//
+//        byte[] bytesList1 = new byte[4];
+//        bytesList1[0] = contents[index + 6 + userID.length + 2];
+//        bytesList1[1] = contents[index + 6 + userID.length + 3];
+//        bytesList1[2] = contents[index + 6 + userID.length + 4];
+//        bytesList1[3] = contents[index + 6 + userID.length + 5];
+////        System.out.println("DECODE bytesList1 Index: " + (index + 6 + userID.length + 2));
+////        System.out.println("DECODE bytesList1 Index: " + (index + 6 + userID.length + 3));
+////        System.out.println("DECODE bytesList1 Index: " + (index + 6 + userID.length + 4));
+////        System.out.println("DECODE bytesList1 Index: " + (index + 6 + userID.length + 5));
+//
+//        System.out.println("  getListFileIDStoreLength after: " + ByteBuffer.wrap(bytesList1).getInt(0));
 
 
         

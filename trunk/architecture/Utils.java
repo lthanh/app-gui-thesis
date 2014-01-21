@@ -1,7 +1,5 @@
 package architecture;
 
-
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -35,4 +33,32 @@ public class Utils {
         String statusForm = "< " + userName + " >:  " + post + "        : Created - " + cDate;
         return statusForm;
     }
+
+    public static String getTypeMessage(byte payLoad) {
+        String typeMessage = "";
+        switch (payLoad) {
+            case Packet.POST:
+                typeMessage = "POST";
+                break;
+            case Packet.LIKE:
+                typeMessage = "LIKE";
+                break;
+            case Packet.COMMENT:
+                typeMessage = "COMMENT";
+                break;
+        }
+        return typeMessage;
+    }
+    /* Parse byte to String
+
+     byte[] temp = new byte[16];
+     for (int i = 0; i < 16; i++) {
+     temp[i] = contents[index + 6 + i];
+     }
+     String userID = new String(temp);
+     System.out.println("\nPONG: getUserIDOnline receive - " + userID);
+     return userID;
+     
+     
+     */
 }

@@ -1,11 +1,14 @@
 package GUI;
 
-
+import architecture.NetworkManager;
+import architecture.Preferences;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Vector;
+import postService.Like;
+import postService.LikeCommentListObject;
 
 /*
  * To change this template, choose Tools | Templates
@@ -17,17 +20,30 @@ import java.util.Vector;
  */
 public class StatusForm extends javax.swing.JFrame {
 
-    /**
-     * Creates new form StatusForm
-     */
+    public static Vector<String> listStoreComment = new Vector<String>();
+    String useIDLogin = LoginForm.currentUser.getIdUserLogin();
+    String userNameLoginString = LoginForm.currentUser.getUserName();
+    String postID = "";
+    String userIDPost = "";
+
     public StatusForm() {
         initComponents();
         setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
         txtContentPopUp.disable();
+
+
+        postID = lbMessageID.getText();
+        userIDPost = lbIDUserPost.getText();
+
+        LikeCommentListObject likeComment = new LikeCommentListObject();
+        likeComment = Preferences.readUserFile(postID, useIDLogin, "");
+        boolean isLike = checkNameLiked(userNameLoginString, likeComment);
+        if (isLike == false) {
+            btnLike.disable();
+        }
+
     }
 
-    public static Vector<String> listStoreComment = new Vector<String>();
-    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -45,6 +61,8 @@ public class StatusForm extends javax.swing.JFrame {
         listComment = new javax.swing.JList();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtContentPopUp = new javax.swing.JTextPane();
+        lbMessageID = new javax.swing.JLabel();
+        lbIDUserPost = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(400, 362));
@@ -119,13 +137,20 @@ public class StatusForm extends javax.swing.JFrame {
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lbUseName, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(58, 58, 58)
+                        .addComponent(lbMessageID)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lbIDUserPost)
+                        .addGap(35, 35, 35))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lbUseName, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbUseName, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lbMessageID)
+                    .addComponent(lbIDUserPost))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -155,6 +180,9 @@ public class StatusForm extends javax.swing.JFrame {
 
     private void btnLikeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLikeActionPerformed
         // TODO add your handling code here:
+        /* Like(byte[] idPost, byte[] idUserPost, byte[] idUserLike, String nameLike)*/
+        Like likeMessage = new Like(postID.getBytes(), userIDPost.getBytes(), useIDLogin.getBytes(), userNameLoginString);
+        NetworkManager.writeToAll(likeMessage);
     }//GEN-LAST:event_btnLikeActionPerformed
 
     private void btnCommentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCommentActionPerformed
@@ -206,6 +234,15 @@ public class StatusForm extends javax.swing.JFrame {
 
 
     }
+
+    public static boolean checkNameLiked(String userNameLogin, LikeCommentListObject likeComment) {
+        for (int i = 0; i < likeComment.getUserNameLike().size(); i++) {
+            if (userNameLogin.equals(likeComment.getUserNameLike().get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public static javax.swing.JButton btnComment;
     public static javax.swing.JButton btnLike;
@@ -215,7 +252,9 @@ public class StatusForm extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     public static javax.swing.JLabel lbComment;
+    public static javax.swing.JLabel lbIDUserPost;
     public static javax.swing.JLabel lbLike;
+    public static javax.swing.JLabel lbMessageID;
     public static javax.swing.JLabel lbUseName;
     public static javax.swing.JList listComment;
     public static javax.swing.JTextPane txtComment;

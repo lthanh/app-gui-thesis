@@ -1,6 +1,5 @@
 package architecture;
 
-
 import GUI.AppGUI;
 import GUI.LoginForm;
 import PeerAction.peerReceivePost;
@@ -9,6 +8,9 @@ import postService.PostHandler;
 import postService.Post;
 import java.io.*;
 import java.net.*;
+import postService.Comment;
+import postService.Like;
+import postService.LikeCommentHandler;
 import static postService.PostHandler.myIP;
 import static postService.PostHandler.recieveListPost;
 import static postService.PostHandler.showListPost;
@@ -104,10 +106,10 @@ class Server extends Thread {
                 } else if (header.identify() == Packet.POST) {
                     Post postMessage = new Post(newpacket);
                     if (LoginForm.currentUser.getUserName().equals("Server")) {
-                        actionSuperPeer doActionOfSuperPeer = new actionSuperPeer();
-
                         // forward post message to all connecting
                         PostHandler handler = new PostHandler(mine, postMessage);
+                        System.out.println("\n ### Server : Packet == POST -- " + newpacket.toString());
+
                         handler.start();
                         continue;
                     } else {
@@ -116,19 +118,32 @@ class Server extends Thread {
                             peerReceivePost peerReceive = new peerReceivePost();
                             peerReceive.receivePost(postMessage);
                         }
+                        continue;
                     }
 
-//                    Post postMessage = new Post(newpacket);
-//                    // System.out.println("\n ### Server : Packet == POST -- " + newpacket.toString());                    
-//                    PostHandler handler = new PostHandler(mine, postMessage);
-//                    handler.start();
+                } else if (header.identify() == Packet.LIKE) {
+                    Like likeMessage = new Like(newpacket);
+                    System.out.println("\n ### Server : Packet == LIKE -- " + newpacket.toString());
 
+                    if (LoginForm.currentUser.getUserName().equals("Server")) {
+                        LikeCommentHandler likeAction = new LikeCommentHandler(likeMessage, null);
+                        likeAction.start();
+                    }
+                    continue;
+                } else if (header.identify() == Packet.COMMENT) {
+                    Comment commentMessage = new Comment(newpacket);
+                    System.out.println("\n ### Server : Packet == COMMENT -- " + newpacket.toString());
+
+                    if (LoginForm.currentUser.getUserName().equals("Server")) {
+                        LikeCommentHandler commentAction = new LikeCommentHandler(null, commentMessage);
+                        commentAction.start();
+                    }
+                    continue;
                 } else {
                     QueryHit queryhit = new QueryHit(newpacket);
                     //  System.out.println("\n ### Server : Packet == QUERYHIT -- " + newpacket.toString());
                     QHitHandler handler = new QHitHandler(mine, queryhit);
                     handler.start();
-                    // AppGUI.inform(mine, queryhit);
                 }
             } catch (Exception e) // If there's a problem, we just die.
             {

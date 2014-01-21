@@ -362,6 +362,10 @@ public class AppGUI extends javax.swing.JFrame {
         // statusPOPUP.txtContentPopUp.disable();
         statusPOPUP.lbLike.setText("1000");
         statusPOPUP.lbComment.setText("1000");
+        statusPOPUP.lbIDUserPost.hide();
+        statusPOPUP.lbIDUserPost.setText(postSelected.getUserID());
+        statusPOPUP.lbMessageID.hide();
+        statusPOPUP.lbMessageID.setText(postSelected.getMessageID().toString());
         // statusPOPUP.btnLike.
 //        statusPOPUP.btnComment
 //        statusPOPUP.txtComment
@@ -470,7 +474,7 @@ public class AppGUI extends javax.swing.JFrame {
 //        String usenID = new String(temp);
 
         // check user to store data
-        Preferences.statusWriteToFilePeer("Post", postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prpl, like, comment, cDate, idGroupFriends, idGroupSP, post);
+        Preferences.statusWriteToFilePeer(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prpl, like, comment, cDate, idGroupFriends, idGroupSP, post);
 
 //        if (usenID.equals(postMessage.getUserID())) {
 //            System.out.println("AppGUI - BEFORE");
@@ -488,7 +492,7 @@ public class AppGUI extends javax.swing.JFrame {
         PostHandler.showListPost.add(0, Utils.formSHOWSTATUS(postMessage.getUserName(), postMessage.getPostStatusContent(), postMessage.getCreatedDate()));
         AppGUI.inform(PostHandler.myIP, PostHandler.showListPost);
 
-        Preferences.statusWriteToFilePeer("Post", postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prPl, liked, commented, createdate, friend, groupdSuperPeerID, postText);
+        Preferences.statusWriteToFilePeer(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prPl, liked, commented, createdate, friend, groupdSuperPeerID, postText);
 
     }
     //////////// END POST MESSAGE

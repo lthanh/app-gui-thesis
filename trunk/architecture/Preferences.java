@@ -2,6 +2,7 @@ package architecture;
 
 import java.io.*;
 import java.util.*;
+import postService.LikeCommentListObject;
 
 public class Preferences {
 
@@ -124,7 +125,46 @@ public class Preferences {
         try {
             FileWriter fw = new FileWriter(Login.SHAREPATH + userID + ".txt", true);
             BufferedWriter writeStatus = new BufferedWriter(fw);
-            writeStatus.write(messageType + "|MessageID: " + messageID + "|NamePost:" + userName + "|StatusContent:" + statusContent + "|GroupFriendID: " + groupFriendID + "|CreatedDate:" + createdDate + "\n");
+            System.out.println("########## PREFERENCE: " + messageType);
+            writeStatus.write(messageType + "|PostID: " + messageID + "|NamePost:" + userName + "|StatusContent:" + statusContent + "|GroupFriendID: " + groupFriendID + "|CreatedDate:" + createdDate + "\n");
+
+            // update list file sharing after write file
+            new SharedDirectory(Login.SHAREPATH, Preferences.SAVEPATH);
+            System.out.println("Update list sharing file successful");
+
+            writeStatus.newLine();
+            writeStatus.close();
+            System.out.println("Written to file");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Unable to write to preferences file");
+        }
+    }
+
+    public static void likeWriteToFileSuperPeer(String messageType, byte[] postID, byte[] likeID, String idUserPost, String idUserLike, String nameLike) {
+        try {
+            FileWriter fw = new FileWriter(Login.SHAREPATH + idUserPost + ".txt", true);
+            BufferedWriter writeStatus = new BufferedWriter(fw);
+            writeStatus.write(messageType + "|PostID: " + postID + "|LikeID: " + likeID + "|IDUserPost:" + idUserPost + "|IDUserLike:" + idUserLike + "|NameUserLike: " + nameLike + "\n");
+
+            // update list file sharing after write file
+            new SharedDirectory(Login.SHAREPATH, Preferences.SAVEPATH);
+            System.out.println("Update list sharing file successful");
+
+            writeStatus.newLine();
+            writeStatus.close();
+            System.out.println("Written to file");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Unable to write to preferences file");
+        }
+    }
+
+    public static void commentWriteToFileSuperPeer(String messageType, byte[] postID, byte[] commentID, String idUserPost, String idUserComment, String nameComment, String commentContent) {
+        try {
+            FileWriter fw = new FileWriter(Login.SHAREPATH + idUserPost + ".txt", true);
+            BufferedWriter writeStatus = new BufferedWriter(fw);
+            writeStatus.write(messageType + "|PostID: " + postID + "|CommentID: " + commentID + "|IDUserPost:" + idUserPost + "|IDUserComment:" + idUserComment + "|NameUserComment: " + nameComment + "|Content of Comment: " + commentContent + "\n");
 
             // update list file sharing after write file
             new SharedDirectory(Login.SHAREPATH, Preferences.SAVEPATH);
@@ -188,5 +228,56 @@ public class Preferences {
             e.printStackTrace();
             System.out.println("Unable to read listPeerSPManage preferences file");
         }
+    }
+
+    public static LikeCommentListObject readUserFile(String postID, String userPostID, String messageID) {
+        LikeCommentListObject objectLikeComment = new LikeCommentListObject();
+        try {
+            BufferedReader fileIn = new BufferedReader(new FileReader(Login.SHAREPATH + userPostID + ".txt"));
+            String line;
+            int counterLike = 0;
+            int counterComment = 0;
+            Vector<String> likeName = new Vector<String>();
+            Vector<String> comment = new Vector<String>();
+
+            while ((line = fileIn.readLine()) != null) {
+                System.out.println("UserFile line: " + line);
+                if (line.startsWith("LIKE|")) {
+                    String[] itemLine = line.split("|");
+                    if (itemLine[2].substring(8).equals(messageID)) {
+                        objectLikeComment.setIsLikeMessage(true);
+                    }
+                    
+                    if (itemLine[1].substring(11).equals(postID)) {
+                        counterLike++;
+                        likeName.add(0, itemLine[4].substring(14));
+                    }
+                    continue;
+                } else if (line.startsWith("COMMENT|")) {
+                    String[] itemLine = line.split("|");
+                     if (itemLine[2].substring(11).equals(messageID)) {
+                        objectLikeComment.setIsCommentMessage(true);
+                    }
+                    
+                    if (itemLine[1].substring(11).equals(postID)) {
+                        counterComment++;
+                        comment.add(0, ("< " + itemLine[4].substring(17) + " >:  " + itemLine[5].substring(20)));
+                    }
+
+                    continue;
+                }
+            }
+            objectLikeComment.setNumLike(counterLike);
+            objectLikeComment.setNumComment(counterComment);
+            objectLikeComment.setUserNameLike(likeName);
+            objectLikeComment.setComment(comment);
+
+
+            fileIn.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Unable to read preferences file");
+        }
+        return objectLikeComment;
     }
 }

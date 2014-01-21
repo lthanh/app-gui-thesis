@@ -4,20 +4,14 @@
  */
 package SuperPeerAction;
 
-import architecture.IPAddress;
-import postService.Post;
-import postService.PostHandler;
 
 /**
  *
  * @author admin
  */
-public class actionSuperPeer {
+public class actionSuperPeer extends Thread {
 
     public actionSuperPeer() {
     }
-
-    public static void forwardPostMessage() {
-        
-    }
+   
 }
