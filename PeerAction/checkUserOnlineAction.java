@@ -29,8 +29,8 @@ public class checkUserOnlineAction {
     public void checkUserOnline() {
         userPongObject = new Friends();
         Pinger.pingCounter = 0;
-        System.out.println("\n checkUserOnlineAction: userInPongObject Pinger.pingCounter: " + Pinger.pingCounter);
-        System.out.println("\n checkUserOnlineAction: userInPongObject PongHandler.listPong: " + PongHandler.listPong.toString());
+//        System.out.println("\n checkUserOnlineAction: userInPongObject Pinger.pingCounter: " + Pinger.pingCounter);
+//        System.out.println("\n checkUserOnlineAction: userInPongObject PongHandler.listPong: " + PongHandler.listPong.toString());
 
         if (!PongHandler.listPong.isEmpty()) {
             for (int i = 0; i < PongHandler.listPong.size(); i++) {
@@ -39,36 +39,36 @@ public class checkUserOnlineAction {
                 userPongObject.setStatus(Preferences.ONLINE);
                 userPongObject.setCountOffline(Preferences.COUNTER_ONLINE);
 
-                System.out.println("\n checkUserOnlineAction: userInPongObject ID [" + i + "] " + userPongObject.getIdUserLogin());
-                System.out.println("checkUserOnlineAction: userInPongObject Name [" + i + "] " + userPongObject.getUserName());
-                System.out.println("checkUserOnlineAction: userInPongObject Status [" + i + "] " + userPongObject.getStatus());
+//                System.out.println("\n checkUserOnlineAction: userInPongObject ID [" + i + "] " + userPongObject.getIdUserLogin());
+//                System.out.println("checkUserOnlineAction: userInPongObject Name [" + i + "] " + userPongObject.getUserName());
+//                System.out.println("checkUserOnlineAction: userInPongObject Status [" + i + "] " + userPongObject.getStatus());
 
                 userInPong.add(userPongObject);
             }
         }
 
-        System.out.println("\n checkUserOnlineAction : LIST PONG BEFORE REMOVED: " + PongHandler.listPong.toString());
+//        System.out.println("\n checkUserOnlineAction : LIST PONG BEFORE REMOVED: " + PongHandler.listPong.toString());
         PongHandler.listPong.removeAllElements();
 
-        System.out.println("\n checkUserOnlineAction : LIST PONG REMOVED: " + PongHandler.listPong.toString());
-        System.out.println("\n checkUserOnlineAction: LIST PONG userPongObject outside for: " + userPongObject.getIdUserLogin());
-        System.out.println("\n checkUserOnlineAction: LIST PONG userPongObject outside for: " + userPongObject.getUserName());
-        System.out.println("\n checkUserOnlineAction: LIST PONG userPongObject outside for: " + userPongObject.getStatus());
+//        System.out.println("\n checkUserOnlineAction : LIST PONG REMOVED: " + PongHandler.listPong.toString());
+//        System.out.println("\n checkUserOnlineAction: LIST PONG userPongObject outside for: " + userPongObject.getIdUserLogin());
+//        System.out.println("\n checkUserOnlineAction: LIST PONG userPongObject outside for: " + userPongObject.getUserName());
+//        System.out.println("\n checkUserOnlineAction: LIST PONG userPongObject outside for: " + userPongObject.getStatus());
 
         Vector<Friends> newFriendList = checkFriendOnline(userInPong, Preferences.friendList); // check user in pong with list of friends
 
-        System.out.println("\n checkUserOnlineAction: newFriendList : " + newFriendList.toString());
+//        System.out.println("\n checkUserOnlineAction: newFriendList : " + newFriendList.toString());
         showUserNameFriend.removeAllElements();
 
-        System.out.println("\n checkUserOnlineAction: showUserNameFriend REMOVED : " + showUserNameFriend.toString());
+//        System.out.println("\n checkUserOnlineAction: showUserNameFriend REMOVED : " + showUserNameFriend.toString());
 
         for (int i = 0; i < newFriendList.size(); i++) {
             showUserNameFriend.add(newFriendList.get(i).getUserName() + newFriendList.get(i).getStatus());
         }
-        System.out.println("\n checkUserOnlineAction: showUserNameFriend: " + showUserNameFriend.toString());
+//        System.out.println("\n checkUserOnlineAction: showUserNameFriend: " + showUserNameFriend.toString());
 
         userInPong.removeAllElements(); // loai bo list user in pong sau khi check voi list friends
-        System.out.println("\n checkUserOnlineAction: AFTER REMOVED userInPong: " + userInPong.toString());
+//        System.out.println("\n checkUserOnlineAction: AFTER REMOVED userInPong: " + userInPong.toString());
 
         AppGUI.listFriends.setListData(showUserNameFriend);
     }
@@ -86,10 +86,10 @@ public class checkUserOnlineAction {
                     // System.out.println("checkUserOnlineAction GO INSIDE 2 FOR LOOP ");
 
                     if (friendList.get(j).getIdUserLogin().equals(userInPong.get(i).getIdUserLogin())) {
-                        System.out.println("checkUserOnlineAction setStatus - Before [" + j + "]" + friendList.get(j).getStatus());
+//                        System.out.println("checkUserOnlineAction setStatus - Before [" + j + "]" + friendList.get(j).getStatus());
                         friendList.get(j).setStatus(Preferences.ONLINE);
                         friendList.get(j).setCountOffline(Preferences.COUNTER_ONLINE);
-                        System.out.println("checkUserOnlineAction setStatus - After: [" + j + "]" + friendList.get(j).getStatus());
+//                        System.out.println("checkUserOnlineAction setStatus - After: [" + j + "]" + friendList.get(j).getStatus());
                     } else {
                         editStatusFriendList(friendList, j);
                     }
@@ -104,14 +104,14 @@ public class checkUserOnlineAction {
         //for (int j = 0; j < friendList.size(); j++) {
         if (friendList.get(index).getStatus().equals(Preferences.ONLINE)) {
             friendList.get(index).setCountOffline(friendList.get(index).getCountOffline() + 1);
-            System.out.println("checkUserOnlineAction AFTER  - getCountOffline [" + index + "]" + friendList.get(index).getCountOffline());
+//            System.out.println("checkUserOnlineAction AFTER  - getCountOffline [" + index + "]" + friendList.get(index).getCountOffline());
         }
 
         if (friendList.get(index).getCountOffline() == 2) {
-            System.out.println("checkUserOnlineAction setStatus - getCountOffline=3 :[" + index + "]" + friendList.get(index).getCountOffline());
+//            System.out.println("checkUserOnlineAction setStatus - getCountOffline=3 :[" + index + "]" + friendList.get(index).getCountOffline());
             friendList.get(index).setStatus(Preferences.OFFLINE);
             friendList.get(index).setCountOffline(Preferences.COUNTER_OFFLINE);
-            System.out.println("checkUserOnlineAction AFTER  getCountOffline=3: [" + index + "]" + friendList.get(index).getStatus());
+//            System.out.println("checkUserOnlineAction AFTER  getCountOffline=3: [" + index + "]" + friendList.get(index).getStatus());
         }
         //  }
         return friendList;
