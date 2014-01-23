@@ -4,8 +4,10 @@
  */
 package postService;
 
+import GUI.AppGUI;
 import GUI.LoginForm;
 import GUI.StatusForm;
+import architecture.IPAddress;
 import architecture.NetworkManager;
 import architecture.Preferences;
 import architecture.SharedDirectory;
@@ -23,39 +25,53 @@ public class LikeCommentHandler extends Thread {
     String userNameLogin = LoginForm.currentUser.getUserName();
     public static Vector<String> listPeerManage = Preferences.peerManageList;
 
-    public LikeCommentHandler(Like likeMessage, Comment commentMessage) {
-        this.likeMessage = likeMessage;
-        this.commentMessage = commentMessage;
+    public LikeCommentHandler(IPAddress ip, Like likeMessage, Comment commentMessage) {
+        if (likeMessage != null) {
+            this.likeMessage = likeMessage;
+            this.likeMessage.setIP(ip);
+
+        }
+        if (commentMessage != null) {
+            this.commentMessage = commentMessage;
+            this.commentMessage.setIP(ip);
+        }
+
+
     }
 
     public void run() {
 
         if (likeMessage != null) {
-            LikeCommentListObject likeComment = new LikeCommentListObject();
-            likeComment = Preferences.readUserFile(likeMessage.getIdPost(), likeMessage.getIdUserPost(), likeMessage.getMessageID().toString());
-            boolean isLike = StatusForm.checkNameLiked(userNameLogin, likeComment);
-
-            if (isLike == true && likeComment.isIsLikeMessage() == false) {
-                saveLikeSuperPeer(likeMessage);
+            boolean isLikeOfUser = serverCheckLikeCommentForPeer(Preferences.peerManageList, likeMessage, null);
+            if (isLikeOfUser) {
+                LikeCommentListObject likeComment = new LikeCommentListObject();
+                likeComment = Preferences.readUserFile(likeMessage.getIdPost(), likeMessage.getIdUserPost());
+                boolean isLike = checkNameLiked(likeMessage.getMessageID(), likeMessage.getIdUserLike(), likeComment);
+                if (likeComment.getIdUserLike().equals("") || isLike == true) {
+                    saveLikeSuperPeer(likeMessage);
+                }
             }
 
-            NetworkManager.writeToAll(likeMessage);  // Query is forwarded to all connected nodes except one from which query came.
+            NetworkManager.writeButOne(likeMessage.getIP(), likeMessage); // Query
+
         }
 
         if (commentMessage != null) {
-            LikeCommentListObject likeComment = new LikeCommentListObject();
-            likeComment = Preferences.readUserFile(commentMessage.getIdPost(), commentMessage.getIdUserPost(), commentMessage.getMessageID().toString());
-
-            if (likeComment.isIsCommentMessage() == false) {
-                saveCommentSuperPeer(commentMessage);
+            boolean isCommentOfUser = serverCheckLikeCommentForPeer(Preferences.peerManageList, null, commentMessage);
+            if (isCommentOfUser) {
+                LikeCommentListObject likeComment = new LikeCommentListObject();
+                likeComment = Preferences.readUserFile(commentMessage.getIdPost(), commentMessage.getIdUserPost());
+                boolean isComment = checkComment(commentMessage.getMessageID(), likeComment);
+                if (isComment) {
+                    saveCommentSuperPeer(commentMessage);
+                }
             }
-            NetworkManager.writeToAll(commentMessage);  // Query is forwarded to all connected nodes except one from which query came.
-
+            NetworkManager.writeButOne(commentMessage.getIP(), commentMessage); // Query
         }
     }
 
     public void saveLikeSuperPeer(Like like) {
-        byte[] idPost = like.getIdPost().getBytes();
+        long idPost = like.getIdPost();
         String idUserPost = like.getIdUserPost();
         String idUserLike = like.getIdUserLike();
         String nameLike = like.getNameLike();
@@ -66,14 +82,50 @@ public class LikeCommentHandler extends Thread {
     }
 
     public void saveCommentSuperPeer(Comment comment) {
-        byte[] idPost = comment.getIdPost().getBytes();
+        long idPost = comment.getIdPost();
         String idUserPost = comment.getIdUserPost();
         String idUserComment = comment.getIdUserComment();
         String nameComment = comment.getNameComment();
-        String commentContent = comment.getCommentContent();
+        String commentContent = comment.getComment();
 
         if (SharedDirectory.listFileIDSaving.contains(idUserPost)) {
             Preferences.commentWriteToFileSuperPeer(comment.getCommentTypeString(comment.getPayload()), idPost, commentMessage.getMessageID(), idUserPost, idUserComment, nameComment, commentContent);
         }
+    }
+
+    public static boolean checkNameLiked(long likeID, String userIDLike, LikeCommentListObject likeComment) {
+        System.out.println("likeID: " + String.valueOf(likeID));
+        System.out.println("userIDLike: " + userIDLike);
+        System.out.println("likeComment iduserLike : " + likeComment.getIdUserLike());
+        if (likeComment.getIdLike().contains(String.valueOf(likeID)) || likeComment.getIdUserLike().contains(userIDLike)) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean checkComment(long commentID, LikeCommentListObject likeComment) {
+        if (likeComment.getIdComment().contains(String.valueOf(commentID))) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean serverCheckLikeCommentForPeer(Vector<String> listPeerOrFriend, Like like, Comment comment) {
+        String userPostID = "";
+        if (like != null) {
+            userPostID = like.getIdUserPost();
+        }
+
+        if (comment != null) {
+            userPostID = comment.getIdUserPost();
+
+        }
+        for (int i = 0; i < listPeerOrFriend.size(); i++) {
+            if (SharedDirectory.listFileIDSaving.contains(userPostID) || userPostID.equals(listPeerOrFriend.get(i))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -7,6 +7,7 @@ import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Vector;
+import postService.Comment;
 import postService.Like;
 import postService.LikeCommentListObject;
 
@@ -19,31 +20,23 @@ import postService.LikeCommentListObject;
  * @author admin
  */
 public class StatusForm extends javax.swing.JFrame {
-
+    
     public static Vector<String> listStoreComment = new Vector<String>();
-    String useIDLogin = LoginForm.currentUser.getIdUserLogin();
-    String userNameLoginString = LoginForm.currentUser.getUserName();
-    String postID = "";
-    String userIDPost = "";
-
+    public static String useIDLogin = LoginForm.currentUser.getIdUserLogin();
+//    public byte[] userIDLOGINBYTE = new byte[16];
+//    public byte[] postIDBYTE = new byte[16];
+//    public byte[] userIDPostBYTE = new byte[16];
+    public static String userNameLoginString = LoginForm.currentUser.getUserName();
+    public static String postID = "";
+    public static String userIDPost = "";
+    
     public StatusForm() {
         initComponents();
         setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
         txtContentPopUp.disable();
-
-
-        postID = lbMessageID.getText();
-        userIDPost = lbIDUserPost.getText();
-
-        LikeCommentListObject likeComment = new LikeCommentListObject();
-        likeComment = Preferences.readUserFile(postID, useIDLogin, "");
-        boolean isLike = checkNameLiked(userNameLoginString, likeComment);
-        if (isLike == false) {
-            btnLike.disable();
-        }
-
+        
     }
-
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -180,15 +173,59 @@ public class StatusForm extends javax.swing.JFrame {
 
     private void btnLikeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLikeActionPerformed
         // TODO add your handling code here:
-        /* Like(byte[] idPost, byte[] idUserPost, byte[] idUserLike, String nameLike)*/
-        Like likeMessage = new Like(postID.getBytes(), userIDPost.getBytes(), useIDLogin.getBytes(), userNameLoginString);
-        NetworkManager.writeToAll(likeMessage);
-    }//GEN-LAST:event_btnLikeActionPerformed
+        if (btnLike.isEnabled()) {
+            btnLike.setEnabled(false);
+        }
+        
+        postID = lbMessageID.getText();
+        userIDPost = lbIDUserPost.getText(); //LIKE : postID- [B@75225918
 
+        System.out.println("LIKE : postIDBYTE - " + postID);
+        System.out.println("LIKE : userIDPostBYTE - " + userIDPost);
+        System.out.println("LIKE : userIDLOGINBYTE - " + useIDLogin);
+        System.out.println("LIKE : userNameLoginString - " + userNameLoginString);
+        
+        
+        
+        Like likeMessage = new Like(postID.length(), userIDPost.length(), useIDLogin.length(), postID, userIDPost, useIDLogin, userNameLoginString);
+        System.out.println("######### LIKE before: " + likeMessage);
+        System.out.println("######### LIKE getIdPost: " + likeMessage.getIdPost());
+        System.out.println("######### LIKE getIdUserLike: " + likeMessage.getIdUserLike());
+        System.out.println("######### LIKE getIdUserPost: " + likeMessage.getIdUserPost());
+        System.out.println("######### LIKE getNameLike: " + likeMessage.getNameLike());
+        System.out.println("######### LIKE getLikeTypeString: " + likeMessage.getLikeTypeString(likeMessage.getPayload()));
+        
+        
+        NetworkManager.writeToAll(likeMessage);
+        
+        
+        
+        
+    }//GEN-LAST:event_btnLikeActionPerformed
+    
     private void btnCommentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCommentActionPerformed
         // TODO add your handling code here:
+        postID = lbMessageID.getText();
+        userIDPost = lbIDUserPost.getText();
+        
+        System.out.println("LIKE : postIDBYTE - " + postID);
+        System.out.println("LIKE : userIDPostBYTE - " + userIDPost);
+        System.out.println("LIKE : userIDLOGINBYTE - " + useIDLogin);
+        System.out.println("LIKE : userNameLoginString - " + userNameLoginString);
+        
+        
+        
+        Comment commentMessage = new Comment(postID.length(), userIDPost.length(), useIDLogin.length(), userNameLoginString.length(), postID, userIDPost, useIDLogin, userNameLoginString, txtComment.getText());
+        System.out.println("######### LIKE before: " + commentMessage);
+        System.out.println("######### LIKE getIdPost: " + commentMessage.getIdPost());
+        System.out.println("######### LIKE getIdUserLike: " + commentMessage.getIdUserComment());
+        System.out.println("######### LIKE getIdUserPost: " + commentMessage.getIdUserPost());
+        System.out.println("######### LIKE getNameLike: " + commentMessage.getNameComment());
+        System.out.println("######### LIKE getLikeTypeString: " + commentMessage.getCommentTypeString(commentMessage.getPayload()));
+        
+        NetworkManager.writeToAll(commentMessage);
     }//GEN-LAST:event_btnCommentActionPerformed
-
+    
     private void txtCommentKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCommentKeyPressed
         if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
         }
@@ -224,24 +261,15 @@ public class StatusForm extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-
+                
                 StatusForm s = new StatusForm();
                 s.setVisible(true);
-
-
+                
+                
             }
         });
-
-
-    }
-
-    public static boolean checkNameLiked(String userNameLogin, LikeCommentListObject likeComment) {
-        for (int i = 0; i < likeComment.getUserNameLike().size(); i++) {
-            if (userNameLogin.equals(likeComment.getUserNameLike().get(i))) {
-                return false;
-            }
-        }
-        return true;
+        
+        
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public static javax.swing.JButton btnComment;

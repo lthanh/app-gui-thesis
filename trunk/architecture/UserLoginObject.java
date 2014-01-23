@@ -16,6 +16,15 @@ public class UserLoginObject {
     public String idUserLogin;
     public String userName;
     public String status;
+//    public long numMessageSent;
+
+//    public long getNumMessageSent() {
+//        return numMessageSent;
+//    }
+//
+//    public void setNumMessageSent(long numMessageSent) {
+//        this.numMessageSent = numMessageSent;
+//    }
 
     public String getStatus() {
         return status;

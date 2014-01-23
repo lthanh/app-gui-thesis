@@ -1,5 +1,9 @@
 package GUI;
 
+import static GUI.StatusForm.btnLike;
+import static GUI.StatusForm.postID;
+import static GUI.StatusForm.useIDLogin;
+import static GUI.StatusForm.userNameLoginString;
 import architecture.*;
 import PeerAction.checkUserOnlineAction;
 import java.awt.event.ActionEvent;
@@ -12,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
+import postService.LikeCommentListObject;
 import postService.Post;
 import postService.PostHandler;
 
@@ -28,9 +33,8 @@ public class AppGUI extends javax.swing.JFrame {
     /**
      * Creates new form AppGUI
      */
+//    public static long numMessageSent = LoginForm.currentUser.getNumMessageSent(); // count number of message sent in one section to set message id
     public static byte prPl = 1;
-    public static byte[] userIDLoginToByte = new byte[16];
-    public static String userNameLoginToByte = LoginForm.currentUser.getUserName();
 
     public AppGUI() {
         initComponents();
@@ -39,6 +43,7 @@ public class AppGUI extends javax.swing.JFrame {
         setTitle("Posting Message Service");
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
+//                Preferences.writeToUserFile(LoginForm.currentUser.getIdUserLogin(), LoginForm.currentUser.getUserName(), numMessageSent);
                 System.exit(0);
             }
         });
@@ -47,7 +52,6 @@ public class AppGUI extends javax.swing.JFrame {
         rdoPl.setSelected(true);
 
         // get UserID to byte array
-        userIDLoginToByte = LoginForm.currentUser.getIdUserLogin().getBytes();
         lbUserName.setText(LoginForm.currentUser.getUserName());
 
         // Gnutella 
@@ -61,7 +65,7 @@ public class AppGUI extends javax.swing.JFrame {
         Preferences.readFromFile();
         Preferences.readFriendFile();
 
-        if (LoginForm.currentUser.getUserName().equals("Server")) {
+        if (LoginForm.currentUser.getUserName().equals("Server") || LoginForm.currentUser.getUserName().equals("Server1")) {
             Preferences.readListPeerManage();
         }
 
@@ -118,6 +122,7 @@ public class AppGUI extends javax.swing.JFrame {
         lbUserName.setForeground(new java.awt.Color(0, 0, 255));
         lbUserName.setText("User");
 
+        txtSearch.setBackground(new java.awt.Color(240, 240, 240));
         txtSearch.setText("Search");
         txtSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -171,6 +176,7 @@ public class AppGUI extends javax.swing.JFrame {
         listFriends.setBorder(javax.swing.BorderFactory.createTitledBorder("Friends"));
         listFriends.setAlignmentX(0.0F);
         listFriends.setAlignmentY(0.0F);
+        listFriends.setFixedCellHeight(30);
         jScrollPane5.setViewportView(listFriends);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -243,6 +249,7 @@ public class AppGUI extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Friends' status"));
 
+        listStatus.setBackground(new java.awt.Color(240, 240, 240));
         listStatus.setFixedCellHeight(50);
         listStatus.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -357,19 +364,34 @@ public class AppGUI extends javax.swing.JFrame {
         StatusForm statusPOPUP = new StatusForm();
         statusPOPUP.setTitle("UserName's status");
         statusPOPUP.lbUseName.setText(postSelected.getUserName());
-//        statusPOPUP.txtContentPopUp.setText(postSelected.getPostStatusContent());
         statusPOPUP.txtContentPopUp.setText(postSelected.getPostStatusContent());
         // statusPOPUP.txtContentPopUp.disable();
         statusPOPUP.lbLike.setText("1000");
         statusPOPUP.lbComment.setText("1000");
+
+        System.out.println("LIKE : postID- " + postSelected.getMessageID());
+        System.out.println("LIKE : userIDPostt- " + postSelected.getUserID());
+        //POST MESSAGEID : [B@7b0da3ae
+
+        //LIKE : postID- [B@75225918
+//LIKE : userIDPostt- 0000000000000000
+
+        long postID = postSelected.getMessageID();
+        String userIDPost = postSelected.getUserID();
         statusPOPUP.lbIDUserPost.hide();
-        statusPOPUP.lbIDUserPost.setText(postSelected.getUserID());
+        statusPOPUP.lbIDUserPost.setText(userIDPost);
         statusPOPUP.lbMessageID.hide();
-        statusPOPUP.lbMessageID.setText(postSelected.getMessageID().toString());
-        // statusPOPUP.btnLike.
-//        statusPOPUP.btnComment
-//        statusPOPUP.txtComment
-        // statusPOPUP.listComment.setListData();
+        statusPOPUP.lbMessageID.setText(String.valueOf(postID));
+
+
+
+        LikeCommentListObject likeComment = new LikeCommentListObject();
+        likeComment = Preferences.readUserFile(postSelected.getMessageID(), LoginForm.currentUser.getIdUserLogin());
+        //  boolean isLike = checkNameLiked(userNameLoginString, likeComment);
+//        if (isLike == false) {
+//            statusPOPUP.btnLike.disable();
+//        }
+
 
         statusPOPUP.show();
     }//GEN-LAST:event_listStatusMouseClicked
@@ -450,16 +472,16 @@ public class AppGUI extends javax.swing.JFrame {
             if (prPl == 0) {
                 privateWritePost(textPost, createdate, friend, groupdSuperPeerID, liked, commented);
             } else {
-                writePostPublic(userIDLoginToByte, prPl, liked, commented, createdate.length(), friend.length(), groupdSuperPeerID.length(), userNameLoginToByte.length(), userNameLoginToByte, createdate, friend, groupdSuperPeerID, textPost);
+                writePostPublic(LoginForm.currentUser.getIdUserLogin(), prPl, liked, commented, createdate.length(), friend.length(), groupdSuperPeerID.length(), userNameLoginString.length(), userNameLoginString, createdate, friend, groupdSuperPeerID, textPost);
 
             }
         }
     }
 
     // send post to other one via Network and save into database
-    public static void writePostPublic(byte[] userID, byte prpl, int like, int comment, int cDateLength, int groupdFriendIDLength, int groupdSuperPeerIDLength, int useNameLength, String userNamePost, String cDate, String idGroupFriends, String idGroupSP, String post) {
+    public static void writePostPublic(String userID, byte prpl, int like, int comment, int cDateLength, int groupdFriendIDLength, int groupdSuperPeerIDLength, int useNameLength, String userNamePost, String cDate, String idGroupFriends, String idGroupSP, String post) {
         Post postMessage = new Post(userID, cDateLength, groupdFriendIDLength, groupdSuperPeerIDLength, useNameLength, userNamePost, cDate, idGroupFriends, idGroupSP, post);
-        System.out.println("POST MESSAGE : " + postMessage);
+        System.out.println("POST MESSAGEID : " + postMessage.getMessageID());
         System.out.println("POST MESSAGE GET CONTENT BYTE: " + postMessage.contents());
         // show status on news feed of user logging in when they have just written the status
         PostHandler.recieveListPost.add(0, postMessage);
@@ -476,18 +498,12 @@ public class AppGUI extends javax.swing.JFrame {
         // check user to store data
         Preferences.statusWriteToFilePeer(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prpl, like, comment, cDate, idGroupFriends, idGroupSP, post);
 
-//        if (usenID.equals(postMessage.getUserID())) {
-//            System.out.println("AppGUI - BEFORE");
-//            Preferences.statusWriteToFilePeer("Post", postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prpl, like, comment, cDate, idGroupFriends, idGroupSP, post);
-//            System.out.println("AppGUI - AFTER ");
-//        }
-
         NetworkManager.writeToAll(postMessage);
         addPOST(postMessage);
     }
 
     public static void privateWritePost(String postText, String createdate, String friend, String groupdSuperPeerID, int liked, int commented) {
-        Post postMessage = new Post(userIDLoginToByte, createdate.length(), friend.length(), groupdSuperPeerID.length(), userNameLoginToByte.length(), userNameLoginToByte, createdate, friend, groupdSuperPeerID, postText);
+        Post postMessage = new Post(LoginForm.currentUser.getIdUserLogin(), createdate.length(), friend.length(), groupdSuperPeerID.length(), userNameLoginString.length(), userNameLoginString, createdate, friend, groupdSuperPeerID, postText);
         PostHandler.recieveListPost.add(0, postMessage);
         PostHandler.showListPost.add(0, Utils.formSHOWSTATUS(postMessage.getUserName(), postMessage.getPostStatusContent(), postMessage.getCreatedDate()));
         AppGUI.inform(PostHandler.myIP, PostHandler.showListPost);
@@ -495,6 +511,8 @@ public class AppGUI extends javax.swing.JFrame {
         Preferences.statusWriteToFilePeer(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prPl, liked, commented, createdate, friend, groupdSuperPeerID, postText);
 
     }
+
+    
     //////////// END POST MESSAGE
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private static javax.swing.JButton btnFeed;

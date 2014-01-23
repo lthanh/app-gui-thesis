@@ -2,7 +2,6 @@ package architecture;
 
 import PeerAction.checkUserOnlineAction;
 
-
 public class Pinger extends Thread {
 
     static int hosts = 0;
@@ -28,12 +27,13 @@ public class Pinger extends Thread {
             if (pingCounter == 2) {
                 System.out.println("\n PINGer 3 times: " + pingCounter);
                 check.checkUserOnline();
-                
+
             }
             NetworkManager.writeToAll(myping);
+
+//            Preferences.PINGER_TIME = 60000;
         }
     }
-
 //    public static void inform(Pong pong) {
 //        if (pong.compare(myping)) {
 //            hosts++;

@@ -51,7 +51,7 @@ public class PostHandler extends Thread {
 
 
         boolean isFriends = serverCheckListFriendorPeer(postMessage, Preferences.idFriendsListString);
-        boolean isPeer = serverCheckListFriendorPeer(postMessage, peerManageList);
+        boolean isPeer = serverCheckListFriendorPeer(postMessage, Preferences.peerManageList);
 
         if (isFriends) { // if friend,show on news feed.
             peerReceivePost peerReceivePost = new peerReceivePost();
@@ -59,7 +59,7 @@ public class PostHandler extends Thread {
         }
 
         if (isPeer) {
-          //  System.out.println("PostHandler: " + postMessage.getPayload() + "\n");
+            //  System.out.println("PostHandler: " + postMessage.getPayload() + "\n");
             Preferences.statusWriteToFileSuperPeer(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), postMessage.getGroupFriendID(), postMessage.getPostStatusContent(), postMessage.getCreatedDate());
         }
 

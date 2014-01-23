@@ -8,7 +8,7 @@ public class PingHandler extends Thread {
 
     public static Map pt;  //ping table    
     Ping ping;
-    byte[] useIDOnlineToByte = LoginForm.currentUser.getIdUserLogin().getBytes();
+    String useIDOnlineString = LoginForm.currentUser.getIdUserLogin();
     String userNameOnlineString = LoginForm.currentUser.getUserName();
 
     public PingHandler(IPAddress pingIP, Ping ping) {
@@ -31,7 +31,7 @@ public class PingHandler extends Thread {
             System.out.println("PingHandler: User name-" + userNameOnlineString);
             System.out.println("PingHandler: User name length -" + userNameOnlineString.length());
             
-            Pong response = new Pong(Mine.getPort(), Mine.getIPAddress(), useIDOnlineToByte, userNameOnlineString.length(), SharedDirectory.getListFileIDSaving().length(), SharedDirectory.getListFileIDSaving(), userNameOnlineString, ping.getMessageID());
+            Pong response = new Pong(Mine.getPort(), Mine.getIPAddress(), useIDOnlineString, userNameOnlineString.length(), SharedDirectory.getListFileIDSaving().length(), SharedDirectory.getListFileIDSaving(), userNameOnlineString, ping.getMessageID());
             /*
              System.out.println("#### PingHandler: PONG -- OUTCOMMING " + response.toString());
              System.out.println("#### PingHandler: PONG -- " + response.getUserIDOnline());

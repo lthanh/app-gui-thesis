@@ -4,6 +4,8 @@
  */
 package postService;
 
+import GUI.AppGUI;
+import architecture.IPAddress;
 import architecture.Packet;
 import architecture.Utils;
 import java.nio.ByteBuffer;
@@ -14,133 +16,151 @@ import java.nio.ByteBuffer;
  */
 public class Comment extends Packet {
 
+    private IPAddress ip;
     int index = Packet.HEADER_LENGTH;
+// (int idPostLength, int idUserPostLength, int idUserLikeLength, String idPost, String idUserPost, String idUserLike, String nameLike)
 
-    public Comment(byte[] idPost, byte[] idUserPost, byte[] idUserComment, int nameCommentLength, String nameComment, String commentContent) {
-        super(Packet.COMMENT, (51 + nameComment.length() + commentContent.length()));
+    public Comment(int idPostLength, int idUserPostLength, int idUserCommentLength, int nameCommentLength, String idPost, String idUserPost, String idUserComment, String nameComment, String commentContent) {
+        super(Packet.COMMENT, (8 + idPost.length() + idUserPost.length() + idUserComment.length() + nameComment.length() + commentContent.length()));
 
-        // convert idPost to byte array
-        for (int i = 0; i < idPost.length; i++) {
-            contents[index + i] = idPost[i];
-            System.out.println("COMMENT -idPost: [" + i + "]" + idPost);
+        // convert idPostLength to byte
+        contents[index + 0] = (byte) idPostLength;
+
+        // convert idUserPostLength to byte
+        contents[index + 1] = (byte) idUserPostLength;
+
+        // convert idUserLikeLength to byte
+        contents[index + 2] = (byte) idUserCommentLength;
+
+        // convert nameCommentLength to byte
+        contents[index + 3] = (byte) nameCommentLength;
+
+
+        // convert idPost to byte  
+        byte[] tempidPost = new byte[idPost.length()];
+        tempidPost = idPost.getBytes();
+        int e;
+        for (e = 0; e < idPost.length(); e++) {
+            contents[(e + index + 4)] = tempidPost[e];
         }
+        contents[(e + index + 4)] = 0;
 
-        // convert idUserPost to byte array
-        for (int i = 0; i < idUserPost.length; i++) {
-            contents[index + 16 + i] = idUserPost[i];
-            System.out.println("COMMENT -idUserPost: [" + i + "]" + idUserPost);
+        // convert idUserPost to byte  
+        byte[] tempidUserPost = new byte[idUserPost.length()];
+        tempidUserPost = idUserPost.getBytes();
+        int p;
+        for (p = 0; p < idUserPost.length(); p++) {
+            contents[(p + index + 4 + idPost.length())] = tempidUserPost[p];
         }
+        contents[(p + index + 4 + idPost.length())] = 0;
 
-        // convert idUserLike to byte array
-        for (int i = 0; i < idUserComment.length; i++) {
-            contents[index + 16 + 16 + i] = idUserComment[i];
-            System.out.println("COMMENT -idUserLike: [" + i + "]" + idUserComment);
+        // convert idUserComment to byte  
+        byte[] tempIdUserComment = new byte[idUserComment.length()];
+        tempIdUserComment = idUserComment.getBytes();
+        int m;
+        for (m = 0; m < idUserComment.length(); m++) {
+            contents[(m + index + 4 + idPost.length() + idUserPost.length())] = tempIdUserComment[m];
         }
-
-        // convert nameCommentLength to byte array
-        ByteBuffer bBPort = ByteBuffer.allocate(2);
-        bBPort.putShort((short) nameCommentLength);
-        byte[] byteNameCommentLength = bBPort.array();
-
-        contents[index + 48] = byteNameCommentLength[0];
-        contents[index + 49] = byteNameCommentLength[1];
-
-
+        contents[(m + index + 4 + idPost.length() + idUserPost.length())] = 0;
 
         // convert nameComment to byte  
         byte[] tempName = new byte[nameComment.length()];
         tempName = nameComment.getBytes();
-        int e;
-        for (e = 0; e < nameComment.length(); e++) {
-            contents[(e + index + 50 + nameComment.length())] = tempName[e];
+        int b;
+        for (b = 0; b < nameComment.length(); b++) {
+            contents[(b + index + 4 + idPost.length() + idUserPost.length() + idUserComment.length())] = tempName[b];
         }
-        contents[(e + index + 50 + nameComment.length())] = 0;
+        contents[(b + index + 4 + idPost.length() + idUserPost.length() + idUserComment.length())] = 0;
 
-        // convert commentContent to byte  
+// convert comment to byte  
         byte[] tempCommentContent = new byte[commentContent.length()];
         tempCommentContent = commentContent.getBytes();
-        int p;
-        for (p = 0; p < commentContent.length(); p++) {
-            contents[(p + index + 51 + commentContent.length())] = tempCommentContent[p];
+        int g;
+        for (g = 0; g < commentContent.length(); g++) {
+            contents[(g + index + 4 + idPost.length() + idUserPost.length() + idUserComment.length() + nameComment.length())] = tempCommentContent[g];
         }
-        contents[(p + index + 51 + commentContent.length())] = 0;
+        contents[(g + index + 4 + idPost.length() + idUserPost.length() + idUserComment.length() + nameComment.length())] = 0;
 
+//        AppGUI.numMessageSent++; // count number of message sent at one section to set message id
+        ip = null;
     }
 
     public Comment(byte[] rawdata) {
         super(rawdata);
     }
 
-    public String getIdPost() {
-        byte[] temp = new byte[16];
-        //StringBuilder userID = new StringBuilder();
-        for (int i = 0; i < 16; i++) {
-            //temp[i] = contents[index + i];
-            temp[i] = contents[index + i];
-        }
-
-        String idPost = new String(temp);
-
-        System.out.println("COMMENT -getIdPost: " + idPost);
-        return idPost;
+    public IPAddress getIP() {
+        return (ip);
     }
 
-    public String getIdUserPost() {
-        byte[] temp = new byte[16];
-        //StringBuilder userID = new StringBuilder();
-        for (int i = 0; i < 16; i++) {
-            //temp[i] = contents[index + i];
-            temp[i] = contents[index + 16 + i];
-        }
-
-        String userPost = new String(temp);
-
-        System.out.println("COMMENT -getIdUserPost: " + userPost);
-        return userPost;
+    public void setIP(IPAddress ip) {
+        this.ip = ip;
     }
 
-    public String getIdUserComment() {
-        byte[] temp = new byte[16];
-        //StringBuilder userID = new StringBuilder();
-        for (int i = 0; i < 16; i++) {
-            //temp[i] = contents[index + i];
-            temp[i] = contents[index + 32 + i];
-        }
+    public int getIDPostLength() {
+        return contents[index + 0];
+    }
 
-        String idUserLike = new String(temp);
+    public int getIDUserPostLength() {
+        return contents[index + 1];
+    }
 
-        System.out.println("COMMENT -getIdUserComment: " + idUserLike);
-        return idUserLike;
+    public int getIDUserCommentLength() {
+        return contents[index + 2];
     }
 
     public int getNameCommentLength() {
-//        System.out.println("\nPONG: getUserIDOnline getPort receive - " + port);
-        byte[] bytes = new byte[2];
-        bytes[0] = contents[index + 48];
-        bytes[1] = contents[index + 49];
-        ByteBuffer wrapped = ByteBuffer.wrap(bytes);
-//        System.out.println("getPort after: " + wrapped.getInt());
-        return (int) wrapped.getShort();
+        return contents[index + 3];
+    }
+
+    public long getIdPost() {
+        String idPost = "";
+        for (int i = (index + 4); i < (index + 4 + getIDPostLength()); i++) {
+            idPost = idPost + (char) (contents[i]);
+        }
+
+        System.out.println("Comment -idPost: " + idPost);
+        return Long.parseLong(idPost);
+    }
+
+    public String getIdUserPost() {
+        String idUserPost = "";
+        for (int i = (index + 4 + getIDPostLength()); i < (index + 4 + getIDPostLength() + getIDUserPostLength()); i++) {
+            idUserPost = idUserPost + (char) (contents[i]);
+        }
+
+        System.out.println("Comment -idUserPost: " + idUserPost);
+        return idUserPost;
+    }
+
+    public String getIdUserComment() {
+        String idUserComment = "";
+        for (int i = (index + 4 + getIDPostLength() + getIDUserPostLength()); i < (index + 4 + getIDPostLength() + getIDUserPostLength() + getIDUserCommentLength()); i++) {
+            idUserComment = idUserComment + (char) (contents[i]);
+        }
+
+        System.out.println("Comment -idUserComment: " + idUserComment);
+        return idUserComment;
     }
 
     public String getNameComment() {
         String nameComment = "";
-        //StringBuilder userID = new StringBuilder();
-        for (int i = 50; i < 50 + getNameCommentLength(); i++) {
+        for (int i = (index + 4 + getIDPostLength() + getIDUserPostLength() + getIDUserCommentLength()); i < (index + 4 + getIDPostLength() + getIDUserPostLength() + getIDUserCommentLength() + getNameCommentLength()); i++) {
             nameComment = nameComment + (char) (contents[i]);
         }
-        System.out.println("COMMENT -getNameComment: " + nameComment);
+
+        System.out.println("Comment -nameComment: " + nameComment);
         return nameComment;
     }
 
-    public String getCommentContent() {
-        String commentContent = "";
-        //StringBuilder userID = new StringBuilder();
-        for (int i = (49 + getNameCommentLength()); i < contents.length; i++) {
-            commentContent = commentContent + (char) (contents[i]);
+    public String getComment() {
+        String comment = "";
+        for (int i = (index + 4 + getIDPostLength() + getIDUserPostLength() + getIDUserCommentLength() + getNameCommentLength()); i < (contents.length); i++) {
+            comment = comment + (char) (contents[i]);
         }
-        System.out.println("COMMENT -getNameComment: " + commentContent);
-        return commentContent;
+
+        System.out.println("Comment -comment: " + comment);
+        return comment;
     }
 
     public String getCommentTypeString(byte typeMessage) {

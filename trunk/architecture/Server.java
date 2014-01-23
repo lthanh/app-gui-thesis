@@ -1,9 +1,7 @@
 package architecture;
 
-import GUI.AppGUI;
 import GUI.LoginForm;
 import PeerAction.peerReceivePost;
-import SuperPeerAction.actionSuperPeer;
 import postService.PostHandler;
 import postService.Post;
 import java.io.*;
@@ -11,9 +9,6 @@ import java.net.*;
 import postService.Comment;
 import postService.Like;
 import postService.LikeCommentHandler;
-import static postService.PostHandler.myIP;
-import static postService.PostHandler.recieveListPost;
-import static postService.PostHandler.showListPost;
 
 class Server extends Thread {
 
@@ -26,8 +21,12 @@ class Server extends Thread {
     }
 
     public void run() {
+//        System.out.println("########### SERVER in - " + in);
         while (true) {
             try {
+
+//                System.out.println("SERVER: in value - " + in.available());
+
                 if (in.available() < Packet.HEADER_LENGTH) {
                     continue;
                 }
@@ -40,7 +39,7 @@ class Server extends Thread {
                 Packet header = new Packet(temp);
 
                 if ((header.identify() != Packet.PONG) && (header.identify() != Packet.PING)
-                        && (header.identify() != Packet.QUERY) && (header.identify() != Packet.QUERYHIT) && (header.identify() != Packet.POST)) {
+                        && (header.identify() != Packet.QUERY) && (header.identify() != Packet.QUERYHIT) && (header.identify() != Packet.POST && (header.identify() != Packet.LIKE)) && (header.identify() != Packet.COMMENT)) {
                     break; // If the data is not something we expect, die.
                 }
                 byte[] newpacket = new byte[(header.length() + Packet.HEADER_LENGTH)]; /* The syntax here is unfortunate, because headers don't store
@@ -88,8 +87,8 @@ class Server extends Thread {
                 if (header.identify() == Packet.PONG) {
                     Pong pong = new Pong(newpacket);
 
-                    System.out.println("\n ### Server : Packet == PONG -- " + newpacket.toString());
-                    System.out.println("\n ### Server : Packet == PONG Length newpacket-- " + newpacket.length);
+//                    System.out.println("\n ### Server : Packet == PONG -- " + newpacket.toString());
+//                    System.out.println("\n ### Server : Packet == PONG Length newpacket-- " + newpacket.length);
 
                     Host h = new Host(mine.toString(), mine.getPort());
                     HostCache.addHost(h);
@@ -105,7 +104,7 @@ class Server extends Thread {
                     continue;
                 } else if (header.identify() == Packet.POST) {
                     Post postMessage = new Post(newpacket);
-                    if (LoginForm.currentUser.getUserName().equals("Server")) {
+                    if (LoginForm.currentUser.getUserName().equals("Server") || LoginForm.currentUser.getUserName().equals("Server1")) {
                         // forward post message to all connecting
                         PostHandler handler = new PostHandler(mine, postMessage);
                         System.out.println("\n ### Server : Packet == POST -- " + newpacket.toString());
@@ -124,21 +123,37 @@ class Server extends Thread {
                 } else if (header.identify() == Packet.LIKE) {
                     Like likeMessage = new Like(newpacket);
                     System.out.println("\n ### Server : Packet == LIKE -- " + newpacket.toString());
-
-                    if (LoginForm.currentUser.getUserName().equals("Server")) {
-                        LikeCommentHandler likeAction = new LikeCommentHandler(likeMessage, null);
+                    if (LoginForm.currentUser.getUserName().equals("Server") || LoginForm.currentUser.getUserName().equals("Server1")) {
+                        LikeCommentHandler likeAction = new LikeCommentHandler(mine, likeMessage, null);
                         likeAction.start();
+                        continue;
                     }
-                    continue;
                 } else if (header.identify() == Packet.COMMENT) {
                     Comment commentMessage = new Comment(newpacket);
                     System.out.println("\n ### Server : Packet == COMMENT -- " + newpacket.toString());
-
-                    if (LoginForm.currentUser.getUserName().equals("Server")) {
-                        LikeCommentHandler commentAction = new LikeCommentHandler(null, commentMessage);
+                    if (LoginForm.currentUser.getUserName().equals("Server") || LoginForm.currentUser.getUserName().equals("Server1")) {
+                        LikeCommentHandler commentAction = new LikeCommentHandler(mine, null, commentMessage);
                         commentAction.start();
+                        continue;
                     }
-                    continue;
+                } else if (header.identify() == Packet.REQ_LIKECOMMENT) {
+                    Comment commentMessage = new Comment(newpacket);
+                    System.out.println("\n ### Server : Packet == REQ_LIKECOMMENT -- " + newpacket.toString());
+
+                    if (LoginForm.currentUser.getUserName().equals("Server") || LoginForm.currentUser.getUserName().equals("Server1")) {
+                        LikeCommentHandler commentAction = new LikeCommentHandler(mine, null, commentMessage);
+                        commentAction.start();
+                        continue;
+                    }
+                } else if (header.identify() == Packet.RES_LIKECOMMENT) {
+                    Comment commentMessage = new Comment(newpacket);
+                    System.out.println("\n ### Server : Packet == RES_LIKECOMMENT -- " + newpacket.toString());
+
+                    if (LoginForm.currentUser.getUserName().equals("Server") || LoginForm.currentUser.getUserName().equals("Server1")) {
+                        LikeCommentHandler commentAction = new LikeCommentHandler(mine, null, commentMessage);
+                        commentAction.start();
+                        continue;
+                    }
                 } else {
                     QueryHit queryhit = new QueryHit(newpacket);
                     //  System.out.println("\n ### Server : Packet == QUERYHIT -- " + newpacket.toString());
