@@ -14,27 +14,61 @@ public class LikeCommentListObject {
 
     public LikeCommentListObject() {
     }
-    private boolean isLikeMessage = false;
-    private boolean isCommentMessage = false;
     private int numLike;
     private int numComment;
-    private Vector<String> userNameLike = new Vector<String>();
-    private Vector<String> comment = new Vector<String>();
+    private String userNameLike;
+    private String comment;
+    private String idUserLike;
 
-    public boolean isIsLikeMessage() {
-        return isLikeMessage;
+    public String getIdUserLike() {
+        return idUserLike;
     }
 
-    public void setIsLikeMessage(boolean isLikeMessage) {
-        this.isLikeMessage = isLikeMessage;
+    public void setIdUserLike(String idUserLike) {
+        this.idUserLike = idUserLike;
     }
 
-    public boolean isIsCommentMessage() {
-        return isCommentMessage;
+    public String getIdUserComment() {
+        return idUserComment;
     }
 
-    public void setIsCommentMessage(boolean isCommentMessage) {
-        this.isCommentMessage = isCommentMessage;
+    public void setIdUserComment(String idUserComment) {
+        this.idUserComment = idUserComment;
+    }
+
+    public String getIdLike() {
+        return idLike;
+    }
+
+    public void setIdLike(String idLike) {
+        this.idLike = idLike;
+    }
+
+    public String getIdComment() {
+        return idComment;
+    }
+
+    public void setIdComment(String idComment) {
+        this.idComment = idComment;
+    }
+    private String idUserComment;
+    private String idLike;
+    private String idComment;
+
+    public String getUserNameLike() {
+        return userNameLike;
+    }
+
+    public void setUserNameLike(String userNameLike) {
+        this.userNameLike = userNameLike;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public int getNumLike() {
@@ -51,21 +85,5 @@ public class LikeCommentListObject {
 
     public void setNumComment(int numComment) {
         this.numComment = numComment;
-    }
-
-    public Vector<String> getUserNameLike() {
-        return userNameLike;
-    }
-
-    public void setUserNameLike(Vector<String> userNameLike) {
-        this.userNameLike = userNameLike;
-    }
-
-    public Vector<String> getComment() {
-        return comment;
-    }
-
-    public void setComment(Vector<String> comment) {
-        this.comment = comment;
     }
 }

@@ -72,47 +72,47 @@ public class Preferences {
         }
     }
 
-    public static void writeToFile() {
+    public static void writeToUserFile(String userID, String userName, long numMessage) {
+        List<String> user = new ArrayList<String>();
         try {
-            PrintWriter fileOut = new PrintWriter(new FileWriter(FILE_NAME));
-            for (int i = 0; i < HostCache.getCount(); i++) {
-                fileOut.println("Host: " + HostCache.hosts[i].getName() + ":" + HostCache.hosts[i].getPort());
-            }
-            fileOut.println("Max-Live: " + MAX_LIVE);
-            fileOut.println("Max-Cache: " + MAX_CACHE);
-            fileOut.println("Auto-Connect: " + AUTO_CONNECT);
-            fileOut.println("Shared-Directory: " + Login.SHAREPATH);
-            fileOut.println("Download-Directory: " + SAVEPATH);
+            BufferedReader fileIn = new BufferedReader(new FileReader(Login.SHAREPATH + "userLogin.txt"));
+            String line;
 
-            System.out.println("Written to file");
+            while ((line = fileIn.readLine()) != null) {
+                String[] check = line.split("-");
+                if (userID.equals(check[0])) {
+                    line = check[0] + "~~" + check[1] + "~~" + numMessage;//line.replace(userName, (userName + "-" + numMessage));
+                    System.out.println(line);
+                }
+                user.add(line);
+                continue;
+            }
+
+            fileIn.close();
+
+            PrintWriter fileOut = new PrintWriter(new FileWriter(Login.SHAREPATH + "userLogin.txt"));
+            for (String i : user) {
+                fileOut.println(i);
+            }
             fileOut.close();
+
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Unable to write to preferences file");
+            System.out.println("Unable to read preferences file");
         }
     }
 
     //////////////////////// byte[] userID, byte prpl, int like, int comment, String cDate, String idGroupFriends, String idGroupSP, String post
-    public static void statusWriteToFilePeer(String messageType, String userID, String userName, byte[] messageID, int prPL, int like, int comment, String createdDate, String groupFriendID, String groupSuPeerID, String statusContent) {
+    public static void statusWriteToFilePeer(String messageType, String userID, String userName, long messageID, int prPL, int like, int comment, String createdDate, String groupFriendID, String groupSuPeerID, String statusContent) {
         try {
             FileWriter fw = new FileWriter(Login.SHAREPATH + userID + ".txt", true);
             BufferedWriter writeStatus = new BufferedWriter(fw);
-            writeStatus.write(messageType + "|MessageID: " + messageID + "|NamePost:" + userName + "|StatusContent:" + statusContent + "|GroupFriendID: " + groupFriendID + "|CreatedDate:" + createdDate + "\n");
-//            writeStatus.write("MessageID: " + messageID + "\n");
-//            writeStatus.write("NamePost: " + userName + "\n");
-//            writeStatus.write("PrPl: " + prPL + "\n");
-//            writeStatus.write("Like: " + like + "\n");
-//            writeStatus.write("Comment: " + comment + "\n");
-//            writeStatus.write("GroupFriendID: " + groupFriendID + "\n");
-//            writeStatus.write("GroupSuperPeerID: " + groupSuPeerID + "\n");
-//            writeStatus.write("StatusContent: " + statusContent + "\n");
-//            writeStatus.write("CreatedDate: " + createdDate + "\n");
+            writeStatus.write(messageType + " ~~PostID: " + messageID + "~~NamePost:" + userName + "~~StatusContent:" + statusContent + "~~GroupFriendID: " + groupFriendID + "~~CreatedDate:" + createdDate + "\n");
 
-            // update list file sharing after write file
             new SharedDirectory(Login.SHAREPATH, Preferences.SAVEPATH);
             System.out.println("Update list sharing file successful");
 
-            writeStatus.newLine();
+            // writeStatus.newLine();
             writeStatus.close();
             System.out.println("Written to file");
         } catch (Exception e) {
@@ -121,18 +121,18 @@ public class Preferences {
         }
     }
 
-    public static void statusWriteToFileSuperPeer(String messageType, String userID, String userName, byte[] messageID, String groupFriendID, String statusContent, String createdDate) {
+    public static void statusWriteToFileSuperPeer(String messageType, String userID, String userName, long messageID, String groupFriendID, String statusContent, String createdDate) {
         try {
             FileWriter fw = new FileWriter(Login.SHAREPATH + userID + ".txt", true);
             BufferedWriter writeStatus = new BufferedWriter(fw);
             System.out.println("########## PREFERENCE: " + messageType);
-            writeStatus.write(messageType + "|PostID: " + messageID + "|NamePost:" + userName + "|StatusContent:" + statusContent + "|GroupFriendID: " + groupFriendID + "|CreatedDate:" + createdDate + "\n");
+            writeStatus.write(messageType + " ~~PostID: " + messageID + "~~NamePost:" + userName + "~~StatusContent:" + statusContent + "~~GroupFriendID: " + groupFriendID + "~~CreatedDate:" + createdDate + "\n");
 
             // update list file sharing after write file
             new SharedDirectory(Login.SHAREPATH, Preferences.SAVEPATH);
             System.out.println("Update list sharing file successful");
 
-            writeStatus.newLine();
+            //  writeStatus.newLine();
             writeStatus.close();
             System.out.println("Written to file");
         } catch (Exception e) {
@@ -141,17 +141,17 @@ public class Preferences {
         }
     }
 
-    public static void likeWriteToFileSuperPeer(String messageType, byte[] postID, byte[] likeID, String idUserPost, String idUserLike, String nameLike) {
+    public static void likeWriteToFileSuperPeer(String messageType, long postID, long likeID, String idUserPost, String idUserLike, String nameLike) {
         try {
             FileWriter fw = new FileWriter(Login.SHAREPATH + idUserPost + ".txt", true);
             BufferedWriter writeStatus = new BufferedWriter(fw);
-            writeStatus.write(messageType + "|PostID: " + postID + "|LikeID: " + likeID + "|IDUserPost:" + idUserPost + "|IDUserLike:" + idUserLike + "|NameUserLike: " + nameLike + "\n");
+            writeStatus.write(messageType + " ~~PostID: " + postID + "~~LikeID: " + likeID + "~~IDUserPost:" + idUserPost + "~~IDUserLike:" + idUserLike + "~~NameUserLike: " + nameLike + "\n");
 
             // update list file sharing after write file
             new SharedDirectory(Login.SHAREPATH, Preferences.SAVEPATH);
             System.out.println("Update list sharing file successful");
 
-            writeStatus.newLine();
+            //writeStatus.newLine();
             writeStatus.close();
             System.out.println("Written to file");
         } catch (Exception e) {
@@ -160,17 +160,17 @@ public class Preferences {
         }
     }
 
-    public static void commentWriteToFileSuperPeer(String messageType, byte[] postID, byte[] commentID, String idUserPost, String idUserComment, String nameComment, String commentContent) {
+    public static void commentWriteToFileSuperPeer(String messageType, long postID, long commentID, String idUserPost, String idUserComment, String nameComment, String commentContent) {
         try {
             FileWriter fw = new FileWriter(Login.SHAREPATH + idUserPost + ".txt", true);
             BufferedWriter writeStatus = new BufferedWriter(fw);
-            writeStatus.write(messageType + "|PostID: " + postID + "|CommentID: " + commentID + "|IDUserPost:" + idUserPost + "|IDUserComment:" + idUserComment + "|NameUserComment: " + nameComment + "|Content of Comment: " + commentContent + "\n");
+            writeStatus.write(messageType + " ~~PostID: " + postID + "~~CommentID: " + commentID + "~~IDUserPost:" + idUserPost + "~~IDUserComment:" + idUserComment + "~~NameUserComment: " + nameComment + "~~Content of Comment: " + commentContent + "\n");
 
             // update list file sharing after write file
             new SharedDirectory(Login.SHAREPATH, Preferences.SAVEPATH);
             System.out.println("Update list sharing file successful");
 
-            writeStatus.newLine();
+            //  writeStatus.newLine();
             writeStatus.close();
             System.out.println("Written to file");
         } catch (Exception e) {
@@ -189,7 +189,7 @@ public class Preferences {
             while ((line = fileIn.readLine()) != null) {
                 Friends user = new Friends();
 
-                String[] userNameID = line.split("-");
+                String[] userNameID = line.split("~~");
 
                 user.setIdUserLogin(userNameID[0]);
                 user.setUserName(userNameID[1]);
@@ -230,39 +230,46 @@ public class Preferences {
         }
     }
 
-    public static LikeCommentListObject readUserFile(String postID, String userPostID, String messageID) {
+    public static LikeCommentListObject readUserFile(long postID, String userPostID) {
         LikeCommentListObject objectLikeComment = new LikeCommentListObject();
         try {
             BufferedReader fileIn = new BufferedReader(new FileReader(Login.SHAREPATH + userPostID + ".txt"));
             String line;
             int counterLike = 0;
             int counterComment = 0;
-            Vector<String> likeName = new Vector<String>();
-            Vector<String> comment = new Vector<String>();
+            String likeName = "";
+            String comment = "";
+            String likeID = "";
+            String commentID = "";
+            String idUserLike = "";
+            String idUserComment = "";
 
             while ((line = fileIn.readLine()) != null) {
-                System.out.println("UserFile line: " + line);
-                if (line.startsWith("LIKE|")) {
-                    String[] itemLine = line.split("|");
-                    if (itemLine[2].substring(8).equals(messageID)) {
-                        objectLikeComment.setIsLikeMessage(true);
-                    }
-                    
-                    if (itemLine[1].substring(11).equals(postID)) {
+//                System.out.println("UserFile line: " + line);
+                if (line.contains("LIKE ")) {
+                    // System.out.println("UserFile line: " + line);
+                    String[] itemLine = line.split("~~");
+                     System.out.println("########## UserFile line: " + itemLine[1].substring(8));
+
+                    if (itemLine[1].substring(8).equals(String.valueOf(postID))) {
                         counterLike++;
-                        likeName.add(0, itemLine[4].substring(14));
+                        likeName = likeName + "\n\n" + itemLine[4].substring(14);
                     }
+                    System.out.println("like id: " + (itemLine[2].substring(8)));
+                    System.out.println("idUserLike : " + itemLine[4].substring(11));
+
+                    likeID += itemLine[2].substring(8) + "~~";
+                    idUserLike += itemLine[4].substring(11) + "~~";
                     continue;
-                } else if (line.startsWith("COMMENT|")) {
-                    String[] itemLine = line.split("|");
-                     if (itemLine[2].substring(11).equals(messageID)) {
-                        objectLikeComment.setIsCommentMessage(true);
-                    }
-                    
-                    if (itemLine[1].substring(11).equals(postID)) {
+                } else if (line.startsWith("COMMENT ")) {
+                    String[] itemLine = line.split("~~");
+                    if (itemLine[1].substring(8).equals(String.valueOf(postID))) {
                         counterComment++;
-                        comment.add(0, ("< " + itemLine[4].substring(17) + " >:  " + itemLine[5].substring(20)));
+                        comment = comment + "< " + itemLine[4].substring(17) + " >:  " + itemLine[5].substring(20) + "\n\n";
+
                     }
+                    commentID += itemLine[2].substring(11) + "~~";
+                    idUserComment += itemLine[4].substring(14) + "~~";
 
                     continue;
                 }
@@ -271,6 +278,10 @@ public class Preferences {
             objectLikeComment.setNumComment(counterComment);
             objectLikeComment.setUserNameLike(likeName);
             objectLikeComment.setComment(comment);
+            objectLikeComment.setIdComment(commentID);
+            objectLikeComment.setIdLike(likeID);
+            objectLikeComment.setIdUserComment(idUserComment);
+            objectLikeComment.setIdUserLike(idUserLike);
 
 
             fileIn.close();

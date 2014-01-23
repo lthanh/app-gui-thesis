@@ -54,7 +54,7 @@ public class QHandler extends Thread
 
 		if (numHits != 0)   //package a query hit to send out if there is at least one query match
 		    {
-			queryID = query.getMessageID();
+//			queryID = query.getMessageID();
 			port = Mine.getPort();
 			myIP = Mine.getIPAddress();
 			speed = Mine.getSpeed();

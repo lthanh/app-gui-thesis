@@ -37,6 +37,7 @@ public  class Login {
 
                     user.setIdUserLogin(userNameID[0]);
                     user.setUserName(userNameID[1]);
+//                    user.setNumMessageSent(Long.parseLong(userNameID[2]));
                     userLogin.add(user);
                     continue;
                 }
