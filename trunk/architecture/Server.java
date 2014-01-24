@@ -2,6 +2,9 @@ package architecture;
 
 import GUI.LoginForm;
 import PeerAction.peerReceivePost;
+import SuperPeerAction.ReqResLikeCmtHanlder;
+import SuperPeerAction.Request_LikeCmt;
+import SuperPeerAction.Respond_LikeCmt;
 import postService.PostHandler;
 import postService.Post;
 import java.io.*;
@@ -21,12 +24,8 @@ class Server extends Thread {
     }
 
     public void run() {
-//        System.out.println("########### SERVER in - " + in);
         while (true) {
             try {
-
-//                System.out.println("SERVER: in value - " + in.available());
-
                 if (in.available() < Packet.HEADER_LENGTH) {
                     continue;
                 }
@@ -39,7 +38,7 @@ class Server extends Thread {
                 Packet header = new Packet(temp);
 
                 if ((header.identify() != Packet.PONG) && (header.identify() != Packet.PING)
-                        && (header.identify() != Packet.QUERY) && (header.identify() != Packet.QUERYHIT) && (header.identify() != Packet.POST && (header.identify() != Packet.LIKE)) && (header.identify() != Packet.COMMENT)) {
+                        && (header.identify() != Packet.QUERY) && (header.identify() != Packet.QUERYHIT) && (header.identify() != Packet.POST && (header.identify() != Packet.LIKE)) && (header.identify() != Packet.COMMENT) && (header.identify() != Packet.REQ_LIKECOMMENT) && (header.identify() != Packet.RES_LIKECOMMENT)) {
                     break; // If the data is not something we expect, die.
                 }
                 byte[] newpacket = new byte[(header.length() + Packet.HEADER_LENGTH)]; /* The syntax here is unfortunate, because headers don't store
@@ -137,23 +136,20 @@ class Server extends Thread {
                         continue;
                     }
                 } else if (header.identify() == Packet.REQ_LIKECOMMENT) {
-                    Comment commentMessage = new Comment(newpacket);
+                    Request_LikeCmt requestMessage = new Request_LikeCmt(newpacket);
                     System.out.println("\n ### Server : Packet == REQ_LIKECOMMENT -- " + newpacket.toString());
-
                     if (LoginForm.currentUser.getUserName().equals("Server") || LoginForm.currentUser.getUserName().equals("Server1")) {
-                        LikeCommentHandler commentAction = new LikeCommentHandler(mine, null, commentMessage);
-                        commentAction.start();
+                        ReqResLikeCmtHanlder requestMessageAction = new ReqResLikeCmtHanlder(requestMessage, null);
+                        requestMessageAction.start();
                         continue;
                     }
                 } else if (header.identify() == Packet.RES_LIKECOMMENT) {
-                    Comment commentMessage = new Comment(newpacket);
+                    Respond_LikeCmt respondMessage = new Respond_LikeCmt(newpacket);
                     System.out.println("\n ### Server : Packet == RES_LIKECOMMENT -- " + newpacket.toString());
 
-                    if (LoginForm.currentUser.getUserName().equals("Server") || LoginForm.currentUser.getUserName().equals("Server1")) {
-                        LikeCommentHandler commentAction = new LikeCommentHandler(mine, null, commentMessage);
-                        commentAction.start();
-                        continue;
-                    }
+                    ReqResLikeCmtHanlder respondMessageAction = new ReqResLikeCmtHanlder(null, respondMessage);
+                    respondMessageAction.start();
+                    continue;
                 } else {
                     QueryHit queryhit = new QueryHit(newpacket);
                     //  System.out.println("\n ### Server : Packet == QUERYHIT -- " + newpacket.toString());

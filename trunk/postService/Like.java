@@ -17,7 +17,7 @@ public class Like extends Packet {
     int index = Packet.HEADER_LENGTH;
 
     public Like(int idPostLength, int idUserPostLength, int idUserLikeLength, String idPost, String idUserPost, String idUserLike, String nameLike) {
-        super(Packet.LIKE, (6 + idPost.length() + idUserPost.length() + idUserLike.length() + nameLike.length()));
+        super(Packet.LIKE, (3 + idPost.length() + idUserPost.length() + idUserLike.length() + nameLike.length()));
 
         // convert idPostLength to byte
         contents[index + 0] = (byte) idPostLength;
@@ -36,7 +36,7 @@ public class Like extends Packet {
         for (e = 0; e < idPost.length(); e++) {
             contents[(e + index + 3)] = tempidPost[e];
         }
-        contents[(e + index + 3)] = 0;
+//        contents[(e + index + 3)] = 0;
 
         System.out.println("Decode idUserPost- " + idUserPost);
         // convert idUserPost to byte  
@@ -46,7 +46,7 @@ public class Like extends Packet {
         for (p = 0; p < idUserPost.length(); p++) {
             contents[(p + index + 3 + idPost.length())] = tempidUserPost[p];
         }
-        contents[(p + index + 3 + idPost.length())] = 0;
+//        contents[(p + index + 3 + idPost.length())] = 0;
 
         System.out.println("Decode idUserLike- " + idUserLike);
 
@@ -57,7 +57,7 @@ public class Like extends Packet {
         for (m = 0; m < idUserLike.length(); m++) {
             contents[(m + index + 3 + idPost.length() + idUserPost.length())] = tempidUserLike[m];
         }
-        contents[(m + index + 3 + idPost.length() + idUserPost.length())] = 0;
+//        contents[(m + index + 3 + idPost.length() + idUserPost.length())] = 0;
 
         System.out.println("Decode nameLike- " + nameLike);
 
@@ -68,7 +68,7 @@ public class Like extends Packet {
         for (b = 0; b < nameLike.length(); b++) {
             contents[(b + index + 3 + idPost.length() + idUserPost.length() + idUserLike.length())] = tempName[b];
         }
-        contents[(b + index + 3 + idPost.length() + idUserPost.length() + idUserLike.length())] = 0;
+//        contents[(b + index + 3 + idPost.length() + idUserPost.length() + idUserLike.length())] = 0;
 
 
         System.out.println("###################### DECODE ");
@@ -163,7 +163,7 @@ public class Like extends Packet {
 
     public String getNameLike() {
         String nameLike = "";
-        for (int i = (index + 3 + getIDPostLength() + getIDUserPostLength() + getIDUserLikeLength()); i < (contents.length - 3); i++) {
+        for (int i = (index + 3 + getIDPostLength() + getIDUserPostLength() + getIDUserLikeLength()); i < (contents.length); i++) {
             nameLike = nameLike + (char) (contents[i]);
         }
 

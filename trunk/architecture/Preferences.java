@@ -265,7 +265,7 @@ public class Preferences {
                     String[] itemLine = line.split("~~");
                     if (itemLine[1].substring(8).equals(String.valueOf(postID))) {
                         counterComment++;
-                        comment = comment + "< " + itemLine[4].substring(17) + " >:  " + itemLine[5].substring(20) + "\n\n";
+                        comment = comment + "< " + itemLine[5].substring(17) + " >:  " + itemLine[6].substring(20) + "\n\n";
 
                     }
                     commentID += itemLine[2].substring(11) + "~~";

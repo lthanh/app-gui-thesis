@@ -68,12 +68,5 @@ public class PongHandler extends Thread {
 
         }
     }
-//    public boolean checkFriendListToShow(Vector<Friends> objectFriend, String pongFriend) {
-//        for (int i = 0; i < objectFriend.size(); i++) {
-//            if (objectFriend.get(i).getUserName().equals(pongFriend)) {
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
+
 }

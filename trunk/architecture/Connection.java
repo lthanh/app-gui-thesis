@@ -28,8 +28,8 @@ public class Connection
     this.socket = socket;
     this.type = type;
     
-    int port = socket.getPort();
-//    int port = 6346;
+//    int port = socket.getPort();
+    int port = 6346;
     byte[] ipbytes = socket.getInetAddress().getAddress();
     
     // Cat chuoi IP byte ra dang decimal *****************************************************
