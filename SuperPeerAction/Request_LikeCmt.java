@@ -6,6 +6,8 @@ package SuperPeerAction;
 
 import architecture.IPAddress;
 import architecture.Packet;
+import architecture.Preferences;
+import java.nio.ByteBuffer;
 
 /**
  *
@@ -13,11 +15,115 @@ import architecture.Packet;
  */
 public class Request_LikeCmt extends Packet {
 
-    public Request_LikeCmt(int port, IPAddress ip, int idUserIDReqLength, String idUserIDReq, String postIDReq ) {
-        super(Packet.REQ_LIKECOMMENT, (8 + idUserIDReq.length() + postIDReq.length()));
+    int index = Packet.HEADER_LENGTH;
+
+    public Request_LikeCmt(int port, IPAddress ip, long postIDReq, String idUserIDReq) {
+        super(Packet.REQ_LIKECOMMENT, (22 + idUserIDReq.length()));
+
+        // convert port to two bytes
+//        System.out.println("\nPONG: port before - " + port);
+        ByteBuffer bBPort = ByteBuffer.allocate(2);
+        bBPort.putShort((short) port);
+        byte[] bytePort = bBPort.array();
+
+        contents[index + 0] = bytePort[0];
+        contents[index + 1] = bytePort[1];
+
+        // convert ip address to 4 bytes; need to check format of ip
+        // address -- Little Endian????
+        contents[index + 2] = (byte) ip.getFirst();
+        contents[index + 3] = (byte) ip.getSecond();
+        contents[index + 4] = (byte) ip.getThird();
+        contents[index + 5] = (byte) ip.getFourth();
+
+        // convert postIDReq to byte  
+        ByteBuffer bBMessageid = ByteBuffer.allocate(16);
+        bBMessageid.putLong(postIDReq);
+        byte[] bytePostIDReq = bBMessageid.array();
+        for (int h = 0; h < 16; h++) {
+            contents[index + 6 + h] = bytePostIDReq[h];
+        }
+
+
+        // convert idUserIDReqLength
+        // contents[index + 6] = (byte) idUserIDReqLength;
+
+        // convert idUserIDReq to byte  
+        byte[] tempIdUserIDReq = new byte[idUserIDReq.length()];
+        tempIdUserIDReq = idUserIDReq.getBytes();
+        int i;
+        // System.out.println("length: " + idUserIDReq.length());
+        for (i = 0; i < idUserIDReq.length(); i++) {
+            contents[(index + 6 + 16 + i)] = tempIdUserIDReq[i];
+//            System.out.println("userName : [" + i + "]" + contents[(index + 22 + i)]);
+        }
+
+//        contents[(index + 6 + 16 + i)] = 0;
+
+        String idUserIDReqDecode = "";
+        for (int g = (index + 22); g < (contents.length); g++) {
+            idUserIDReqDecode = idUserIDReqDecode + (char) (contents[g]);
+//            System.out.println("userName : [" + g + "]" + contents[(g)]);
+
+        }
+
+//        System.out.println("UserID Insert: " + idUserIDReqDecode);
+//  
+
+
+
+//        byte[] tempPostIDReq = new byte[postIDReq.length()];
+//        tempPostIDReq = postIDReq.getBytes();
+//        int l;
+//        for (l = 0; l < postIDReq.length(); l++) {
+//            contents[(index + l + 7 + idUserIDReq.length())] = tempPostIDReq[l];
+////            System.out.println("userName : [" + i + "]" + contents[(index + 26 + i)]);
+//        }
+//
+//        contents[(index + l + 7 + idUserIDReq.length())] = 0;
+
     }
 
     public Request_LikeCmt(byte[] rawdata) {
         super(rawdata);
+    }
+
+    public int getPort() {
+//        System.out.println("\nPONG: getUserIDOnline getPort receive - " + port);
+        byte[] bytes = new byte[2];
+        bytes[0] = contents[index + 0];
+        bytes[1] = contents[index + 1];
+        ByteBuffer wrapped = ByteBuffer.wrap(bytes);
+//        System.out.println("getPort after: " + wrapped.getInt());
+        return (int) wrapped.getShort();
+    }
+
+    public IPAddress getIP() {
+//        System.out.println("\nPONG: getIP receive - " + (new IPAddress((contents[index + 2] & 0xff), (contents[index + 3] & 0xff), (contents[index + 4] & 0xff), (contents[index + 5] & 0xff), getPort())));
+        return (new IPAddress((contents[index + 2] & 0xff), (contents[index + 3] & 0xff), (contents[index + 4] & 0xff), (contents[index + 5] & 0xff), getPort()));
+    }
+
+//    public int getIdUserIDReqLength() {
+////        System.out.println("POST -CDateLength: " + (contents[index + 16 + 0]));
+//        return (contents[index + 6]);
+//    }
+    public long getPostIDReq() {
+        byte[] bytes = new byte[16];
+        for (int i = 0; i < 16; i++) {
+            bytes[i] = contents[index + 6 + i];
+        }
+
+        ByteBuffer wrapped = ByteBuffer.wrap(bytes);
+        return wrapped.getLong(0);
+    }
+
+    public String getIdUserIDReq() {
+        String idUserIDReq = "";
+        for (int i = (index + 22); i < (contents.length); i++) {
+            idUserIDReq = idUserIDReq + (char) (contents[i]);
+        }
+
+//        System.out.println("POST -userName: " + userName);
+        return idUserIDReq;
     }
 }

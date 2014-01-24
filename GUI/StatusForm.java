@@ -1,5 +1,7 @@
 package GUI;
 
+import SuperPeerAction.ReqResLikeCmtHanlder;
+import SuperPeerAction.SaveLikeCmtAction;
 import architecture.NetworkManager;
 import architecture.Preferences;
 import java.awt.Dimension;
@@ -7,6 +9,7 @@ import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Vector;
+import javax.swing.JLabel;
 import postService.Comment;
 import postService.Like;
 import postService.LikeCommentListObject;
@@ -20,7 +23,7 @@ import postService.LikeCommentListObject;
  * @author admin
  */
 public class StatusForm extends javax.swing.JFrame {
-    
+
     public static Vector<String> listStoreComment = new Vector<String>();
     public static String useIDLogin = LoginForm.currentUser.getIdUserLogin();
 //    public byte[] userIDLOGINBYTE = new byte[16];
@@ -29,14 +32,22 @@ public class StatusForm extends javax.swing.JFrame {
     public static String userNameLoginString = LoginForm.currentUser.getUserName();
     public static String postID = "";
     public static String userIDPost = "";
-    
+
     public StatusForm() {
         initComponents();
         setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
         txtContentPopUp.disable();
-        
+
+//        JLabel temp = new JLabel("Loading");
+//        JLabel t = new JLabel(temp.getText());
+//        t.add((new JLabel(".")));
+//        t.add((new JLabel("..")));
+//        t.add((new JLabel("...")));
+//        t.add((new JLabel("....")));
+//        loading.setText(t.getText());
+
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -48,25 +59,28 @@ public class StatusForm extends javax.swing.JFrame {
         lbComment = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         btnComment = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        txtComment = new javax.swing.JTextPane();
         jScrollPane3 = new javax.swing.JScrollPane();
         listComment = new javax.swing.JList();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtContentPopUp = new javax.swing.JTextPane();
         lbMessageID = new javax.swing.JLabel();
         lbIDUserPost = new javax.swing.JLabel();
+        loading = new javax.swing.JLabel();
+        lbLoading = new javax.swing.JLabel();
+        txtComment = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(400, 362));
         setResizable(false);
 
-        lbUseName.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        lbUseName.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
         lbUseName.setForeground(new java.awt.Color(0, 51, 255));
         lbUseName.setText("jLabel1");
 
+        lbLike.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         lbLike.setText("jLabel2");
 
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel4.setText("Like");
 
         btnLike.setText("LIKE");
@@ -76,8 +90,10 @@ public class StatusForm extends javax.swing.JFrame {
             }
         });
 
+        lbComment.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         lbComment.setText("jLabel3");
 
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel5.setText("Comment");
 
         btnComment.setText("COMMENT");
@@ -87,16 +103,21 @@ public class StatusForm extends javax.swing.JFrame {
             }
         });
 
+        listComment.setBackground(new java.awt.Color(240, 240, 240));
+        listComment.setFixedCellHeight(25);
+        jScrollPane3.setViewportView(listComment);
+
+        jScrollPane1.setViewportView(txtContentPopUp);
+
+        lbLoading.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        lbLoading.setForeground(new java.awt.Color(255, 153, 0));
+        lbLoading.setText("Loading ...");
+
         txtComment.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtCommentKeyPressed(evt);
             }
         });
-        jScrollPane2.setViewportView(txtComment);
-
-        jScrollPane3.setViewportView(listComment);
-
-        jScrollPane1.setViewportView(txtContentPopUp);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -106,35 +127,38 @@ public class StatusForm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
+                    .addComponent(jScrollPane3)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnLike, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lbLike)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel4)))
-                        .addGap(59, 59, 59)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lbComment)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel5))
-                            .addComponent(btnComment, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(90, 90, 90))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane3)
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jScrollPane2)
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lbUseName, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(58, 58, 58)
+                        .addComponent(lbUseName, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(lbLoading)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lbMessageID)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(lbIDUserPost)
-                        .addGap(35, 35, 35))))
+                        .addGap(35, 35, 35))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(68, 68, 68)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lbLike)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel4))
+                            .addComponent(btnLike, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(loading)
+                        .addGap(85, 85, 85)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lbComment)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnComment, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(58, 58, 58))))
+                    .addComponent(txtComment))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -143,28 +167,33 @@ public class StatusForm extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbUseName, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lbMessageID)
-                    .addComponent(lbIDUserPost))
+                    .addComponent(lbIDUserPost)
+                    .addComponent(lbLoading))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lbLike)
-                            .addComponent(jLabel4))
-                        .addGap(12, 12, 12)
-                        .addComponent(btnLike))
+                        .addGap(0, 22, Short.MAX_VALUE)
+                        .addComponent(loading))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lbComment)
-                            .addComponent(jLabel5))
-                        .addGap(12, 12, 12)
-                        .addComponent(btnComment)))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(lbLike)
+                                .addComponent(jLabel4))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(lbComment)
+                                .addComponent(jLabel5)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnComment)
+                    .addComponent(btnLike))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(txtComment, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         pack();
@@ -176,7 +205,7 @@ public class StatusForm extends javax.swing.JFrame {
         if (btnLike.isEnabled()) {
             btnLike.setEnabled(false);
         }
-        
+
         postID = lbMessageID.getText();
         userIDPost = lbIDUserPost.getText(); //LIKE : postID- [B@75225918
 
@@ -184,50 +213,60 @@ public class StatusForm extends javax.swing.JFrame {
         System.out.println("LIKE : userIDPostBYTE - " + userIDPost);
         System.out.println("LIKE : userIDLOGINBYTE - " + useIDLogin);
         System.out.println("LIKE : userNameLoginString - " + userNameLoginString);
-        
-        
-        
+
+
+
         Like likeMessage = new Like(postID.length(), userIDPost.length(), useIDLogin.length(), postID, userIDPost, useIDLogin, userNameLoginString);
+        (new SaveLikeCmtAction()).saveLikeSuperPeer(likeMessage);
+
         System.out.println("######### LIKE before: " + likeMessage);
         System.out.println("######### LIKE getIdPost: " + likeMessage.getIdPost());
         System.out.println("######### LIKE getIdUserLike: " + likeMessage.getIdUserLike());
         System.out.println("######### LIKE getIdUserPost: " + likeMessage.getIdUserPost());
         System.out.println("######### LIKE getNameLike: " + likeMessage.getNameLike());
         System.out.println("######### LIKE getLikeTypeString: " + likeMessage.getLikeTypeString(likeMessage.getPayload()));
-        
-        
+
+
         NetworkManager.writeToAll(likeMessage);
-        
-        
-        
-        
+
+
+
+
     }//GEN-LAST:event_btnLikeActionPerformed
-    
+
     private void btnCommentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCommentActionPerformed
         // TODO add your handling code here:
-        postID = lbMessageID.getText();
-        userIDPost = lbIDUserPost.getText();
-        
-        System.out.println("LIKE : postIDBYTE - " + postID);
-        System.out.println("LIKE : userIDPostBYTE - " + userIDPost);
-        System.out.println("LIKE : userIDLOGINBYTE - " + useIDLogin);
-        System.out.println("LIKE : userNameLoginString - " + userNameLoginString);
-        
-        
-        
-        Comment commentMessage = new Comment(postID.length(), userIDPost.length(), useIDLogin.length(), userNameLoginString.length(), postID, userIDPost, useIDLogin, userNameLoginString, txtComment.getText());
-        System.out.println("######### LIKE before: " + commentMessage);
-        System.out.println("######### LIKE getIdPost: " + commentMessage.getIdPost());
-        System.out.println("######### LIKE getIdUserLike: " + commentMessage.getIdUserComment());
-        System.out.println("######### LIKE getIdUserPost: " + commentMessage.getIdUserPost());
-        System.out.println("######### LIKE getNameLike: " + commentMessage.getNameComment());
-        System.out.println("######### LIKE getLikeTypeString: " + commentMessage.getCommentTypeString(commentMessage.getPayload()));
-        
-        NetworkManager.writeToAll(commentMessage);
+        txtComment.requestFocus();
     }//GEN-LAST:event_btnCommentActionPerformed
-    
+
     private void txtCommentKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCommentKeyPressed
+        // TODO add your handling code here:
         if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+            postID = lbMessageID.getText();
+            userIDPost = lbIDUserPost.getText();
+
+            System.out.println("COMMENT : postIDBYTE - " + postID);
+            System.out.println("COMMENT : userIDPostBYTE - " + userIDPost);
+            System.out.println("COMMENT : userIDLOGINBYTE - " + useIDLogin);
+            System.out.println("COMMENT : userNameLoginString - " + userNameLoginString);
+
+            Comment commentMessage = new Comment(postID.length(), userIDPost.length(), useIDLogin.length(), userNameLoginString.length(), postID, userIDPost, useIDLogin, userNameLoginString, txtComment.getText());
+            (new SaveLikeCmtAction()).saveCommentSuperPeer(commentMessage);
+            String commentCurrently = "< " + commentMessage.getNameComment() + " >:  " + commentMessage.getComment();
+            ReqResLikeCmtHanlder.comment.add(0, commentCurrently);
+            listComment.setListData(ReqResLikeCmtHanlder.comment);
+            //                         comment = comment + "< " + itemLine[5].substring(17) + " >:  " + itemLine[6].substring(20) + "\n\n";
+
+
+            System.out.println("######### COMMENT before: " + commentMessage);
+            System.out.println("######### COMMENT getIdPost: " + commentMessage.getIdPost());
+            System.out.println("######### COMMENT getIdUserLike: " + commentMessage.getIdUserComment());
+            System.out.println("######### COMMENT getIdUserPost: " + commentMessage.getIdUserPost());
+            System.out.println("######### COMMENT getNameLike: " + commentMessage.getNameComment());
+            System.out.println("######### COMMENT getLikeTypeString: " + commentMessage.getCommentTypeString(commentMessage.getPayload()));
+
+            NetworkManager.writeToAll(commentMessage);
+            txtComment.setText("");
         }
     }//GEN-LAST:event_txtCommentKeyPressed
 
@@ -261,15 +300,15 @@ public class StatusForm extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                
+
                 StatusForm s = new StatusForm();
                 s.setVisible(true);
-                
-                
+
+
             }
         });
-        
-        
+
+
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public static javax.swing.JButton btnComment;
@@ -277,15 +316,16 @@ public class StatusForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     public static javax.swing.JLabel lbComment;
     public static javax.swing.JLabel lbIDUserPost;
     public static javax.swing.JLabel lbLike;
+    public static javax.swing.JLabel lbLoading;
     public static javax.swing.JLabel lbMessageID;
     public static javax.swing.JLabel lbUseName;
     public static javax.swing.JList listComment;
-    public static javax.swing.JTextPane txtComment;
+    private javax.swing.JLabel loading;
+    public static javax.swing.JTextField txtComment;
     public static javax.swing.JTextPane txtContentPopUp;
     // End of variables declaration//GEN-END:variables
 }

@@ -96,7 +96,7 @@ public class SharedDirectory {
     }
 
     public static String getListFileIDSaving() {
-        System.out.println("\n SHARE: " + listFileIDSaving);
+//        System.out.println("\n SHARE: " + listFileIDSaving);
         return (listFileIDSaving);
     }
 }

@@ -30,16 +30,16 @@ public class NetworkManager {
         for (int i = 0; i < HostArray.getCount(); i++) {
             Connection c = HostArray.getConnection(i);
             try {
-                if (packet.getPayload() == 2) {
-                    System.out.println("POST CONTENT: Payload - " + packet.getPayload() + " Content: " + packet.contents().toString());
-                    System.out.println("POST Content LENGTH: " + packet.contents.length);
-                    System.out.println("POST TOTAL LENGTH: " + packet.totalLength());
-                }
-                if (packet.getPayload() == 3) {
-                    System.out.println("LIKE CONTENT: Payload - " + packet.getPayload() + " Content: " + packet.contents().toString());
-                    System.out.println("LIKE Content LENGTH: " + packet.contents.length);
-                    System.out.println("LIKE TOTAL LENGTH: " + packet.totalLength());
-                }
+//                if (packet.getPayload() == 2) {
+//                    System.out.println("POST CONTENT: Payload - " + packet.getPayload() + " Content: " + packet.contents().toString());
+//                    System.out.println("POST Content LENGTH: " + packet.contents.length);
+//                    System.out.println("POST TOTAL LENGTH: " + packet.totalLength());
+//                }
+//                if (packet.getPayload() == 3) {
+//                    System.out.println("LIKE CONTENT: Payload - " + packet.getPayload() + " Content: " + packet.contents().toString());
+//                    System.out.println("LIKE Content LENGTH: " + packet.contents.length);
+//                    System.out.println("LIKE TOTAL LENGTH: " + packet.totalLength());
+//                }
 
                 c.getByteWriter().write(packet.contents(), 0, packet.totalLength());
                 c.getByteWriter().flush();

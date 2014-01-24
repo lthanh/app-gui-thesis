@@ -10,7 +10,7 @@ public class Pong extends Packet {
     private int index = HEADER_LENGTH;
 
     public Pong(int port, IPAddress ip, String userID, int userNameLength, int listFileIDStoreLength, String listFileIDStore, String userNameOnline, long messageid) {
-        super(Packet.PONG, (30 + listFileIDStore.length() + userNameOnline.length()));
+        super(Packet.PONG, (29 + listFileIDStore.length() + userNameOnline.length()));
         int index = HEADER_LENGTH;
 
 //        for (int i = 0; i < messageid.length; i++) // Pongs need the same Message IDs as the pings that generate them.
@@ -65,7 +65,7 @@ public class Pong extends Packet {
         for (q = 0; q < userID.length(); q++) {
             contents[index + 6 + q] = tempUserID[q];
         }
-        contents[index + 6 + q] = 0;
+//        contents[index + 6 + q] = 0;
 
 
         //  System.out.println("port after: " +(((contents[index + 1] & 0xff) << 8) | (contents[index + 0] & 0xff)));
@@ -126,7 +126,7 @@ public class Pong extends Packet {
 //            System.out.println("\nPONG: listFileIDStore send - [" + i + "] " + contents[(index + i + 29)]);
 //             System.out.println("listFileIDStore Index: " + (index + i + 28));
         }
-        contents[(index + i + 28)] = 0;
+//        contents[(index + i + 28)] = 0;
 
         // convert userNameOnline to byte 
         byte[] tempUserName = new byte[userNameOnline.length()];
@@ -138,7 +138,7 @@ public class Pong extends Packet {
 //            System.out.println("userNameOnline Index: " + (index + i + 28 + listFileIDStore.length()));
             //  System.out.println("\nPONG: userNameOnline send - [" + j + "] " + contents[(index + j + 28 + listFileIDStore.length())]);
         }
-        contents[(index + j + 28 + listFileIDStore.length())] = 0;
+//        contents[(index + j + 28 + listFileIDStore.length())] = 0;
 
 //        AppGUI.numMessageSent++; // count number of message sent at one section to set message id
 

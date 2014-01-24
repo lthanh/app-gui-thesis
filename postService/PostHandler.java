@@ -42,7 +42,7 @@ public class PostHandler extends Thread {
 
     public PostHandler(IPAddress queryIP, Post postMessage) {
         this.postMessage = postMessage;
-        postMessage.setIP(queryIP);  //set IPAddress of query
+        this.postMessage.setIP(queryIP);  //set IPAddress of query
         //  recieveListPost.add(0, postMessage);
         //  showListPost.add(0, Utils.formSHOWSTATUS(postMessage.getUserName(), postMessage.getPostStatusContent(), postMessage.getCreatedDate()));
     }

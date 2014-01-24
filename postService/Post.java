@@ -18,7 +18,7 @@ public class Post extends Packet {
     private int index = HEADER_LENGTH;
 
     public Post(String userID, int cDateLength, int groupdFriendIDLength, int groupdSuperPeerIDLength, int useNameLength, String userNamePost, String cDate, String idGroupFriends, String idGroupSP, String post) {
-        super(Packet.POST, (30 + (userNamePost.length() + post.length() + idGroupFriends.length() + idGroupSP.length() + cDate.length())));
+        super(Packet.POST, (26 + (userNamePost.length() + post.length() + idGroupFriends.length() + idGroupSP.length() + cDate.length())));
 
         //  System.out.println("####### POST : " + getPayload());
         // convert userID to byte array
@@ -36,7 +36,7 @@ public class Post extends Packet {
         for (q = 0; q < userID.length(); q++) {
             contents[index + q] = tempUserID[q];
         }
-        contents[index + q] = 0;
+//        contents[index + q] = 0;
 
 
 
@@ -90,7 +90,7 @@ public class Post extends Packet {
 //            System.out.println("userName : [" + i + "]" + contents[(index + 26 + i)]);
         }
 
-        contents[(index + 26 + i)] = 0;
+//        contents[(index + 26 + i)] = 0;
 
         // convert created date to byte  
         byte[] tempCDate = new byte[cDate.length()];
@@ -99,7 +99,7 @@ public class Post extends Packet {
         for (e = 0; e < cDate.length(); e++) {
             contents[(e + index + 26 + userNamePost.length())] = tempCDate[e];
         }
-        contents[(e + index + 26 + userNamePost.length())] = 0;
+//        contents[(e + index + 26 + userNamePost.length())] = 0;
 
         // convert groupFriendID to byte  
         byte[] gFriendIDtoByte = new byte[idGroupFriends.length()];
@@ -110,7 +110,7 @@ public class Post extends Packet {
         }
 //        System.out.println("Friend ID : " + contents[(k + index + 26 + userNamePost.length() + cDate.length())]);
 
-        contents[(k + index + 26 + userNamePost.length() + cDate.length())] = 0;
+//        contents[(k + index + 26 + userNamePost.length() + cDate.length())] = 0;
 
         // convert groupSuperPeerID  to byte  
         byte[] tempGroupSuperPeerID = new byte[idGroupSP.length()];
@@ -119,17 +119,33 @@ public class Post extends Packet {
         for (y = 0; y < idGroupSP.length(); y++) {
             contents[(y + index + 26 + userNamePost.length() + cDate.length() + idGroupFriends.length())] = tempGroupSuperPeerID[y];
         }
-        contents[(y + index + 26 + userNamePost.length() + cDate.length() + idGroupFriends.length())] = 0;
+//        contents[(y + index + 26 + userNamePost.length() + cDate.length() + idGroupFriends.length())] = 0;
 
 
         // convert postContentTOByte  to byte  
+        System.out.println("post length origi: " + post.length());
         byte[] postContentTOByte = new byte[post.length()];
         postContentTOByte = post.getBytes();
         int u;
         for (u = 0; u < post.length(); u++) {
             contents[(u + index + 26 + userNamePost.length() + cDate.length() + idGroupFriends.length() + idGroupSP.length())] = postContentTOByte[u];
         }
-        contents[(u + index + 26 + userNamePost.length() + cDate.length() + idGroupFriends.length() + idGroupSP.length())] = 0;
+//        contents[(u + index + 26 + userNamePost.length() + cDate.length() + idGroupFriends.length() + idGroupSP.length())] = 0;
+
+        String postT = "";
+//        System.out.println("Content length: " + k);
+        System.out.println("post length decode: " + contents.length);
+        System.out.println("post userNamePost.length() decode: " + userNamePost.length());
+        System.out.println("post cDate.length() decode: " + cDate.length());
+        System.out.println("post idGroupFriends.length() decode: " + idGroupFriends.length());
+        System.out.println("post idGroupSP.length() decode: " + idGroupSP.length());
+
+
+
+        for (int m = (index + 26 + userNamePost.length() + cDate.length() + idGroupFriends.length() + idGroupSP.length()); m < (contents.length); m++) {
+            postT = postT + (char) (contents[m]);
+        }
+        System.out.println("POST -post length get insert: " + postT.length());
 
 //        AppGUI.numMessageSent++; // count number of message sent at one section to set message id
         ip = null;  //initialize IPaddress to null.
@@ -242,10 +258,10 @@ public class Post extends Packet {
         String post = "";
         int k = contents.length;
 //        System.out.println("Content length: " + k);
-        for (int i = (index + 26 + getUserNameLength() + getCDateLength() + getGroupFriendIDLength() + getGroupSuPeerIDLength()); i < (contents.length - 4); i++) {
+        for (int i = (index + 26 + getUserNameLength() + getCDateLength() + getGroupFriendIDLength() + getGroupSuPeerIDLength()); i < (contents.length); i++) {
             post = post + (char) (contents[i]);
         }
-//        System.out.println("POST -post: " + post);
+        System.out.println("POST -post length receive: " + post.length());
         return post;
     }
 

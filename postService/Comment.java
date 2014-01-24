@@ -21,7 +21,7 @@ public class Comment extends Packet {
 // (int idPostLength, int idUserPostLength, int idUserLikeLength, String idPost, String idUserPost, String idUserLike, String nameLike)
 
     public Comment(int idPostLength, int idUserPostLength, int idUserCommentLength, int nameCommentLength, String idPost, String idUserPost, String idUserComment, String nameComment, String commentContent) {
-        super(Packet.COMMENT, (8 + idPost.length() + idUserPost.length() + idUserComment.length() + nameComment.length() + commentContent.length()));
+        super(Packet.COMMENT, (4 + idPost.length() + idUserPost.length() + idUserComment.length() + nameComment.length() + commentContent.length()));
 
         // convert idPostLength to byte
         contents[index + 0] = (byte) idPostLength;
@@ -43,7 +43,7 @@ public class Comment extends Packet {
         for (e = 0; e < idPost.length(); e++) {
             contents[(e + index + 4)] = tempidPost[e];
         }
-        contents[(e + index + 4)] = 0;
+//        contents[(e + index + 4)] = 0;
 
         // convert idUserPost to byte  
         byte[] tempidUserPost = new byte[idUserPost.length()];
@@ -52,7 +52,7 @@ public class Comment extends Packet {
         for (p = 0; p < idUserPost.length(); p++) {
             contents[(p + index + 4 + idPost.length())] = tempidUserPost[p];
         }
-        contents[(p + index + 4 + idPost.length())] = 0;
+//        contents[(p + index + 4 + idPost.length())] = 0;
 
         // convert idUserComment to byte  
         byte[] tempIdUserComment = new byte[idUserComment.length()];
@@ -61,7 +61,7 @@ public class Comment extends Packet {
         for (m = 0; m < idUserComment.length(); m++) {
             contents[(m + index + 4 + idPost.length() + idUserPost.length())] = tempIdUserComment[m];
         }
-        contents[(m + index + 4 + idPost.length() + idUserPost.length())] = 0;
+//        contents[(m + index + 4 + idPost.length() + idUserPost.length())] = 0;
 
         // convert nameComment to byte  
         byte[] tempName = new byte[nameComment.length()];
@@ -70,7 +70,7 @@ public class Comment extends Packet {
         for (b = 0; b < nameComment.length(); b++) {
             contents[(b + index + 4 + idPost.length() + idUserPost.length() + idUserComment.length())] = tempName[b];
         }
-        contents[(b + index + 4 + idPost.length() + idUserPost.length() + idUserComment.length())] = 0;
+//        contents[(b + index + 4 + idPost.length() + idUserPost.length() + idUserComment.length())] = 0;
 
 // convert comment to byte  
         byte[] tempCommentContent = new byte[commentContent.length()];
@@ -79,7 +79,7 @@ public class Comment extends Packet {
         for (g = 0; g < commentContent.length(); g++) {
             contents[(g + index + 4 + idPost.length() + idUserPost.length() + idUserComment.length() + nameComment.length())] = tempCommentContent[g];
         }
-        contents[(g + index + 4 + idPost.length() + idUserPost.length() + idUserComment.length() + nameComment.length())] = 0;
+//        contents[(g + index + 4 + idPost.length() + idUserPost.length() + idUserComment.length() + nameComment.length())] = 0;
 
 //        AppGUI.numMessageSent++; // count number of message sent at one section to set message id
         ip = null;
