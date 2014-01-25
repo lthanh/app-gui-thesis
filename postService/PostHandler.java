@@ -3,7 +3,8 @@ package postService;
 import architecture.*;
 import postService.Post;
 import GUI.AppGUI;
-import PeerAction.peerReceivePost;
+import PeerAction.*;
+import SuperPeerAction.PostObject;
 import architecture.*;
 import static architecture.Preferences.friendList;
 import static architecture.Preferences.peerManageList;
@@ -37,32 +38,38 @@ public class PostHandler extends Thread {
     ResultSet result;
     byte[] serventID;
     byte[] queryID;
-    public static Vector<Post> recieveListPost = new Vector<Post>(); // receive listPost from friends
+    public static Vector<PostObject> recieveListPost = new Vector<PostObject>(); // receive listPost from friends
     public static Vector<String> showListPost = new Vector<String>();
-
+    
     public PostHandler(IPAddress queryIP, Post postMessage) {
         this.postMessage = postMessage;
         this.postMessage.setIP(queryIP);  //set IPAddress of query
         //  recieveListPost.add(0, postMessage);
         //  showListPost.add(0, Utils.formSHOWSTATUS(postMessage.getUserName(), postMessage.getPostStatusContent(), postMessage.getCreatedDate()));
     }
-
+    
     public void run() {
-
-
+        
+        
         boolean isFriends = serverCheckListFriendorPeer(postMessage, Preferences.idFriendsListString);
         boolean isPeer = serverCheckListFriendorPeer(postMessage, Preferences.peerManageList);
-
+        
         if (isFriends) { // if friend,show on news feed.
-            peerReceivePost peerReceivePost = new peerReceivePost();
-            peerReceivePost.receivePost(postMessage);
+            PostObject post = new PostObject();
+            post.setNamePost(postMessage.getUserName());
+            post.setPostID(postMessage.getMessageID());
+            post.setContentPost(postMessage.getPostStatusContent());
+            post.setGroupID(postMessage.getGroupFriendID());
+            post.setCreatedDate(postMessage.getCreatedDate());
+            post.setUserIDPost(postMessage.getUserID());
+            (new peerReceivePost()).receivePost(post);
         }
-
+        
         if (isPeer) {
             //  System.out.println("PostHandler: " + postMessage.getPayload() + "\n");
             Preferences.statusWriteToFileSuperPeer(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), postMessage.getGroupFriendID(), postMessage.getPostStatusContent(), postMessage.getCreatedDate());
         }
-
+        
         NetworkManager.writeButOne(postMessage.getIP(), postMessage);  // Query is forwarded to all connected nodes except one from which query came.
 
 
@@ -79,9 +86,9 @@ public class PostHandler extends Thread {
 //        queryHit = new QueryHit(numHits, port, myIP, speed, searchResult, serventID, queryID);
         //  NetworkManager.writeToOne(postMessage.getIP(), queryHit);  //send qHit back to node that sent original query
 
-
+        
     }
-
+    
     public static boolean serverCheckListFriendorPeer(Post post, Vector<String> listPeerOrFriend) {
         String userPostID = post.getUserID();
         for (int i = 0; i < listPeerOrFriend.size(); i++) {
@@ -91,7 +98,7 @@ public class PostHandler extends Thread {
         }
         return false;
     }
-
+    
     public static boolean checkListFriendORPeerInPong(Pong pong, Vector<String> listPeerOrFriend) {
         String userPongID = pong.getUserIDOnline();
         for (int i = 0; i < listPeerOrFriend.size(); i++) {

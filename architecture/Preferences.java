@@ -1,5 +1,6 @@
 package architecture;
 
+import SuperPeerAction.PostObject;
 import java.io.*;
 import java.util.*;
 import postService.LikeCommentListObject;
@@ -249,7 +250,7 @@ public class Preferences {
                 if (line.contains("LIKE ")) {
                     // System.out.println("UserFile line: " + line);
                     String[] itemLine = line.split("~~");
-                     System.out.println("########## UserFile line: " + itemLine[1].substring(8));
+                    System.out.println("########## UserFile line: " + itemLine[1].substring(8));
 
                     if (itemLine[1].substring(8).equals(String.valueOf(postID))) {
                         counterLike++;
@@ -290,5 +291,26 @@ public class Preferences {
             System.out.println("Unable to read preferences file");
         }
         return objectLikeComment;
+    }
+
+    public static String readUserPOST(String userPostID) {
+        String listPost = "";
+        try {
+            BufferedReader fileIn = new BufferedReader(new FileReader(Login.SHAREPATH + userPostID + ".txt"));
+            String line;
+
+            while ((line = fileIn.readLine()) != null) {
+                if (line.contains("POST ")) {
+                    listPost = listPost + line + "\n\n";
+                    continue;
+                }
+            }
+            fileIn.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Unable to read preferences file");
+        }
+
+        return listPost;
     }
 }
