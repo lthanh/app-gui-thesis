@@ -9,6 +9,7 @@ import PeerAction.checkUserOnlineAction;
 import PeerAction.peerReceivePost;
 import SuperPeerAction.PostObject;
 import SuperPeerAction.Request_LikeCmt;
+import SuperPeerAction.Request_NewsFeed;
 import SuperPeerAction.Request_Profile;
 import SuperPeerAction.RespondStatusFormObject;
 import java.awt.event.ActionEvent;
@@ -332,6 +333,15 @@ public class AppGUI extends javax.swing.JFrame {
 
     private void btnFeedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFeedActionPerformed
         // TODO add your handling code here:
+        System.out.println("ONCLICK Feed Before");
+        PostHandler.recieveListPost.removeAllElements();
+        PostHandler.showListPost.removeAllElements();
+        listStatus.setListData(new Object[0]);
+
+        Request_NewsFeed requestFeed = new Request_NewsFeed(Mine.getPort(), Mine.getIPAddress(), LoginForm.currentUser.getIdUserLogin());
+        NetworkManager.writeToAll(requestFeed);
+        System.out.println("ONCLICK Feed After");
+
     }//GEN-LAST:event_btnFeedActionPerformed
 
     private void btnSettingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSettingActionPerformed
@@ -501,8 +511,8 @@ public class AppGUI extends javax.swing.JFrame {
         if (!textPost.trim().isEmpty()) {
             txtStatus.setText(null);
             String createdate = Utils.formatDate(new Date());
-            String friend = "12121212-21212121212";
-            String groupdSuperPeerID = "192.168.0.110:6346;192.168.0.120:6346"; // ignore
+            String friend = "9999999999999999~~0000000000000000~~1111111111111111~~5555555555555555~~8888888888888888";
+            String groupdSuperPeerID = "9999999999999999~~0000000000000000"; // ignore
             int liked = 0;
             int commented = 0;
 

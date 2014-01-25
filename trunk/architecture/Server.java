@@ -2,12 +2,15 @@ package architecture;
 
 import GUI.LoginForm;
 import PeerAction.peerReceivePost;
+import SuperPeerAction.NewsFeedHandler;
 import SuperPeerAction.PostObject;
 import SuperPeerAction.ReqResLikeCmtHanlder;
 import SuperPeerAction.ReqRes_ProfileHandler;
 import SuperPeerAction.Request_LikeCmt;
+import SuperPeerAction.Request_NewsFeed;
 import SuperPeerAction.Request_Profile;
 import SuperPeerAction.Respond_LikeCmt;
+import SuperPeerAction.Respond_NewsFeed;
 import SuperPeerAction.Respond_Profile;
 import postService.PostHandler;
 import postService.Post;
@@ -16,6 +19,8 @@ import java.net.*;
 import postService.Comment;
 import postService.Like;
 import postService.LikeCommentHandler;
+import static postService.PostHandler.checkGroupFriendIDPost;
+import static postService.PostHandler.serverCheckListFriendorPeer;
 
 class Server extends Thread {
 
@@ -42,7 +47,7 @@ class Server extends Thread {
                 Packet header = new Packet(temp);
 
                 if ((header.identify() != Packet.PONG) && (header.identify() != Packet.PING)
-                        && (header.identify() != Packet.QUERY) && (header.identify() != Packet.QUERYHIT) && (header.identify() != Packet.POST && (header.identify() != Packet.LIKE)) && (header.identify() != Packet.COMMENT) && (header.identify() != Packet.REQ_LIKECOMMENT) && (header.identify() != Packet.RES_LIKECOMMENT) && (header.identify() != Packet.REQ_PROFILE) && (header.identify() != Packet.RES_PROFILE)) {
+                        && (header.identify() != Packet.QUERY) && (header.identify() != Packet.QUERYHIT) && (header.identify() != Packet.POST && (header.identify() != Packet.LIKE)) && (header.identify() != Packet.COMMENT) && (header.identify() != Packet.REQ_LIKECOMMENT) && (header.identify() != Packet.RES_LIKECOMMENT) && (header.identify() != Packet.REQ_PROFILE) && (header.identify() != Packet.RES_PROFILE) && (header.identify() != Packet.REQ_NewsFeed) && (header.identify() != Packet.RES_NewsFeed)) {
                     break; // If the data is not something we expect, die.
                 }
                 byte[] newpacket = new byte[(header.length() + Packet.HEADER_LENGTH)]; /* The syntax here is unfortunate, because headers don't store
@@ -115,9 +120,12 @@ class Server extends Thread {
                         handler.start();
                         continue;
                     } else {
-                        boolean isPeerFriends = PostHandler.serverCheckListFriendorPeer(postMessage, Preferences.idFriendsListString);
-                        if (isPeerFriends) {
-                            peerReceivePost peerReceive = new peerReceivePost();
+                        String listFriendID = postMessage.getGroupFriendID();
+                        String[] tempListFriendID = listFriendID.split("~~");
+
+                        //boolean isFriends = serverCheckListFriendorPeer(postMessage, Preferences.idFriendsListString);
+                        boolean isFriends = checkGroupFriendIDPost(LoginForm.currentUser.getIdUserLogin(), tempListFriendID);
+                        if (isFriends) { // if friend,show on news feed.
                             PostObject post = new PostObject();
                             post.setNamePost(postMessage.getUserName());
                             post.setPostID(postMessage.getMessageID());
@@ -125,7 +133,7 @@ class Server extends Thread {
                             post.setGroupID(postMessage.getGroupFriendID());
                             post.setCreatedDate(postMessage.getCreatedDate());
                             post.setUserIDPost(postMessage.getUserID());
-                            peerReceive.receivePost(post);
+                            (new peerReceivePost()).receivePost(post);
                         }
                         continue;
                     }
@@ -177,6 +185,22 @@ class Server extends Thread {
                     System.out.println("\n ### Server : Packet == RES_PROFILE -- " + newpacket.toString());
 
                     ReqRes_ProfileHandler respondProfileAction = new ReqRes_ProfileHandler(null, respondMessage);
+                    respondProfileAction.start();
+                    continue;
+                } else if (header.identify() == Packet.REQ_NewsFeed) {
+                    Request_NewsFeed requestMessage = new Request_NewsFeed(newpacket);
+                    System.out.println("\n ### Server : Packet == REQ_NewsFeed -- " + newpacket.toString());
+                    if (LoginForm.currentUser.getUserName().equals("Server") || LoginForm.currentUser.getUserName().equals("Server1")) {
+
+                        NewsFeedHandler requestProfileAction = new NewsFeedHandler(requestMessage, null);
+                        requestProfileAction.start();
+                        continue;
+                    }
+                } else if (header.identify() == Packet.RES_NewsFeed) {
+                    Respond_NewsFeed respondMessage = new Respond_NewsFeed(newpacket);
+                    System.out.println("\n ### Server : Packet == RES_NewsFeed -- " + newpacket.toString());
+
+                    NewsFeedHandler respondProfileAction = new NewsFeedHandler(null, respondMessage);
                     respondProfileAction.start();
                     continue;
                 } else {

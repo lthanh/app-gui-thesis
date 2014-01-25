@@ -10,7 +10,7 @@ public class Pong extends Packet {
     private int index = HEADER_LENGTH;
 
     public Pong(int port, IPAddress ip, String userID, int userNameLength, int listFileIDStoreLength, String listFileIDStore, String userNameOnline, long messageid) {
-        super(Packet.PONG, (29 + listFileIDStore.length() + userNameOnline.length()));
+        super(Packet.PONG, (28 + listFileIDStore.length() + userNameOnline.length()));
         int index = HEADER_LENGTH;
 
 //        for (int i = 0; i < messageid.length; i++) // Pongs need the same Message IDs as the pings that generate them.

@@ -1,5 +1,6 @@
 package architecture;
 
+import GUI.LoginForm;
 import SuperPeerAction.PostObject;
 import java.io.*;
 import java.util.*;
@@ -14,7 +15,7 @@ public class Preferences {
     public static int PINGER_TIME = 10000;
     public static int CONNECTOR_TIME = 10000;
     public static String SAVEPATH = "";
-    public static String ONLINE = " - Online (^^)";
+    public static String ONLINE = " - Online    (^^)";
     public static String OFFLINE = " - Offline";
     public static int COUNTER_OFFLINE = 3;
     public static int COUNTER_ONLINE = 0;
@@ -199,7 +200,7 @@ public class Preferences {
                 } else {
                     user.setStatus(OFFLINE);
                 }
-                
+
                 user.setCountOffline(COUNTER_OFFLINE);
 //                System.out.println("user.setIdUserLogin: " + user.getIdUserLogin());
 //                System.out.println("user.setUserName: " + user.getUserName());
@@ -223,7 +224,6 @@ public class Preferences {
 
             BufferedReader fileIn = new BufferedReader(new FileReader(Login.SHAREPATH + "listPeerSPManage.txt")); // NHi - C:\Users\phatn_000\Desktop\src  Trang - F:\Users\dangphat50\Desktop\src\
             String line;
-
             while ((line = fileIn.readLine()) != null) {
                 peerManageList.add(line);
                 continue; // 
@@ -234,6 +234,28 @@ public class Preferences {
             e.printStackTrace();
             System.out.println("Unable to read listPeerSPManage preferences file");
         }
+    }
+
+    public static String readNewsFeedFile(String userID) {
+        String newsFeed = "";
+        try {
+            BufferedReader fileIn = new BufferedReader(new FileReader(Login.SHAREPATH + userID + "_NewsFeed.txt"));
+            String line;
+            while ((line = fileIn.readLine()) != null) {
+                if (line.contains("POST ")) {
+                    newsFeed = newsFeed + line + "\n\n";
+                    continue;
+                }
+                continue; // 
+            }
+
+            fileIn.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Unable to read readFriend Filepreferences file");
+        }
+
+        return newsFeed;
     }
 
     public static LikeCommentListObject readUserFile(long postID, String userPostID) {
@@ -317,5 +339,24 @@ public class Preferences {
         }
 
         return listPost;
+    }
+
+    public static void writeNewsFeed(String messageType, long postID, String userIDOnline, String idUserPost, String namePost, String statusContent, String createdDate) {
+        try {
+            FileWriter fw = new FileWriter(Login.SHAREPATH + userIDOnline + "_NewsFeed.txt", true);
+            BufferedWriter writeStatus = new BufferedWriter(fw);
+            writeStatus.write(messageType + " ~~PostID: " + postID + "~~IDUserPost:" + idUserPost + "~~NameUserPost: " + namePost + "~~StatusContent:" + statusContent + "~~CreatedDate:" + createdDate + "\n");
+
+            // update list file sharing after write file
+            new SharedDirectory(Login.SHAREPATH, Preferences.SAVEPATH);
+            System.out.println("Update list sharing file successful");
+
+            //writeStatus.newLine();
+            writeStatus.close();
+            System.out.println("Written to file");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Unable to write to preferences file");
+        }
     }
 }
