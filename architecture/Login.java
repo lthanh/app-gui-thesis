@@ -33,7 +33,7 @@ public  class Login {
                 } else {
                     UserLoginObject user = new UserLoginObject();
                     // System.out.println("User line: " + line);
-                    String[] userNameID = line.split("-");
+                    String[] userNameID = line.split("~~");
 
                     user.setIdUserLogin(userNameID[0]);
                     user.setUserName(userNameID[1]);

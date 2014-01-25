@@ -552,7 +552,7 @@ public class AppGUI extends javax.swing.JFrame {
         PostObject postWrite = new PostObject();
         postWrite.setNamePost(postMessage.getUserName());
         postWrite.setPostID(postMessage.getMessageID());
-        postWrite.setContentPost(postMessage.getPostStatusContent());
+        postWrite.setContentPost("<Private> " + postMessage.getPostStatusContent());
         postWrite.setGroupID(postMessage.getGroupFriendID());
         postWrite.setCreatedDate(postMessage.getCreatedDate());
         postWrite.setUserIDPost(postMessage.getUserID());
@@ -560,7 +560,7 @@ public class AppGUI extends javax.swing.JFrame {
         PostHandler.showListPost.add(0, Utils.formSHOWSTATUS(postWrite.getNamePost(), postWrite.getContentPost(), postWrite.getCreatedDate()));
         AppGUI.inform(PostHandler.showListPost);
 
-        Preferences.statusWriteToFilePeer(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prPl, liked, commented, createdate, friend, groupdSuperPeerID, postText);
+        Preferences.statusWriteToFilePeer(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prPl, liked, commented, createdate, friend, groupdSuperPeerID, "<Private>    " + postText);
 
     }
 

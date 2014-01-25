@@ -194,7 +194,12 @@ public class Preferences {
 
                 user.setIdUserLogin(userNameID[0]);
                 user.setUserName(userNameID[1]);
-                user.setStatus(OFFLINE);
+                if (user.getUserName().equals("Quoc Thanh") || user.getUserName().equals("Quynh Dao") || user.getUserName().equals("Thanh Thao") || user.getUserName().equals("Tien Thanh") || user.getUserName().equals("Minh Hieu")) {
+                    user.setStatus(ONLINE);
+                } else {
+                    user.setStatus(OFFLINE);
+                }
+                
                 user.setCountOffline(COUNTER_OFFLINE);
 //                System.out.println("user.setIdUserLogin: " + user.getIdUserLogin());
 //                System.out.println("user.setUserName: " + user.getUserName());
