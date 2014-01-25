@@ -63,40 +63,31 @@ public class ReqResLikeCmtHanlder extends Thread {
         }
         if (respond != null) {
             System.out.println("######## RESPOND");
-
-            comment = new Vector<String>();
-            String commentRespond = respond.getListComment();
-            System.out.println("######## RESPOND commentRespond: " + commentRespond);
-            String[] tempComment = commentRespond.split("\n\n");
-            for (int i = 0; i < tempComment.length; i++) {
-                comment.add(0, tempComment[i]);
-                System.out.println("######## RESPOND commentList: " + tempComment[i]);
-            }
-
             try {
+                comment = new Vector<String>();
+                String commentRespond = respond.getListComment();
+                if (!commentRespond.equals("")) {
+                    System.out.println("######## RESPOND commentRespond: " + commentRespond);
+                    String[] tempComment = commentRespond.split("\n\n");
+                    for (int i = 0; i < tempComment.length; i++) {
+                        comment.add(0, tempComment[i]);
+                        System.out.println("######## RESPOND commentList: " + tempComment[i]);
+                    }
+
+                }
                 if (respond.getPostID() == AppGUI.postSelectedID) {
                     System.out.println("########## RESPOND before show");
                     System.out.println("########## RESPOND respond.getPostID() show :" + respond.getPostID());
                     System.out.println("########## RESPOND respond.getNumLike() show :" + respond.getNumLike());
                     System.out.println("########## RESPOND respond.getNumComment() show :" + respond.getNumComment());
                     System.out.println("########## RESPOND respond.getListUserNameLike() show :" + respond.getListUserNameLike());
-                    if (!comment.isEmpty()) {
-                        for (String i : comment) {
-                            System.out.println("########## RESPOND comment show :" + i);
-                        }
-                    }
-
-                     AppGUI.updateStatusForm(respond.getNumLike(), respond.getNumComment(), respond.getListUserNameLike(), comment);
-//                    AppGUI.statusPOPUP.btnLike.setVisible(true);
-//                    AppGUI.statusPOPUP.btnComment.setVisible(true);
-//                    AppGUI.statusPOPUP.txtComment.setVisible(true);
-//                    AppGUI.statusPOPUP.lbLike.setText(String.valueOf(respond.getNumLike()));
-//                    AppGUI.statusPOPUP.lbComment.setText(String.valueOf(respond.getNumComment()));
-//                    if (!comment.isEmpty()) {
-//                        AppGUI.statusPOPUP.listComment.setListData(comment);
+//                    if (comment.size() > 1) {
+//                        for (String i : comment) {
+//                            System.out.println("########## RESPOND comment show :" + i);
+//                        }
 //                    }
-//                    AppGUI.statusPOPUP.lbLoading.setVisible(false);
-
+                    if (AppGUI.statusPOPUP!=null)
+                    AppGUI.statusPOPUP.updateStatusForm(respond.getNumLike(), respond.getNumComment(), respond.getListUserNameLike(), comment);
                     System.out.println("########## RESPOND after show");
                 }
             } catch (Exception e) {

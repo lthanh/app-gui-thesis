@@ -1,5 +1,6 @@
 package GUI;
 
+import static GUI.AppGUI.statusPOPUP;
 import SuperPeerAction.ReqResLikeCmtHanlder;
 import SuperPeerAction.SaveLikeCmtAction;
 import architecture.NetworkManager;
@@ -10,6 +11,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Vector;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 import postService.Comment;
 import postService.Like;
 import postService.LikeCommentListObject;
@@ -33,18 +35,24 @@ public class StatusForm extends javax.swing.JFrame {
     public static String postID = "";
     public static String userIDPost = "";
 
-    public StatusForm() {
+    public StatusForm(String namePost, String contentPost, int numLike, int comment, Vector<String> tempComment, long postID, String userIDPost) {
         initComponents();
         setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
         txtContentPopUp.disable();
 
-//        JLabel temp = new JLabel("Loading");
-//        JLabel t = new JLabel(temp.getText());
-//        t.add((new JLabel(".")));
-//        t.add((new JLabel("..")));
-//        t.add((new JLabel("...")));
-//        t.add((new JLabel("....")));
-//        loading.setText(t.getText());
+        setTitle(namePost + "'s status");
+        lbUseName.setText(namePost);
+        txtContentPopUp.setText(contentPost);
+        lbLike.setText(String.valueOf(numLike));
+        lbComment.setText(String.valueOf(comment));
+        listComment.setListData(tempComment);
+        lbIDUserPost.hide();
+        lbIDUserPost.setText(userIDPost);
+        lbMessageID.hide();
+        lbMessageID.setText(String.valueOf(postID));
+        btnLike.setVisible(false);
+        btnComment.setVisible(false);
+        txtComment.setVisible(false);
 
     }
 
@@ -171,7 +179,6 @@ public class StatusForm extends javax.swing.JFrame {
                     .addComponent(lbLoading))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 22, Short.MAX_VALUE)
@@ -300,32 +307,54 @@ public class StatusForm extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-
-                StatusForm s = new StatusForm();
-                s.setVisible(true);
-
-
+//                StatusForm s = new StatusForm(String namePost, String contentPost, int numLike, int comment, Vector<String> tempComment, long postID, String userIDPost);
+//                s.setVisible(true);
             }
         });
 
 
     }
+
+    public void updateStatusForm(int numLike, int numComment, String userLike, Vector<String> comment) {
+
+        System.out.println("###### RECEIVE REPOSND");
+        btnLike.setVisible(true);
+        btnComment.setVisible(true);
+        txtComment.setVisible(true);
+        txtComment.repaint();
+        lbLike.setText(String.valueOf(numLike));
+        lbComment.setText(String.valueOf(numComment));
+        if (!comment.isEmpty()) {
+            listComment.setListData(comment);
+        }
+        lbLoading.setVisible(false);
+        invalidate();
+        revalidate();
+        repaint();
+
+//        invalidate();
+//        validate();
+//        repaint();
+
+
+        System.out.println("###### RECEIVE After");
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public static javax.swing.JButton btnComment;
-    public static javax.swing.JButton btnLike;
+    private javax.swing.JButton btnComment;
+    private javax.swing.JButton btnLike;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
-    public static javax.swing.JLabel lbComment;
+    private javax.swing.JLabel lbComment;
     public static javax.swing.JLabel lbIDUserPost;
-    public static javax.swing.JLabel lbLike;
-    public static javax.swing.JLabel lbLoading;
+    private javax.swing.JLabel lbLike;
+    private javax.swing.JLabel lbLoading;
     public static javax.swing.JLabel lbMessageID;
     public static javax.swing.JLabel lbUseName;
-    public static javax.swing.JList listComment;
+    private javax.swing.JList listComment;
     private javax.swing.JLabel loading;
-    public static javax.swing.JTextField txtComment;
+    private javax.swing.JTextField txtComment;
     public static javax.swing.JTextPane txtContentPopUp;
     // End of variables declaration//GEN-END:variables
 }

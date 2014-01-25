@@ -1,6 +1,5 @@
 package GUI;
 
-import static GUI.StatusForm.btnLike;
 import static GUI.StatusForm.postID;
 import static GUI.StatusForm.useIDLogin;
 import static GUI.StatusForm.userNameLoginString;
@@ -13,6 +12,7 @@ import SuperPeerAction.Request_NewsFeed;
 import SuperPeerAction.Request_Profile;
 import SuperPeerAction.RespondStatusFormObject;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Date;
@@ -27,6 +27,9 @@ import javax.swing.text.Element;
 import postService.LikeCommentListObject;
 import postService.Post;
 import postService.PostHandler;
+import static postService.PostHandler.checkGroupFriendIDPost;
+import static postService.PostHandler.checkNewsFeedForPeer;
+import static postService.PostHandler.serverCheckListFriendorPeer;
 
 /*
  * To change this template, choose Tools | Templates
@@ -48,6 +51,7 @@ public class AppGUI extends javax.swing.JFrame {
     public static String idUserSelected = "";
     public static String postContentSelected = "";
     public static StatusForm statusPOPUP;
+    public static boolean isScroll = false;
 
     public AppGUI() {
         initComponents();
@@ -260,6 +264,11 @@ public class AppGUI extends javax.swing.JFrame {
 
         listStatus.setBackground(new java.awt.Color(240, 240, 240));
         listStatus.setFixedCellHeight(50);
+        listStatus.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
+                listStatusMouseWheelMoved(evt);
+            }
+        });
         listStatus.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 listStatusMouseClicked(evt);
@@ -338,7 +347,7 @@ public class AppGUI extends javax.swing.JFrame {
         PostHandler.showListPost.removeAllElements();
         listStatus.setListData(new Object[0]);
 
-        Request_NewsFeed requestFeed = new Request_NewsFeed(Mine.getPort(), Mine.getIPAddress(), LoginForm.currentUser.getIdUserLogin());
+        Request_NewsFeed requestFeed = new Request_NewsFeed(Mine.getPort(), Mine.getIPAddress(), -2, 0, LoginForm.currentUser.getIdUserLogin());
         NetworkManager.writeToAll(requestFeed);
         System.out.println("ONCLICK Feed After");
 
@@ -395,25 +404,32 @@ public class AppGUI extends javax.swing.JFrame {
                 Request_LikeCmt req = new Request_LikeCmt(Mine.getPort(), Mine.getIPAddress(), postSelectedObject.getPostID(), postSelectedObject.getUserIDPost());
                 NetworkManager.writeToAll(req);
                 System.out.println("Send request after");
-
-                // StatusForm statusPOPUP = new StatusForm();
-                statusPOPUP = new StatusForm();
                 Vector<String> tempComment = new Vector<String>();
-                statusPOPUP.setTitle(postSelectedObject.getNamePost() + "'s status");
-                statusPOPUP.lbUseName.setText(postSelectedObject.getNamePost());
-                statusPOPUP.txtContentPopUp.setText(postSelectedObject.getContentPost());
-                statusPOPUP.lbLike.setText("0");
-                statusPOPUP.lbComment.setText("0");
-                statusPOPUP.listComment.setListData(tempComment);
-                long postID = postSelectedObject.getPostID();
-                String userIDPost = postSelectedObject.getUserIDPost();
-                statusPOPUP.lbIDUserPost.hide();
-                statusPOPUP.lbIDUserPost.setText(userIDPost);
-                statusPOPUP.lbMessageID.hide();
-                statusPOPUP.lbMessageID.setText(String.valueOf(postID));
-                statusPOPUP.btnLike.setVisible(false);
-                statusPOPUP.btnComment.setVisible(false);
-                statusPOPUP.txtComment.setVisible(false);
+                // String namePost,String contentPost, Vector<String> tempComment, long postID, String userIDPost
+                statusPOPUP = new StatusForm(postSelectedObject.getNamePost(), postSelectedObject.getContentPost(), 0, 0, tempComment, postSelectedObject.getPostID(), postSelectedObject.getUserIDPost());
+//                statusPOPUP.invalidate();
+//                statusPOPUP.validate();
+//                statusPOPUP.repaint();
+
+                //                statusPOPUP.revalidate();
+//                statusPOPUP.repaint();
+                //new StatusForm());
+//                Vector<String> tempComment = new Vector<String>();
+//                statusPOPUP.setTitle(postSelectedObject.getNamePost() + "'s status");
+//                statusPOPUP.lbUseName.setText(postSelectedObject.getNamePost());
+//                statusPOPUP.txtContentPopUp.setText(postSelectedObject.getContentPost());
+//                statusPOPUP.lbLike.setText("0");
+//                statusPOPUP.lbComment.setText("0");
+//                statusPOPUP.listComment.setListData(tempComment);
+//                long postID = postSelectedObject.getPostID();
+//                String userIDPost = postSelectedObject.getUserIDPost();
+//                statusPOPUP.lbIDUserPost.hide();
+//                statusPOPUP.lbIDUserPost.setText(userIDPost);
+//                statusPOPUP.lbMessageID.hide();
+//                statusPOPUP.lbMessageID.setText(String.valueOf(postID));
+//                statusPOPUP.btnLike.setVisible(false);
+//                statusPOPUP.btnComment.setVisible(false);
+//                statusPOPUP.txtComment.setVisible(false);
                 statusPOPUP.show();
             }
         }
@@ -451,6 +467,18 @@ public class AppGUI extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_listFriendsMouseClicked
+
+    private void listStatusMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_listStatusMouseWheelMoved
+        // TODO add your handling code here:
+        //  listStatus.addMouseWheelListener((new MouseWheelListener));
+        int notches = evt.getWheelRotation();
+        if (notches < 0) { // "Mouse wheel moved UP "
+        } else { // "Mouse wheel moved DOWN "
+            int lastIndex = listStatus.getLastVisibleIndex();
+            Request_NewsFeed requestFeed = new Request_NewsFeed(Mine.getPort(), Mine.getIPAddress(), lastIndex, 1, LoginForm.currentUser.getIdUserLogin()); // 1 = isScroll
+            NetworkManager.writeToAll(requestFeed);
+        }
+    }//GEN-LAST:event_listStatusMouseWheelMoved
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -511,8 +539,8 @@ public class AppGUI extends javax.swing.JFrame {
         if (!textPost.trim().isEmpty()) {
             txtStatus.setText(null);
             String createdate = Utils.formatDate(new Date());
-            String friend = "9999999999999999~~0000000000000000~~1111111111111111~~5555555555555555~~8888888888888888";
-            String groupdSuperPeerID = "9999999999999999~~0000000000000000"; // ignore
+            String friend = "9999999999999999:0000000000000000:1111111111111111:5555555555555555:8888888888888888";
+            String groupdSuperPeerID = "9999999999999999:0000000000000000"; // ignore
             int liked = 0;
             int commented = 0;
 
@@ -543,15 +571,20 @@ public class AppGUI extends javax.swing.JFrame {
         PostHandler.showListPost.add(0, Utils.formSHOWSTATUS(postWrite.getNamePost(), postWrite.getContentPost(), postWrite.getCreatedDate()));
         AppGUI.inform(PostHandler.showListPost);
 
-//        byte[] temp = new byte[16];
-//        for (int i = 0; i < 16; i++) {
-//            temp[i] = userIDLoginToByte[i];
-//        }
-//
-//        String usenID = new String(temp);
-
         // check user to store data
         Preferences.statusWriteToFilePeer(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prpl, like, comment, cDate, idGroupFriends, idGroupSP, post);
+
+        String listFriendID = postMessage.getGroupFriendID();
+        String[] tempListFriendID = listFriendID.split(":");
+
+        // check to save post to news feed users
+        for (int i = 0; i < tempListFriendID.length; i++) {
+            boolean isNewsFeedOfPeer = checkNewsFeedForPeer(tempListFriendID[i], Preferences.peerManageList);
+            if (isNewsFeedOfPeer) {
+                Preferences.writeNewsFeed(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getMessageID(), tempListFriendID[i], postMessage.getUserID(), postMessage.getUserName(), postMessage.getPostStatusContent(), postMessage.getCreatedDate());
+            }
+        }
+
 
         NetworkManager.writeToAll(postMessage);
         addPOST(postMessage);
@@ -572,19 +605,6 @@ public class AppGUI extends javax.swing.JFrame {
 
         Preferences.statusWriteToFilePeer(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prPl, liked, commented, createdate, friend, groupdSuperPeerID, "<Private>    " + postText);
 
-    }
-
-    public static void updateStatusForm(int numLike, int numComment, String userLike, Vector<String> comment) {
-        System.out.println("###### RECEIVE REPOSND");
-        StatusForm.btnLike.setVisible(true);
-        StatusForm.btnComment.setVisible(true);
-        StatusForm.txtComment.setVisible(true);
-        StatusForm.lbLike.setText(String.valueOf(numLike));
-        StatusForm.lbComment.setText(String.valueOf(numComment));
-        if (!comment.isEmpty()) {
-            StatusForm.listComment.setListData(comment);
-        }
-        StatusForm.lbLoading.setVisible(false);
     }
     //////////// END POST MESSAGE
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -68,7 +68,7 @@ public class Preferences {
                 }
             }
             fileIn.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Unable to read preferences file");
         }
@@ -98,7 +98,7 @@ public class Preferences {
             }
             fileOut.close();
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Unable to read preferences file");
         }
@@ -213,7 +213,7 @@ public class Preferences {
             }
 
             fileIn.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Unable to read readFriend Filepreferences file");
         }
@@ -230,32 +230,52 @@ public class Preferences {
             }
 
             fileIn.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Unable to read listPeerSPManage preferences file");
         }
     }
 
-    public static String readNewsFeedFile(String userID) {
-        String newsFeed = "";
+    public static String readNewsFeedFile(String userID, int indexPost) {
+        String newsFeedString = "";
+        List<String> newsFeed = new ArrayList<String>();
         try {
             BufferedReader fileIn = new BufferedReader(new FileReader(Login.SHAREPATH + userID + "_NewsFeed.txt"));
             String line;
+            //  int count = 0;
             while ((line = fileIn.readLine()) != null) {
+                //  count++;
                 if (line.contains("POST ")) {
-                    newsFeed = newsFeed + line + "\n\n";
+                    // newsFeed = newsFeed + line + "\n\n";
+                    newsFeed.add(line);
                     continue;
                 }
-                continue; // 
+                // continue; // 
+            }
+
+            if (newsFeed.size() > 20) {
+                if (indexPost == -2) {
+                    for (int i = newsFeed.size() - 20; i <= newsFeed.size(); i++) {
+                        newsFeedString = newsFeedString + newsFeed.get(i) + "\n\n";
+                    }
+                } else {
+                    for (int i = (indexPost + 1) - 20; i < indexPost; i++) {
+                        newsFeedString = newsFeedString + newsFeed.get(i) + "\n\n";
+                    }
+                }
+            } else {
+                for (int i = 0; i < newsFeed.size(); i++) {
+                    newsFeedString = newsFeedString + newsFeed.get(i) + "\n\n";
+                }
             }
 
             fileIn.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Unable to read readFriend Filepreferences file");
         }
 
-        return newsFeed;
+        return newsFeedString;
     }
 
     public static LikeCommentListObject readUserFile(long postID, String userPostID) {
@@ -313,7 +333,7 @@ public class Preferences {
 
 
             fileIn.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Unable to read preferences file");
         }
@@ -333,7 +353,7 @@ public class Preferences {
                 }
             }
             fileIn.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Unable to read preferences file");
         }
