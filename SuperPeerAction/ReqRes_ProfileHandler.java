@@ -62,13 +62,11 @@ public class ReqRes_ProfileHandler extends Thread {
         }
         if (respond_ProfileMsg != null) {
             peerReceivePost prc = new peerReceivePost();
-
             System.out.println("######## RESPOND");
 
             String userIDInRes = respond_ProfileMsg.getUserIDPost();//respond_ProfileMsg.getListPost().split("\n\n")[0].split("~~")[2].substring(9);
             if (userIDInRes.equals(AppGUI.idUserSelected)) {
 
-                //  listPostVector = new Vector<PostObject>();
                 String listPostRespond = respond_ProfileMsg.getListPost();
 
                 System.out.println("######## RESPOND listPostRespond: " + listPostRespond);
@@ -82,29 +80,11 @@ public class ReqRes_ProfileHandler extends Thread {
                     profileObject.setGroupID(line[4].substring(15));
                     profileObject.setCreatedDate(line[5].substring(12));
                     profileObject.setUserIDPost(respond_ProfileMsg.getUserIDPost());
-//                listPostVector.add(0, profileObject);
                     prc.receivePost(profileObject);
-
-                    //  System.out.println("######## RESPOND commentList: " + listPostVector.get(i));
                 }
-
-
-//                String[] line = respond_ProfileMsg.getListPost().split("\n\n")[0].split("~~");
-//
-//                System.out.println("########## RESPOND before show");
-//                System.out.println("########## RESPOND respond.setPostID() show :" + Long.parseLong(line[1].substring(8)));
-//                System.out.println("########## RESPOND respond.setNamePost() show :" + line[2].substring(9));
-//                System.out.println("########## RESPOND respond.setContentPost() show :" + line[3].substring(14));
-//                System.out.println("########## RESPOND respond.setGroupID() show :" + line[4].substring(15));
-//                System.out.println("########## RESPOND respond.setCreatedDate() show :" + line[5].substring(12));
-
+                
+                // read private message that only store on user device before
                 try {
-
-//                    showListPostProfile(listPostVector);
-//                    AppGUI.inform(listPostStringShow);
-
-
-
                     System.out.println("########## RESPOND after show");
 
                     if (SharedDirectory.listFileIDSaving.contains(AppGUI.idUserSelected)) {
@@ -123,23 +103,14 @@ public class ReqRes_ProfileHandler extends Thread {
                                 profileObject.setGroupID(linePost[4].substring(15));
                                 profileObject.setCreatedDate(linePost[5].substring(12));
                                 profileObject.setUserIDPost(AppGUI.idUserSelected);
-
-                                // listPostVector.add(0, profileObject);
                                 prc.receivePost(profileObject);
-
                             }
                         }
-//                        showListPostProfile(listPostVector);
-//                        AppGUI.inform(listPostStringShow);
-//                        (new peerReceivePost()).receivePost(null);
-
                     }
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-
         }
     }
 

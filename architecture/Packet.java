@@ -18,6 +18,8 @@ public class Packet {
     public static final byte RES_LIKECOMMENT = 6; // Comment message
     public static final byte REQ_PROFILE = 7;
     public static final byte RES_PROFILE = 8;
+    public static final byte REQ_NewsFeed = 9;
+    public static final byte RES_NewsFeed = 10;
     public static final byte TTL = 7; // Standard Time to Live for a new packet
     public static final byte HOPS = 0; // All new packets start at zero hops
     protected byte[] contents;
