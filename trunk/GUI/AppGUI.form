@@ -238,6 +238,9 @@
                 <Property name="alignmentY" type="float" value="0.0"/>
                 <Property name="fixedCellHeight" type="int" value="30"/>
               </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="listFriendsMouseClicked"/>
+              </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="9"/>
               </AuxValues>

@@ -2,9 +2,13 @@ package architecture;
 
 import GUI.LoginForm;
 import PeerAction.peerReceivePost;
+import SuperPeerAction.PostObject;
 import SuperPeerAction.ReqResLikeCmtHanlder;
+import SuperPeerAction.ReqRes_ProfileHandler;
 import SuperPeerAction.Request_LikeCmt;
+import SuperPeerAction.Request_Profile;
 import SuperPeerAction.Respond_LikeCmt;
+import SuperPeerAction.Respond_Profile;
 import postService.PostHandler;
 import postService.Post;
 import java.io.*;
@@ -38,7 +42,7 @@ class Server extends Thread {
                 Packet header = new Packet(temp);
 
                 if ((header.identify() != Packet.PONG) && (header.identify() != Packet.PING)
-                        && (header.identify() != Packet.QUERY) && (header.identify() != Packet.QUERYHIT) && (header.identify() != Packet.POST && (header.identify() != Packet.LIKE)) && (header.identify() != Packet.COMMENT) && (header.identify() != Packet.REQ_LIKECOMMENT) && (header.identify() != Packet.RES_LIKECOMMENT)) {
+                        && (header.identify() != Packet.QUERY) && (header.identify() != Packet.QUERYHIT) && (header.identify() != Packet.POST && (header.identify() != Packet.LIKE)) && (header.identify() != Packet.COMMENT) && (header.identify() != Packet.REQ_LIKECOMMENT) && (header.identify() != Packet.RES_LIKECOMMENT) && (header.identify() != Packet.REQ_PROFILE) && (header.identify() != Packet.RES_PROFILE)) {
                     break; // If the data is not something we expect, die.
                 }
                 byte[] newpacket = new byte[(header.length() + Packet.HEADER_LENGTH)]; /* The syntax here is unfortunate, because headers don't store
@@ -114,7 +118,14 @@ class Server extends Thread {
                         boolean isPeerFriends = PostHandler.serverCheckListFriendorPeer(postMessage, Preferences.idFriendsListString);
                         if (isPeerFriends) {
                             peerReceivePost peerReceive = new peerReceivePost();
-                            peerReceive.receivePost(postMessage);
+                            PostObject post = new PostObject();
+                            post.setNamePost(postMessage.getUserName());
+                            post.setPostID(postMessage.getMessageID());
+                            post.setContentPost(postMessage.getPostStatusContent());
+                            post.setGroupID(postMessage.getGroupFriendID());
+                            post.setCreatedDate(postMessage.getCreatedDate());
+                            post.setUserIDPost(postMessage.getUserID());
+                            peerReceive.receivePost(post);
                         }
                         continue;
                     }
@@ -146,9 +157,27 @@ class Server extends Thread {
                 } else if (header.identify() == Packet.RES_LIKECOMMENT) {
                     Respond_LikeCmt respondMessage = new Respond_LikeCmt(newpacket);
                     System.out.println("\n ### Server : Packet == RES_LIKECOMMENT -- " + newpacket.toString());
+                    if (LoginForm.currentUser.getUserName().equals("Server") || LoginForm.currentUser.getUserName().equals("Server1")) {
 
-                    ReqResLikeCmtHanlder respondMessageAction = new ReqResLikeCmtHanlder(null, respondMessage);
-                    respondMessageAction.start();
+                        ReqResLikeCmtHanlder respondMessageAction = new ReqResLikeCmtHanlder(null, respondMessage);
+                        respondMessageAction.start();
+                        continue;
+                    }
+                } else if (header.identify() == Packet.REQ_PROFILE) {
+                    Request_Profile requestMessage = new Request_Profile(newpacket);
+                    System.out.println("\n ### Server : Packet == REQ_PROFILE -- " + newpacket.toString());
+                    if (LoginForm.currentUser.getUserName().equals("Server") || LoginForm.currentUser.getUserName().equals("Server1")) {
+
+                        ReqRes_ProfileHandler requestProfileAction = new ReqRes_ProfileHandler(requestMessage, null);
+                        requestProfileAction.start();
+                        continue;
+                    }
+                } else if (header.identify() == Packet.RES_PROFILE) {
+                    Respond_Profile respondMessage = new Respond_Profile(newpacket);
+                    System.out.println("\n ### Server : Packet == RES_PROFILE -- " + newpacket.toString());
+
+                    ReqRes_ProfileHandler respondProfileAction = new ReqRes_ProfileHandler(null, respondMessage);
+                    respondProfileAction.start();
                     continue;
                 } else {
                     QueryHit queryhit = new QueryHit(newpacket);
