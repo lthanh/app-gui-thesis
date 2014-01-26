@@ -253,21 +253,25 @@ public class Preferences {
                 // continue; // 
             }
 
-            if (newsFeed.size() > 20) {
-                if (indexPost == -2) {
-                    for (int i = newsFeed.size() - 20; i <= newsFeed.size(); i++) {
-                        newsFeedString = newsFeedString + newsFeed.get(i) + "\n\n";
+            if (indexPost == -2 || indexPost >= 20) {
+
+                if (newsFeed.size() > 20) {
+                    if (indexPost == -2) {
+                        for (int i = newsFeed.size() - 20; i < newsFeed.size(); i++) {
+                            newsFeedString = newsFeedString + newsFeed.get(i) + "\n\n";
+                        }
+                    } else {
+                        for (int i = indexPost - 20; i < (newsFeed.size() - indexPost); i++) {
+                            newsFeedString = newsFeedString + newsFeed.get(i) + "\n\n";
+                        }
                     }
                 } else {
-                    for (int i = (indexPost + 1) - 20; i < indexPost; i++) {
+                    for (int i = 0; i < newsFeed.size(); i++) {
                         newsFeedString = newsFeedString + newsFeed.get(i) + "\n\n";
                     }
                 }
-            } else {
-                for (int i = 0; i < newsFeed.size(); i++) {
-                    newsFeedString = newsFeedString + newsFeed.get(i) + "\n\n";
-                }
             }
+
 
             fileIn.close();
         } catch (Exception e) {
@@ -301,7 +305,7 @@ public class Preferences {
 
                     if (itemLine[1].substring(8).equals(String.valueOf(postID))) {
                         counterLike++;
-                        likeName = likeName + "\n\n" + itemLine[4].substring(14);
+                        likeName = likeName + "\n\n" + itemLine[5].substring(14);
                     }
                     System.out.println("like id: " + (itemLine[2].substring(8)));
                     System.out.println("idUserLike : " + itemLine[4].substring(11));

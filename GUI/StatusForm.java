@@ -38,7 +38,7 @@ public class StatusForm extends javax.swing.JFrame {
     public StatusForm(String namePost, String contentPost, int numLike, int comment, Vector<String> tempComment, long postID, String userIDPost) {
         initComponents();
         setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
-        txtContentPopUp.disable();
+        txtContentPopUp.setEditable(false);
 
         setTitle(namePost + "'s status");
         lbUseName.setText(namePost);
@@ -50,9 +50,9 @@ public class StatusForm extends javax.swing.JFrame {
         lbIDUserPost.setText(userIDPost);
         lbMessageID.hide();
         lbMessageID.setText(String.valueOf(postID));
-        btnLike.setVisible(false);
-        btnComment.setVisible(false);
-        txtComment.setVisible(false);
+        btnLike.setEnabled(false);
+        btnComment.setEnabled(false);
+        txtComment.setEnabled(false);
 
     }
 
@@ -115,6 +115,8 @@ public class StatusForm extends javax.swing.JFrame {
         listComment.setFixedCellHeight(25);
         jScrollPane3.setViewportView(listComment);
 
+        txtContentPopUp.setBackground(new java.awt.Color(240, 240, 240));
+        txtContentPopUp.setSelectedTextColor(new java.awt.Color(240, 240, 240));
         jScrollPane1.setViewportView(txtContentPopUp);
 
         lbLoading.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -315,29 +317,41 @@ public class StatusForm extends javax.swing.JFrame {
 
     }
 
-    public void updateStatusForm(int numLike, int numComment, String userLike, Vector<String> comment) {
-
+    public void updateStatusForm(int numLike, int numComment, String userIDLike, Vector<String> comment) {
         System.out.println("###### RECEIVE REPOSND");
-        btnLike.setVisible(true);
-        btnComment.setVisible(true);
-        txtComment.setVisible(true);
-        txtComment.repaint();
+
+        String[] userIDLIKED = userIDLike.split("\n\n");
+
+        boolean isLiked = checkLiked(userIDLIKED, userNameLoginString);
+        if (isLiked == false) {
+            btnLike.setEnabled(true);
+        }
+
+
+        btnComment.setEnabled(true);
+        txtComment.setEnabled(true);
         lbLike.setText(String.valueOf(numLike));
         lbComment.setText(String.valueOf(numComment));
         if (!comment.isEmpty()) {
             listComment.setListData(comment);
         }
         lbLoading.setVisible(false);
-        invalidate();
+        //invalidate();
+        //validate();
         revalidate();
         repaint();
-
-//        invalidate();
-//        validate();
-//        repaint();
-
-
+        
         System.out.println("###### RECEIVE After");
+    }
+
+    public boolean checkLiked(String[] userNameLike, String userNameLogin) {
+        for (int i = 0; i < userNameLike.length; i++) {
+            System.out.println("USER 1:" + userNameLike[i]);
+            if (userNameLike[i].equals(userNameLogin)) {
+                return true;
+            }
+        }
+        return false;
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnComment;
