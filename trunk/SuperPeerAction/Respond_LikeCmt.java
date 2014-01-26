@@ -153,7 +153,7 @@ public class Respond_LikeCmt extends Packet {
             temp = temp + (char) (contents[index + 16 + 7 + getUserIDReqLength() + i]);
         }
         // String userID = new String(temp);
-//        System.out.println("\nPONG: getUserIDOnline receive - " + userID);
+        System.out.println("\n###########RESPOND LIKE: getListUserNameLike receive -" + temp);
         return temp;
     }
 

@@ -11,6 +11,7 @@ import SuperPeerAction.Request_LikeCmt;
 import SuperPeerAction.Request_NewsFeed;
 import SuperPeerAction.Request_Profile;
 import SuperPeerAction.RespondStatusFormObject;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
@@ -22,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JScrollPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import postService.LikeCommentListObject;
@@ -407,29 +409,6 @@ public class AppGUI extends javax.swing.JFrame {
                 Vector<String> tempComment = new Vector<String>();
                 // String namePost,String contentPost, Vector<String> tempComment, long postID, String userIDPost
                 statusPOPUP = new StatusForm(postSelectedObject.getNamePost(), postSelectedObject.getContentPost(), 0, 0, tempComment, postSelectedObject.getPostID(), postSelectedObject.getUserIDPost());
-//                statusPOPUP.invalidate();
-//                statusPOPUP.validate();
-//                statusPOPUP.repaint();
-
-                //                statusPOPUP.revalidate();
-//                statusPOPUP.repaint();
-                //new StatusForm());
-//                Vector<String> tempComment = new Vector<String>();
-//                statusPOPUP.setTitle(postSelectedObject.getNamePost() + "'s status");
-//                statusPOPUP.lbUseName.setText(postSelectedObject.getNamePost());
-//                statusPOPUP.txtContentPopUp.setText(postSelectedObject.getContentPost());
-//                statusPOPUP.lbLike.setText("0");
-//                statusPOPUP.lbComment.setText("0");
-//                statusPOPUP.listComment.setListData(tempComment);
-//                long postID = postSelectedObject.getPostID();
-//                String userIDPost = postSelectedObject.getUserIDPost();
-//                statusPOPUP.lbIDUserPost.hide();
-//                statusPOPUP.lbIDUserPost.setText(userIDPost);
-//                statusPOPUP.lbMessageID.hide();
-//                statusPOPUP.lbMessageID.setText(String.valueOf(postID));
-//                statusPOPUP.btnLike.setVisible(false);
-//                statusPOPUP.btnComment.setVisible(false);
-//                statusPOPUP.txtComment.setVisible(false);
                 statusPOPUP.show();
             }
         }
@@ -469,16 +448,23 @@ public class AppGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_listFriendsMouseClicked
 
     private void listStatusMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_listStatusMouseWheelMoved
-        // TODO add your handling code here:
-        //  listStatus.addMouseWheelListener((new MouseWheelListener));
         int notches = evt.getWheelRotation();
+        System.out.println("########### NOTCHES evt.getUnitsToScroll(): " + evt.getUnitsToScroll());
+
+        System.out.println("########### NOTCHES: " + notches);
         if (notches < 0) { // "Mouse wheel moved UP "
         } else { // "Mouse wheel moved DOWN "
-            int lastIndex = listStatus.getLastVisibleIndex();
-            Request_NewsFeed requestFeed = new Request_NewsFeed(Mine.getPort(), Mine.getIPAddress(), lastIndex, 1, LoginForm.currentUser.getIdUserLogin()); // 1 = isScroll
-            NetworkManager.writeToAll(requestFeed);
+            int lastIndex = listStatus.getLastVisibleIndex() + 1;
+            loadMore(lastIndex);
         }
+
+
     }//GEN-LAST:event_listStatusMouseWheelMoved
+
+    public void loadMore(int index) {
+        Request_NewsFeed requestFeed = new Request_NewsFeed(Mine.getPort(), Mine.getIPAddress(), index, 1, LoginForm.currentUser.getIdUserLogin()); // 1 = isScroll
+        NetworkManager.writeToAll(requestFeed);
+    }
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -509,8 +495,6 @@ public class AppGUI extends javax.swing.JFrame {
             public void run() {
                 AppGUI app = new AppGUI();
                 app.setVisible(true);
-
-
             }
         });
 
