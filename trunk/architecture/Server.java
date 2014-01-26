@@ -1,5 +1,6 @@
 package architecture;
 
+import GUI.AppGUI;
 import GUI.LoginForm;
 import PeerAction.peerReceivePost;
 import SuperPeerAction.NewsFeedHandler;
@@ -141,10 +142,14 @@ class Server extends Thread {
                 } else if (header.identify() == Packet.LIKE) {
                     Like likeMessage = new Like(newpacket);
                     System.out.println("\n ### Server : Packet == LIKE -- " + newpacket.toString());
+
                     if (LoginForm.currentUser.getUserName().equals("Server") || LoginForm.currentUser.getUserName().equals("Server1")) {
                         LikeCommentHandler likeAction = new LikeCommentHandler(mine, likeMessage, null);
                         likeAction.start();
                         continue;
+                    } else {
+                        AppGUI.updateNotification(1, likeMessage.getNameLike(), "");
+
                     }
                 } else if (header.identify() == Packet.COMMENT) {
                     Comment commentMessage = new Comment(newpacket);
@@ -153,6 +158,9 @@ class Server extends Thread {
                         LikeCommentHandler commentAction = new LikeCommentHandler(mine, null, commentMessage);
                         commentAction.start();
                         continue;
+                    } else {
+                        AppGUI.updateNotification(1, "", commentMessage.getNameComment());
+
                     }
                 } else if (header.identify() == Packet.REQ_LIKECOMMENT) {
                     Request_LikeCmt requestMessage = new Request_LikeCmt(newpacket);

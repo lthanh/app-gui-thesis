@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
@@ -54,6 +55,9 @@ public class AppGUI extends javax.swing.JFrame {
     public static String postContentSelected = "";
     public static StatusForm statusPOPUP;
     public static boolean isScroll = false;
+    public static String userNameLiked = "";
+    public static String userNameCommented = "";
+    public static int numLikeCommented = 0;
 
     public AppGUI() {
         initComponents();
@@ -340,6 +344,16 @@ public class AppGUI extends javax.swing.JFrame {
 
     private void btnNotiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotiActionPerformed
         // TODO add your handling code here:
+
+        String noti = showDialogNotification(userNameLiked, userNameCommented);
+        if (noti.equals("\n")) {
+            noti = "0 - Notification";
+        }
+        JOptionPane.showMessageDialog(this, noti, "Notification", JOptionPane.INFORMATION_MESSAGE);
+        btnNoti.setText("Notification");
+        numLikeCommented = 0;
+        userNameLiked = "";
+        userNameCommented = "";
     }//GEN-LAST:event_btnNotiActionPerformed
 
     private void btnFeedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFeedActionPerformed
@@ -589,6 +603,29 @@ public class AppGUI extends javax.swing.JFrame {
 
         Preferences.statusWriteToFilePeer(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prPl, liked, commented, createdate, friend, groupdSuperPeerID, "<Private>    " + postText);
 
+    }
+
+    public static void updateNotification(int numLikeComment, String userNameLike, String userNameComment) {
+        numLikeCommented += numLikeComment;
+        if (userNameLike != "") {
+            userNameLiked = userNameLike;
+        }
+        if (userNameComment != "") {
+            userNameCommented = userNameComment;
+        }
+        btnNoti.setText("<" + numLikeCommented + "> Notification");
+    }
+
+    public String showDialogNotification(String userNameLike, String userNameComment) {
+        String like = "";
+        String comment = "";
+        if (userNameLike != "") {
+            like = "Like: " + userNameLike + " liked your status!";
+        }
+        if (userNameComment != "") {
+            comment = "Comment: " + userNameComment + " commented on your status!";
+        }
+        return like + "\n\n" + comment;
     }
     //////////// END POST MESSAGE
     // Variables declaration - do not modify//GEN-BEGIN:variables
