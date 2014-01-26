@@ -372,6 +372,9 @@ public class AppGUI extends javax.swing.JFrame {
 
     private void btnSettingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSettingActionPerformed
         // TODO add your handling code here:
+
+
+        JOptionPane.showMessageDialog(this, "Quynh Dao\nKim Yen\nThanh Thao\nMinh Hieu\nVinh Khanh\nTien Thanh\nPham Hieu\nServer\nServer1", "Group of Friends", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_btnSettingActionPerformed
 
     private void btnProfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProfileActionPerformed
@@ -539,7 +542,7 @@ public class AppGUI extends javax.swing.JFrame {
         if (!textPost.trim().isEmpty()) {
             txtStatus.setText(null);
             String createdate = Utils.formatDate(new Date());
-            String friend = "9999999999999999:0000000000000000:1111111111111111:5555555555555555:8888888888888888";
+            String friend = "9999999999999999:0000000000000000:1111111111111111:5555555555555555:8888888888888888:4444444444444444:3333333333333333:2222222222222222:1222222222222222:2333333333333333";
             String groupdSuperPeerID = "9999999999999999:0000000000000000"; // ignore
             int liked = 0;
             int commented = 0;
