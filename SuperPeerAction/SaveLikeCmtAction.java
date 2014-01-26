@@ -35,18 +35,13 @@ public class SaveLikeCmtAction {
         if (isLikeOfUser) {
             LikeCommentListObject likeComment = new LikeCommentListObject();
             likeComment = Preferences.readUserFile(like.getIdPost(), like.getIdUserPost());
+            System.out.println("ID:" + like.getIdUserLike());
             boolean isLike = checkNameLiked(like.getMessageID(), like.getIdUserLike(), likeComment);
             if ((likeComment.getIdUserLike().equals("") || isLike == true) && (SharedDirectory.listFileIDSaving.contains(idUserPost))) {
                 //saveLikeSuperPeer(likeMessage);
                 Preferences.likeWriteToFileSuperPeer(like.getLikeTypeString(like.getPayload()), idPost, like.getMessageID(), idUserPost, idUserLike, nameLike);
-
             }
         }
-
-
-//        if (SharedDirectory.listFileIDSaving.contains(idUserPost)) {
-//            Preferences.likeWriteToFileSuperPeer(like.getLikeTypeString(like.getPayload()), idPost, like.getMessageID(), idUserPost, idUserLike, nameLike);
-//        }
     }
 
     public void saveCommentSuperPeer(Comment comment) {
@@ -78,8 +73,9 @@ public class SaveLikeCmtAction {
     public static boolean checkNameLiked(long likeID, String userIDLike, LikeCommentListObject likeComment) {
         System.out.println("likeID: " + String.valueOf(likeID));
         System.out.println("userIDLike: " + userIDLike);
-        System.out.println("likeComment iduserLike : " + likeComment.getIdUserLike());
-        if (likeComment.getIdLike().contains(String.valueOf(likeID)) || likeComment.getIdUserLike().contains(userIDLike)) {
+        System.out.println("likeComment iduserLike :" + likeComment.getIdUserLike());
+        System.out.println("LIKE ID: "+ likeComment.getIdLike());
+        if (likeComment.getIdLike().contains(String.valueOf(likeID))){// || likeComment.getIdUserLike().contains(userIDLike)) {  // still like many times.
             return false;
         }
         return true;
