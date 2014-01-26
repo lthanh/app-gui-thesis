@@ -21,8 +21,8 @@ public  class Login {
 
     public static void readFileUserID() {
         try {
-                                    //NHi - C:\Users\phatn_000\Desktop\src\  Trang - F:\Users\dangphat50\Desktop\src\   Thanh C:\Users\admin\Desktop\src\
-            BufferedReader fileIn = new BufferedReader(new FileReader("C:\\Users\\admin\\Desktop\\src\\userLogin.txt")); 
+                                    //NHi - C:\Users\phatn_000\Desktop\src\  Trang - F:\Users\dangphat50\Desktop\src\   ThanhPeer  Thanh C:\Users\admin\Desktop\src\
+            BufferedReader fileIn = new BufferedReader(new FileReader("C:\\Users\\admin\\Desktop\\ThanhPeer\\userLogin.txt")); 
             String line;
 
             while ((line = fileIn.readLine()) != null) {

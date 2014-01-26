@@ -346,14 +346,15 @@ public class AppGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
 
         String noti = showDialogNotification(userNameLiked, userNameCommented);
-        if (noti.equals("\n")) {
+        if (noti.equals("\n") || noti.equals("\n\n")) {
             noti = "0 - Notification";
         }
-        JOptionPane.showMessageDialog(this, noti, "Notification", JOptionPane.INFORMATION_MESSAGE);
         btnNoti.setText("Notification");
         numLikeCommented = 0;
         userNameLiked = "";
         userNameCommented = "";
+        JOptionPane.showMessageDialog(this, noti, "Notification", JOptionPane.INFORMATION_MESSAGE);
+
     }//GEN-LAST:event_btnNotiActionPerformed
 
     private void btnFeedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFeedActionPerformed
@@ -418,6 +419,7 @@ public class AppGUI extends javax.swing.JFrame {
             if (postSelectedObject.getUserIDPost() != "") {
                 System.out.println("Send request before");
                 Request_LikeCmt req = new Request_LikeCmt(Mine.getPort(), Mine.getIPAddress(), postSelectedObject.getPostID(), postSelectedObject.getUserIDPost());
+                System.out.println("REQUEST IP:" + req.getIP());
                 NetworkManager.writeToAll(req);
                 System.out.println("Send request after");
                 Vector<String> tempComment = new Vector<String>();
