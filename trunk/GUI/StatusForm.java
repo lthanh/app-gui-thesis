@@ -26,7 +26,7 @@ import postService.LikeCommentListObject;
  * @author admin
  */
 public class StatusForm extends javax.swing.JFrame {
-
+    
     public static Vector<String> listStoreComment = new Vector<String>();
     public static String useIDLogin = LoginForm.currentUser.getIdUserLogin();
 //    public byte[] userIDLOGINBYTE = new byte[16];
@@ -35,12 +35,12 @@ public class StatusForm extends javax.swing.JFrame {
     public static String userNameLoginString = LoginForm.currentUser.getUserName();
     public static String postID = "";
     public static String userIDPost = "";
-
+    
     public StatusForm(String namePost, String contentPost, int numLike, int comment, Vector<String> tempComment, long postID, String userIDPost) {
         initComponents();
         setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
         txtContentPopUp.setEditable(false);
-
+        
         setTitle(namePost + "'s status");
         lbUseName.setText(namePost);
         txtContentPopUp.setText(contentPost);
@@ -54,9 +54,9 @@ public class StatusForm extends javax.swing.JFrame {
         btnLike.setEnabled(false);
         btnComment.setEnabled(false);
         txtComment.setEnabled(false);
-
+        
     }
-
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -183,20 +183,23 @@ public class StatusForm extends javax.swing.JFrame {
                     .addComponent(lbIDUserPost)
                     .addComponent(lbLoading))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 22, Short.MAX_VALUE)
-                        .addComponent(loading))
-                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(lbLike)
-                                .addComponent(jLabel4))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(lbComment)
-                                .addComponent(jLabel5)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(loading))
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel4)
+                                    .addComponent(lbLike)))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(lbComment))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnComment)
@@ -217,7 +220,11 @@ public class StatusForm extends javax.swing.JFrame {
         if (btnLike.isEnabled()) {
             btnLike.setEnabled(false);
         }
-
+        
+        int like = Integer.parseInt(lbLike.getText());
+        lbLike.setText(String.valueOf(like + 1));
+        
+        
         postID = lbMessageID.getText();
         userIDPost = lbIDUserPost.getText(); //LIKE : postID- [B@75225918
 
@@ -225,43 +232,43 @@ public class StatusForm extends javax.swing.JFrame {
         System.out.println("LIKE : userIDPostBYTE - " + userIDPost);
         System.out.println("LIKE : userIDLOGINBYTE - " + useIDLogin);
         System.out.println("LIKE : userNameLoginString - " + userNameLoginString);
-
-
-
+        
+        
+        
         Like likeMessage = new Like(postID.length(), userIDPost.length(), useIDLogin.length(), postID, userIDPost, useIDLogin, userNameLoginString);
         (new SaveLikeCmtAction()).saveLikeSuperPeer(likeMessage);
-
+        
         System.out.println("######### LIKE before: " + likeMessage);
         System.out.println("######### LIKE getIdPost: " + likeMessage.getIdPost());
         System.out.println("######### LIKE getIdUserLike: " + likeMessage.getIdUserLike());
         System.out.println("######### LIKE getIdUserPost: " + likeMessage.getIdUserPost());
         System.out.println("######### LIKE getNameLike: " + likeMessage.getNameLike());
         System.out.println("######### LIKE getLikeTypeString: " + likeMessage.getLikeTypeString(likeMessage.getPayload()));
-
-
+        
+        
         NetworkManager.writeToAll(likeMessage);
-
-
-
-
+        
+        
+        
+        
     }//GEN-LAST:event_btnLikeActionPerformed
-
+    
     private void btnCommentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCommentActionPerformed
         // TODO add your handling code here:
         txtComment.requestFocus();
     }//GEN-LAST:event_btnCommentActionPerformed
-
+    
     private void txtCommentKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCommentKeyPressed
         // TODO add your handling code here:
         if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
             postID = lbMessageID.getText();
             userIDPost = lbIDUserPost.getText();
-
+            
             System.out.println("COMMENT : postIDBYTE - " + postID);
             System.out.println("COMMENT : userIDPostBYTE - " + userIDPost);
             System.out.println("COMMENT : userIDLOGINBYTE - " + useIDLogin);
             System.out.println("COMMENT : userNameLoginString - " + userNameLoginString);
-
+            
             Comment commentMessage = new Comment(postID.length(), userIDPost.length(), useIDLogin.length(), userNameLoginString.length(), postID, userIDPost, useIDLogin, userNameLoginString, txtComment.getText());
             (new SaveLikeCmtAction()).saveCommentSuperPeer(commentMessage);
             String commentCurrently = "< " + commentMessage.getNameComment() + " >:  " + commentMessage.getComment();
@@ -269,14 +276,14 @@ public class StatusForm extends javax.swing.JFrame {
             listComment.setListData(ReqResLikeCmtHanlder.comment);
             //                         comment = comment + "< " + itemLine[5].substring(17) + " >:  " + itemLine[6].substring(20) + "\n\n";
 
-
+            
             System.out.println("######### COMMENT before: " + commentMessage);
             System.out.println("######### COMMENT getIdPost: " + commentMessage.getIdPost());
             System.out.println("######### COMMENT getIdUserLike: " + commentMessage.getIdUserComment());
             System.out.println("######### COMMENT getIdUserPost: " + commentMessage.getIdUserPost());
             System.out.println("######### COMMENT getNameLike: " + commentMessage.getNameComment());
             System.out.println("######### COMMENT getLikeTypeString: " + commentMessage.getCommentTypeString(commentMessage.getPayload()));
-
+            
             NetworkManager.writeToAll(commentMessage);
             txtComment.setText("");
         }
@@ -316,21 +323,21 @@ public class StatusForm extends javax.swing.JFrame {
 //                s.setVisible(true);
             }
         });
-
-
+        
+        
     }
-
+    
     public void updateStatusForm(int numLike, int numComment, String userIDLike, Vector<String> comment) {
         System.out.println("###### RECEIVE REPOSND");
-
+        
         String[] userIDLIKED = userIDLike.split("\n\n");
-
+        
         boolean isLiked = checkLiked(userIDLIKED, userNameLoginString);
         if (isLiked == false) {
             btnLike.setEnabled(true);
         }
-
-
+        
+        
         btnComment.setEnabled(true);
         txtComment.setEnabled(true);
         lbLike.setText(String.valueOf(numLike));
@@ -341,11 +348,11 @@ public class StatusForm extends javax.swing.JFrame {
         lbLoading.setVisible(false);
         
         revalidate();
-        //repaint();
-
+        repaint();
+        
         System.out.println("###### RECEIVE After");
     }
-
+    
     public boolean checkLiked(String[] userNameLike, String userNameLogin) {
         for (int i = 0; i < userNameLike.length; i++) {
             System.out.println("USER 1:" + userNameLike[i]);

@@ -173,12 +173,12 @@ class Server extends Thread {
                 } else if (header.identify() == Packet.RES_LIKECOMMENT) {
                     Respond_LikeCmt respondMessage = new Respond_LikeCmt(newpacket);
                     System.out.println("\n ### Server : Packet == RES_LIKECOMMENT -- " + newpacket.toString());
-                    if (LoginForm.currentUser.getUserName().equals("Server") || LoginForm.currentUser.getUserName().equals("Server1")) {
+//                    if (LoginForm.currentUser.getUserName().equals("Server") || LoginForm.currentUser.getUserName().equals("Server1")) {
 
-                        ReqResLikeCmtHanlder respondMessageAction = new ReqResLikeCmtHanlder(null, respondMessage);
-                        respondMessageAction.start();
-                        continue;
-                    }
+                    ReqResLikeCmtHanlder respondMessageAction = new ReqResLikeCmtHanlder(null, respondMessage);
+                    respondMessageAction.start();
+                    continue;
+//                    }
                 } else if (header.identify() == Packet.REQ_PROFILE) {
                     Request_Profile requestMessage = new Request_Profile(newpacket);
                     System.out.println("\n ### Server : Packet == REQ_PROFILE -- " + newpacket.toString());
