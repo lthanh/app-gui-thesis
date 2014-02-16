@@ -96,7 +96,7 @@ public class Like extends Packet {
         System.out.println("Like -getIdUserLike: " + idUserLikeD);
 
         String nameLikeD = "";
-        for (int i = (index + 3 + getIDPostLength() + getIDUserPostLength() + getIDUserLikeLength()); i < (contents.length); i++) {
+        for (int i = (index + 3 + getIDPostLength() + getIDUserPostLength() + getIDUserLikeLength()); i < (contents.length - 3); i++) {
             nameLikeD = nameLikeD + (char) (contents[i]);
         }
 

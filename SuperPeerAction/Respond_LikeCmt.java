@@ -16,7 +16,7 @@ public class Respond_LikeCmt extends Packet {
     int index = Packet.HEADER_LENGTH;
 
     public Respond_LikeCmt(long postIDReq, int numLike, int numComment, int userIDReqLength, int listUserNameLikeLength, String userIDReq, String listUserNameLike, String listComment) {
-        super(Packet.RES_LIKECOMMENT, (23 + userIDReq.length() + listUserNameLike.length() + listComment.length()));
+        super(Packet.RES_LIKECOMMENT, (25 + userIDReq.length() + listUserNameLike.length() + listComment.length()));
 
         // convert postIDReq
         ByteBuffer bBPostIDReq = ByteBuffer.allocate(16);
@@ -59,7 +59,7 @@ public class Respond_LikeCmt extends Packet {
         for (q = 0; q < userIDReq.length(); q++) {
             contents[index + 16 + 7 + q] = tempuserIDReq[q];
         }
-        // contents[index + 16 + 7 + q] = 0;
+        contents[index + 16 + 7 + q] = 0;
 
         // convert listUserNameLike to byte 
         byte[] templistUserNameLike = new byte[listUserNameLike.length()];
@@ -69,7 +69,7 @@ public class Respond_LikeCmt extends Packet {
         for (t = 0; t < listUserNameLike.length(); t++) {
             contents[index + 16 + 7 + userIDReq.length() + t] = templistUserNameLike[t];
         }
-        // contents[index + 16 + 7 + userIDReq.length() + t] = 0;
+        contents[index + 16 + 7 + userIDReq.length() + t] = 0;
 
 
         // convert listComment to byte 
@@ -80,7 +80,7 @@ public class Respond_LikeCmt extends Packet {
         for (y = 0; y < listComment.length(); y++) {
             contents[index + 16 + 7 + userIDReq.length() + listUserNameLike.length() + y] = templistComment[y];
         }
-        // contents[index + 16 + 7 + userIDReq.length() + listUserNameLike.length() + y] = 0;
+        contents[index + 16 + 7 + userIDReq.length() + listUserNameLike.length() + y] = 0;
 
     }
 
@@ -153,7 +153,7 @@ public class Respond_LikeCmt extends Packet {
             temp = temp + (char) (contents[index + 16 + 7 + getUserIDReqLength() + i]);
         }
         // String userID = new String(temp);
-        System.out.println("\n###########RESPOND LIKE: getListUserNameLike receive -" + temp);
+//        System.out.println("\nPONG: getUserIDOnline receive - " + userID);
         return temp;
     }
 

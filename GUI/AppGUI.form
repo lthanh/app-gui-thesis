@@ -370,7 +370,6 @@
                 <Property name="fixedCellHeight" type="int" value="50"/>
               </Properties>
               <Events>
-                <EventHandler event="mouseWheelMoved" listener="java.awt.event.MouseWheelListener" parameters="java.awt.event.MouseWheelEvent" handler="listStatusMouseWheelMoved"/>
                 <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="listStatusMouseClicked"/>
               </Events>
               <AuxValues>

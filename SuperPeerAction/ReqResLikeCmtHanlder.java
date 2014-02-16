@@ -5,17 +5,12 @@
 package SuperPeerAction;
 
 import GUI.AppGUI;
-import static GUI.AppGUI.postSelectedID;
-import static GUI.AppGUI.statusPOPUP;
-import GUI.LoginForm;
-import GUI.StatusForm;
+import static SuperPeerAction.ReqResLikeCmtHanlder.comment;
 import architecture.IPAddress;
 import architecture.NetworkManager;
 import architecture.Preferences;
 import architecture.SharedDirectory;
 import java.util.Vector;
-import postService.Comment;
-import postService.Like;
 import postService.LikeCommentListObject;
 
 /**
@@ -86,8 +81,9 @@ public class ReqResLikeCmtHanlder extends Thread {
 //                            System.out.println("########## RESPOND comment show :" + i);
 //                        }
 //                    }
-                    if (AppGUI.statusPOPUP!=null)
-                    AppGUI.statusPOPUP.updateStatusForm(respond.getNumLike(), respond.getNumComment(), respond.getListUserNameLike(), comment);
+                    if (AppGUI.statusPOPUP != null) {
+                        AppGUI.statusPOPUP.updateStatusForm(respond.getNumLike(), respond.getNumComment(), respond.getListUserNameLike(), comment);
+                    }
                     System.out.println("########## RESPOND after show");
                 }
             } catch (Exception e) {

@@ -66,28 +66,25 @@ public class ReqRes_ProfileHandler extends Thread {
 
             String userIDInRes = respond_ProfileMsg.getUserIDPost();//respond_ProfileMsg.getListPost().split("\n\n")[0].split("~~")[2].substring(9);
             if (userIDInRes.equals(AppGUI.idUserSelected)) {
+
+                String listPostRespond = respond_ProfileMsg.getListPost();
+
+                System.out.println("######## RESPOND listPostRespond: " + listPostRespond);
+                String[] tempListPost = listPostRespond.split("\n\n");
+                for (int i = 0; i < tempListPost.length; i++) {
+                    PostObject profileObject = new PostObject();
+                    String[] line = tempListPost[i].split("~~");
+                    profileObject.setPostID(Long.parseLong(line[1].substring(8)));
+                    profileObject.setNamePost(line[2].substring(9));
+                    profileObject.setContentPost(line[3].substring(14));
+                    profileObject.setGroupID(line[4].substring(15));
+                    profileObject.setCreatedDate(line[5].substring(12));
+                    profileObject.setUserIDPost(respond_ProfileMsg.getUserIDPost());
+                    prc.receivePost(profileObject);
+                }
+                
+                // read private message that only store on user device before
                 try {
-                    String listPostRespond = respond_ProfileMsg.getListPost();
-
-                    System.out.println("######## RESPOND listPostRespond: " + listPostRespond);
-                    String[] tempListPost = listPostRespond.split("\n\n");
-                    for (int i = 0; i < tempListPost.length; i++) {
-                        PostObject profileObject = new PostObject();
-                        String[] line = tempListPost[i].split("~~");
-                        System.out.println("LINEEEEEEEEEE:" + line.length);
-                        if (line.length > 1) {
-                            profileObject.setPostID(Long.parseLong(line[1].substring(8)));
-                            profileObject.setNamePost(line[2].substring(9));
-                            profileObject.setContentPost(line[3].substring(14));
-                            profileObject.setGroupID(line[4].substring(15));
-                            profileObject.setCreatedDate(line[5].substring(12));
-                            profileObject.setUserIDPost(respond_ProfileMsg.getUserIDPost());
-                            prc.receivePost(profileObject);
-                        }
-                    }
-
-                    // read private message that only store on user device before
-
                     System.out.println("########## RESPOND after show");
 
                     if (SharedDirectory.listFileIDSaving.contains(AppGUI.idUserSelected)) {

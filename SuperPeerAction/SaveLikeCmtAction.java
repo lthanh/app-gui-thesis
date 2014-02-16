@@ -4,6 +4,9 @@
  */
 package SuperPeerAction;
 
+import static SuperPeerAction.SaveLikeCmtAction.checkCommentID;
+import static SuperPeerAction.SaveLikeCmtAction.checkNameLiked;
+import static SuperPeerAction.SaveLikeCmtAction.serverCheckLikeCommentForPeer;
 import architecture.Preferences;
 import architecture.SharedDirectory;
 import java.util.Vector;

@@ -1,6 +1,4 @@
-
 package architecture;
-
 
 import GUI.AppGUI;
 import java.io.*;
@@ -44,7 +42,7 @@ public class HostArray {
                 System.out.println("IIIIIIIIIIIPPPPPPPPPPP: " + showListServer);
                 cacheConnection.add(c.getIPAddress());
                 showListServer.add(showIPGUI(c.getIPAddress(), c.getTypeString()));
-                
+
             }
 
             System.out.println("\n\nADD CACHECONNECTION 1: " + cacheConnection.toString() + "SHOWIP: " + showListServer.toString());
@@ -64,7 +62,7 @@ public class HostArray {
                 System.out.println("IIIIIIIIIIIPPPPPPPPPPP: " + showListServer);
                 cacheConnection.add(c.getIPAddress());
                 showListServer.add(showIPGUI(c.getIPAddress(), c.getTypeString()));
-                
+
             }
             System.out.println("\n\nADD CACHECONNECTION 2: " + cacheConnection.toString() + "SHOWIP: " + showListServer.toString());
             AppGUI.listServer.setListData(showListServer);
@@ -178,7 +176,6 @@ public class HostArray {
 //        }
 //        return showListServer;
 //    }
-
     public static String showIPGUI(IPAddress ip, String type) {
         Vector<String> peer = Preferences.ipSuperPeer;
 
@@ -187,9 +184,9 @@ public class HostArray {
 
 
             if (peer.get(i).contains(ip.toString())) {
-                return "Super Peer: " + ip.toString() + ":" + ip.getPort();
+                return "Super Peer - " + ip.toString() + ":" + ip.getPort();
             }
         }
-        return ip.toString() + ":" + ip.getPort() + type;
+        return type + ip.toString() + ":" + ip.getPort();
     }
 }
