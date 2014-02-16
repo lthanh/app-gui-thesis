@@ -16,8 +16,8 @@ public class Request_NewsFeed extends Packet {
 
     int index = Packet.HEADER_LENGTH;
 
-    public Request_NewsFeed(int port, IPAddress ip, int indexPost, int isScroll, String idUserIDReq) {
-        super(Packet.REQ_NewsFeed, (9 + idUserIDReq.length()));
+    public Request_NewsFeed(int port, IPAddress ip, String idUserIDReq) {
+        super(Packet.REQ_NewsFeed, (6 + idUserIDReq.length()));
 
         // convert port to two bytes
 //        System.out.println("\nPONG: port before - " + port);
@@ -35,25 +35,13 @@ public class Request_NewsFeed extends Packet {
         contents[index + 4] = (byte) ip.getThird();
         contents[index + 5] = (byte) ip.getFourth();
 
-
-        ByteBuffer bBfromPost = ByteBuffer.allocate(2);
-        bBfromPost.putShort((short) indexPost);
-        byte[] bytefromPost = bBfromPost.array();
-
-        contents[index + 6] = bytefromPost[0];
-        contents[index + 7] = bytefromPost[1];
-
-        contents[index + 8] = (byte) isScroll;
-
-
-
         // convert idUserIDReq to byte  
         byte[] tempIdUserIDReq = new byte[idUserIDReq.length()];
         tempIdUserIDReq = idUserIDReq.getBytes();
         int i;
         // System.out.println("length: " + idUserIDReq.length());
         for (i = 0; i < idUserIDReq.length(); i++) {
-            contents[(index + 9 + i)] = tempIdUserIDReq[i];
+            contents[(index + 6 + i)] = tempIdUserIDReq[i];
 //            System.out.println("userName : [" + i + "]" + contents[(index + 22 + i)]);
         }
     }
@@ -77,23 +65,9 @@ public class Request_NewsFeed extends Packet {
         return (new IPAddress((contents[index + 2] & 0xff), (contents[index + 3] & 0xff), (contents[index + 4] & 0xff), (contents[index + 5] & 0xff), getPort()));
     }
 
-    public int getIndexPost() {
-//        System.out.println("\nPONG: getUserIDOnline getPort receive - " + port);
-        byte[] bytes = new byte[2];
-        bytes[0] = contents[index + 6];
-        bytes[1] = contents[index + 7];
-        ByteBuffer wrapped = ByteBuffer.wrap(bytes);
-//        System.out.println("getPort after: " + wrapped.getInt());
-        return (int) wrapped.getShort();
-    }
-
-    public int getScroll() {
-        return contents[index + 8];
-    }
-
     public String getIdUserIDReq() {
         String idUserIDReq = "";
-        for (int i = (index + 9); i < (contents.length); i++) {
+        for (int i = (index + 6); i < (contents.length); i++) {
             idUserIDReq = idUserIDReq + (char) (contents[i]);
         }
 

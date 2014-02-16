@@ -14,20 +14,20 @@ import java.util.List;
  *
  * @author admin
  */
-public  class Login {
+public class Login {
 
     public static List<UserLoginObject> userLogin = new ArrayList<UserLoginObject>();
-    public static String SHAREPATH = "";
+    public static String SHAREPATH = "C:\\Posting\\";
 
     public static void readFileUserID() {
         try {
-                                    //NHi - C:\Users\phatn_000\Desktop\src\  Trang - F:\Users\dangphat50\Desktop\src\   ThanhPeer  Thanh C:\Users\admin\Desktop\src\
-            BufferedReader fileIn = new BufferedReader(new FileReader("C:\\Users\\admin\\Desktop\\ThanhPeer\\userLogin.txt")); 
+            //NHi - C:\Users\phatn_000\Desktop\src\  Trang - F:\Users\dangphat50\Desktop\src\   Thanh C:\Users\admin\Desktop\src\
+            BufferedReader fileIn = new BufferedReader(new FileReader(SHAREPATH + "userLogin.txt"));
             String line;
 
             while ((line = fileIn.readLine()) != null) {
                 if (line.startsWith("Shared-Directory: ")) {
-                    Login.SHAREPATH = line.substring(18);
+                    //  Login.SHAREPATH = line.substring(18);
                     System.out.println("Shared-Directory is " + Login.SHAREPATH);
                     continue;
                 } else {

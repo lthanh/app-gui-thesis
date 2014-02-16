@@ -21,19 +21,18 @@ public class checkUserOnlineAction {
     public checkUserOnlineAction() {
     }
     // Friends friends = new Friends();
-    Friends userPongObject = new Friends();
     public static Vector<String> showUserNameFriend = new Vector<String>(); // show friends in JList
     public static Vector<Friends> userInPong = new Vector<Friends>();
     public static Vector<Friends> friendObjectCheckOnline; // list friend object currently online
 
     public void checkUserOnline() {
-        userPongObject = new Friends();
         Pinger.pingCounter = 0;
 //        System.out.println("\n checkUserOnlineAction: userInPongObject Pinger.pingCounter: " + Pinger.pingCounter);
 //        System.out.println("\n checkUserOnlineAction: userInPongObject PongHandler.listPong: " + PongHandler.listPong.toString());
 
         if (!PongHandler.listPong.isEmpty()) {
             for (int i = 0; i < PongHandler.listPong.size(); i++) {
+                Friends userPongObject = new Friends();
                 userPongObject.setIdUserLogin(PongHandler.listPong.get(i).getUserIDOnline());
                 userPongObject.setUserName(PongHandler.listPong.get(i).getUserNameOnline());
                 userPongObject.setStatus(Preferences.ONLINE);

@@ -54,7 +54,7 @@ public class PostHandler extends Thread {
     public void run() {
 
         String listFriendID = postMessage.getGroupFriendID();
-        String[] tempListFriendID = listFriendID.split(":");
+        String[] tempListFriendID = listFriendID.split("~~");
 
         //boolean isFriends = serverCheckListFriendorPeer(postMessage, Preferences.idFriendsListString);
         boolean isFriends = checkGroupFriendIDPost(LoginForm.currentUser.getIdUserLogin(), tempListFriendID);
@@ -121,9 +121,9 @@ public class PostHandler extends Thread {
         return false;
     }
 
-    public static boolean checkNewsFeedForPeer(String friendID,Vector<String> listPeerOrFriend) {
+    public static boolean checkNewsFeedForPeer(String friendID, Vector<String> listPeerOrFriend) {
         for (int i = 0; i < listPeerOrFriend.size(); i++) {
-            if (friendID.equals(listPeerOrFriend.get(i))) { // only server use this class
+            if (friendID.equals(listPeerOrFriend.get(i)) || friendID.equals(LoginForm.currentUser.getIdUserLogin())) { // only server use this class
                 return true;
             }
         }

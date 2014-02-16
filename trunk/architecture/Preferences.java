@@ -68,7 +68,7 @@ public class Preferences {
                 }
             }
             fileIn.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Unable to read preferences file");
         }
@@ -98,7 +98,7 @@ public class Preferences {
             }
             fileOut.close();
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Unable to read preferences file");
         }
@@ -195,11 +195,12 @@ public class Preferences {
 
                 user.setIdUserLogin(userNameID[0]);
                 user.setUserName(userNameID[1]);
-                if (user.getUserName().equals("Quoc Thanh") || user.getUserName().equals("Quynh Dao") || user.getUserName().equals("Thanh Thao") || user.getUserName().equals("Tien Thanh") || user.getUserName().equals("Minh Hieu")) {
-                    user.setStatus(ONLINE);
-                } else {
-                    user.setStatus(OFFLINE);
-                }
+                user.setStatus(OFFLINE);
+//                if (user.getUserName().equals("Quoc Thanh") || user.getUserName().equals("Quynh Dao") || user.getUserName().equals("Thanh Thao") || user.getUserName().equals("Tien Thanh") || user.getUserName().equals("Minh Hieu")) {
+//                    user.setStatus(ONLINE);
+//                } else {
+//                    user.setStatus(OFFLINE);
+//                }
 
                 user.setCountOffline(COUNTER_OFFLINE);
 //                System.out.println("user.setIdUserLogin: " + user.getIdUserLogin());
@@ -213,7 +214,7 @@ public class Preferences {
             }
 
             fileIn.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Unable to read readFriend Filepreferences file");
         }
@@ -230,56 +231,32 @@ public class Preferences {
             }
 
             fileIn.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Unable to read listPeerSPManage preferences file");
         }
     }
 
-    public static String readNewsFeedFile(String userID, int indexPost) {
-        String newsFeedString = "";
-        List<String> newsFeed = new ArrayList<String>();
+    public static String readNewsFeedFile(String userID) {
+        String newsFeed = "";
         try {
             BufferedReader fileIn = new BufferedReader(new FileReader(Login.SHAREPATH + userID + "_NewsFeed.txt"));
             String line;
-            //  int count = 0;
             while ((line = fileIn.readLine()) != null) {
-                //  count++;
                 if (line.contains("POST ")) {
-                    // newsFeed = newsFeed + line + "\n\n";
-                    newsFeed.add(line);
+                    newsFeed = newsFeed + line + "\n\n";
                     continue;
                 }
-                // continue; // 
+                continue; // 
             }
-
-            if (indexPost == -2 || indexPost >= 20) {
-
-                if (newsFeed.size() > 20) {
-                    if (indexPost == -2) {
-                        for (int i = newsFeed.size() - 20; i < newsFeed.size(); i++) {
-                            newsFeedString = newsFeedString + newsFeed.get(i) + "\n\n";
-                        }
-                    } else {
-                        for (int i = indexPost - 20; i < (newsFeed.size() - indexPost); i++) {
-                            newsFeedString = newsFeedString + newsFeed.get(i) + "\n\n";
-                        }
-                    }
-                } else {
-                    for (int i = 0; i < newsFeed.size(); i++) {
-                        newsFeedString = newsFeedString + newsFeed.get(i) + "\n\n";
-                    }
-                }
-            }
-
 
             fileIn.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Unable to read readFriend Filepreferences file");
         }
 
-        return newsFeedString;
+        return newsFeed;
     }
 
     public static LikeCommentListObject readUserFile(long postID, String userPostID) {
@@ -357,7 +334,7 @@ public class Preferences {
                 }
             }
             fileIn.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Unable to read preferences file");
         }

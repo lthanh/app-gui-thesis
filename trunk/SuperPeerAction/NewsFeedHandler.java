@@ -11,11 +11,9 @@ import architecture.IPAddress;
 import architecture.NetworkManager;
 import architecture.Preferences;
 import architecture.SharedDirectory;
-import architecture.Utils;
 import java.util.List;
 import java.util.Vector;
 import static postService.PostHandler.recieveListPost;
-import static postService.PostHandler.showListPost;
 
 /**
  *
@@ -44,8 +42,8 @@ public class NewsFeedHandler extends Thread {
         if (request_NewsFeed != null) {
             if (SharedDirectory.listFileIDSaving.contains(request_NewsFeed.getIdUserIDReq() + "_NewsFeed.txt")) {
                 System.out.println("## REQUEST listFileIDSaving.contains OK ");
-                String listFeed = Preferences.readNewsFeedFile(request_NewsFeed.getIdUserIDReq(), request_NewsFeed.getIndexPost());
-                Respond_NewsFeed respond = new Respond_NewsFeed(request_NewsFeed.getScroll(), request_NewsFeed.getIdUserIDReq(), listFeed);
+                String listFeed = Preferences.readNewsFeedFile(request_NewsFeed.getIdUserIDReq());
+                Respond_NewsFeed respond = new Respond_NewsFeed(request_NewsFeed.getIdUserIDReq(), listFeed);
                 NetworkManager.writeToOne(requestIP, respond);
             }
         }
@@ -63,24 +61,16 @@ public class NewsFeedHandler extends Thread {
                     String[] tempListPost = listFeedRespond.split("\n\n");
 
                     for (int i = 0; i < tempListPost.length; i++) {
-                        PostObject newsFeedObject = new PostObject();
+                        PostObject profileObject = new PostObject();
                         String[] line = tempListPost[i].split("~~");
-                        newsFeedObject.setPostID(Long.parseLong(line[1].substring(8)));
-                        newsFeedObject.setUserIDPost(line[2].substring(11));
-                        newsFeedObject.setNamePost(line[3].substring(14));
-                        newsFeedObject.setContentPost(line[4].substring(14));
-                        newsFeedObject.setCreatedDate(line[5].substring(12));
+                        profileObject.setPostID(Long.parseLong(line[1].substring(8)));
+                        profileObject.setUserIDPost(line[2].substring(11));
+                        profileObject.setNamePost(line[3].substring(14));
+                        profileObject.setContentPost(line[4].substring(14));
+                        profileObject.setCreatedDate(line[5].substring(12));
 
-                        newsFeedObject.setGroupID("");
-
-                        if (respond_NewsFeed.getScroll() == 1) {
-                            recieveListPost.add(newsFeedObject);
-                            showListPost.add(Utils.formSHOWSTATUS(newsFeedObject.getNamePost(), newsFeedObject.getContentPost(), newsFeedObject.getCreatedDate()));
-                            AppGUI.inform(showListPost);
-                        } else {
-                            prc.receivePost(newsFeedObject);
-                        }
-//                        
+                        profileObject.setGroupID("");
+                        prc.receivePost(profileObject);
                     }
                 }
             }

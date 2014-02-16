@@ -48,10 +48,10 @@ public class Connection
 
   public String getTypeString()
   {
-    if (type == 1) return " - Incoming";
-    else if(type == 2) return " - Outgoing";
-    else if (type == 3) return " - Downloading";
-    else if (type == 4) return " - Uploading";
+    if (type == 1) return "Incoming - ";
+    else if(type == 2) return "Outgoing - ";
+    else if (type == 3) return "Downloading - ";
+    else if (type == 4) return "Uploading - ";
     else return "";
   }
   
