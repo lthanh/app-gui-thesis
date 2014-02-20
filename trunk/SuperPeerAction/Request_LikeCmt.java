@@ -4,9 +4,9 @@
  */
 package SuperPeerAction;
 
-import architecture.IPAddress;
-import architecture.Packet;
-import architecture.Preferences;
+import Architecture_Posting.IPAddress;
+import Architecture_Posting.Packet;
+import Architecture_Posting.Preferences;
 import java.nio.ByteBuffer;
 
 /**

@@ -4,7 +4,8 @@
  */
 package SuperPeerAction;
 
-import architecture.Packet;
+import Architecture_Posting.Packet;
+import java.nio.ByteBuffer;
 
 /**
  *
@@ -14,8 +15,15 @@ public class Respond_NewsFeed extends Packet {
 
     int index = Packet.HEADER_LENGTH;
 
-    public Respond_NewsFeed(String userIDReq, String listPost) {
+    public Respond_NewsFeed(int indexRequested, String userIDReq, String listPost) {
         super(Packet.RES_NewsFeed, (16 + listPost.length()));
+
+//        ByteBuffer bBfromPost = ByteBuffer.allocate(2);
+//        bBfromPost.putShort((short) indexRequested);
+//        byte[] bytefromPost = bBfromPost.array();
+//
+//        contents[index + 0] = bytefromPost[0];
+//        contents[index + 1] = bytefromPost[1];
 
         // convert userIDPost to byte  
         byte[] tempuserIDPost = new byte[16];
@@ -40,6 +48,15 @@ public class Respond_NewsFeed extends Packet {
         super(rawdata);
     }
 
+//    public int getIndexRequested() {
+////        System.out.println("\nPONG: getUserIDOnline getPort receive - " + port);
+//        byte[] bytes = new byte[2];
+//        bytes[0] = contents[index + 0];
+//        bytes[1] = contents[index + 1];
+//        ByteBuffer wrapped = ByteBuffer.wrap(bytes);
+////        System.out.println("getPort after: " + wrapped.getInt());
+//        return (int) wrapped.getShort();
+//    }
     public String getUserIDReq() {
         //  byte[] temp = new byte[16];
         String temp = "";

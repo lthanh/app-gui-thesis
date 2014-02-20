@@ -6,7 +6,7 @@ package PeerAction;
 
 import GUI.AppGUI;
 import SuperPeerAction.PostObject;
-import architecture.Utils;
+import Architecture_Posting.Utils;
 import postService.Post;
 import static postService.PostHandler.myIP;
 import static postService.PostHandler.recieveListPost;
@@ -16,9 +16,9 @@ import static postService.PostHandler.showListPost;
  *
  * @author admin
  */
-public class peerReceivePost {
+public class PeerReceivePost {
     
-    public peerReceivePost() {
+    public PeerReceivePost() {
     }
     
     public void receivePost(PostObject post) {

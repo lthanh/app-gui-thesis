@@ -5,10 +5,10 @@ package PeerAction;
  * and open the template in the editor.
  */
 import GUI.AppGUI;
-import architecture.Friends;
-import architecture.Pinger;
-import architecture.PongHandler;
-import architecture.Preferences;
+import Architecture_Posting.Friends;
+import Architecture_Posting.Pinger;
+import Architecture_Posting.PongHandler;
+import Architecture_Posting.Preferences;
 import java.util.List;
 import java.util.Vector;
 
@@ -16,9 +16,9 @@ import java.util.Vector;
  *
  * @author admin
  */
-public class checkUserOnlineAction {
+public class CheckUserOnlineAction {
 
-    public checkUserOnlineAction() {
+    public CheckUserOnlineAction() {
     }
     // Friends friends = new Friends();
     public static Vector<String> showUserNameFriend = new Vector<String>(); // show friends in JList

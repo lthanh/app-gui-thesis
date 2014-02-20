@@ -1,12 +1,22 @@
 package GUI;
 
+import Architecture_Posting.QHandler;
+import Architecture_Posting.Mine;
+import Architecture_Posting.Utils;
+import Architecture_Posting.SharedDirectory;
+import Architecture_Posting.NetworkManager;
+import Architecture_Posting.PingHandler;
+import Architecture_Posting.Pinger;
+import Architecture_Posting.Preferences;
+import Architecture_Posting.Login;
+import Architecture_Posting.PeriodicConnector;
+import Architecture_Posting.Listener;
 import static GUI.StatusForm.btnLike;
 import static GUI.StatusForm.postID;
 import static GUI.StatusForm.useIDLogin;
 import static GUI.StatusForm.userNameLoginString;
-import architecture.*;
-import PeerAction.checkUserOnlineAction;
-import PeerAction.peerReceivePost;
+import PeerAction.CheckUserOnlineAction;
+import PeerAction.PeerReceivePost;
 import SuperPeerAction.PostObject;
 import SuperPeerAction.Request_LikeCmt;
 import SuperPeerAction.Request_NewsFeed;
@@ -49,6 +59,9 @@ public class AppGUI extends javax.swing.JFrame {
     public static String userNameLiked = "";
     public static String userNameCommented = "";
     public static int numLikeCommented = 0;
+    //  public int lastIndexValueInList = 19;
+    public int previousIndexScroll = 0;
+    public static boolean isNewsFeed = true;  // TRUE = NEWSFEED session ; FALSE = PROFILE session
 
     public AppGUI() {
         initComponents();
@@ -84,9 +97,9 @@ public class AppGUI extends javax.swing.JFrame {
         }
 
         for (int i = 0; i < Preferences.friendList.size(); i++) {
-            checkUserOnlineAction.showUserNameFriend.add(Preferences.friendList.get(i).getUserName() + Preferences.friendList.get(i).getStatus());
+            CheckUserOnlineAction.showUserNameFriend.add(Preferences.friendList.get(i).getUserName() + Preferences.friendList.get(i).getStatus());
         }
-        listFriends.setListData(checkUserOnlineAction.showUserNameFriend);
+        listFriends.setListData(CheckUserOnlineAction.showUserNameFriend);
 
         System.out.println("Setting up file table...");
         new SharedDirectory(Login.SHAREPATH, Preferences.SAVEPATH);
@@ -206,6 +219,7 @@ public class AppGUI extends javax.swing.JFrame {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Status"));
 
+        btnPost.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         btnPost.setText("Post");
         btnPost.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -241,8 +255,8 @@ public class AppGUI extends javax.swing.JFrame {
                 .addComponent(rdoPl, javax.swing.GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(rdoPr, javax.swing.GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE)
-                .addGap(103, 103, 103)
-                .addComponent(btnPost, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(97, 97, 97)
+                .addComponent(btnPost))
             .addComponent(txtStatus)
         );
         jPanel3Layout.setVerticalGroup(
@@ -266,6 +280,16 @@ public class AppGUI extends javax.swing.JFrame {
                 listStatusMouseClicked(evt);
             }
         });
+        listStatus.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                listStatusMouseMoved(evt);
+            }
+        });
+        listStatus.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                listStatusValueChanged(evt);
+            }
+        });
         jScrollPane4.setViewportView(listStatus);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -276,7 +300,7 @@ public class AppGUI extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -345,13 +369,18 @@ public class AppGUI extends javax.swing.JFrame {
     private void btnFeedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFeedActionPerformed
         // TODO add your handling code here:
         System.out.println("ONCLICK Feed Before");
+
+        isNewsFeed = true;
         PostHandler.recieveListPost.removeAllElements();
         PostHandler.showListPost.removeAllElements();
         listStatus.setListData(new Object[0]);
 
-        Request_NewsFeed requestFeed = new Request_NewsFeed(Mine.getPort(), Mine.getIPAddress(), LoginForm.currentUser.getIdUserLogin());
+        Request_NewsFeed requestFeed = new Request_NewsFeed(Mine.getPort(), Mine.getIPAddress(), -1, LoginForm.currentUser.getIdUserLogin());
         NetworkManager.writeToAll(requestFeed);
         System.out.println("ONCLICK Feed After");
+
+        //  lastIndexValueInList = 19;
+        previousIndexScroll = 19;
 
     }//GEN-LAST:event_btnFeedActionPerformed
 
@@ -364,6 +393,8 @@ public class AppGUI extends javax.swing.JFrame {
     private void btnProfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProfileActionPerformed
         // TODO add your handling code here:
         System.out.println("ONCLICK Profile Before");
+
+        isNewsFeed = false;
         PostHandler.recieveListPost.removeAllElements();
         PostHandler.showListPost.removeAllElements();
         listStatus.setListData(new Object[0]);
@@ -371,9 +402,11 @@ public class AppGUI extends javax.swing.JFrame {
         nameUserSelected = LoginForm.currentUser.getUserName();
         idUserSelected = LoginForm.currentUser.getIdUserLogin();
 
-        Request_Profile requestProfile = new Request_Profile(Mine.getPort(), Mine.getIPAddress(), idUserSelected);
+        Request_Profile requestProfile = new Request_Profile(Mine.getPort(), Mine.getIPAddress(), -1, idUserSelected);
         NetworkManager.writeToAll(requestProfile);
         System.out.println("ONCLICK Profile After");
+
+        previousIndexScroll = 19;
 
 
     }//GEN-LAST:event_btnProfileActionPerformed
@@ -416,15 +449,6 @@ public class AppGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_listStatusMouseClicked
 
-    private void txtStatusKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtStatusKeyPressed
-        // TODO add your handling code here:
-
-        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-            showPost();
-        }
-
-    }//GEN-LAST:event_txtStatusKeyPressed
-
     private void listFriendsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listFriendsMouseClicked
         // TODO add your handling code here:
         JList list = (JList) evt.getSource();
@@ -439,15 +463,48 @@ public class AppGUI extends javax.swing.JFrame {
             nameUserSelected = Preferences.friendList.get(indexSelected).getUserName();
             idUserSelected = Preferences.friendList.get(indexSelected).getIdUserLogin();
 
-            Request_Profile requestProfile = new Request_Profile(Mine.getPort(), Mine.getIPAddress(), idUserSelected);
+            Request_Profile requestProfile = new Request_Profile(Mine.getPort(), Mine.getIPAddress(), -1, idUserSelected);
             NetworkManager.writeToAll(requestProfile);
             System.out.println("ONCLICK Friends After");
 
-
+            previousIndexScroll = 19;
 
         }
 
     }//GEN-LAST:event_listFriendsMouseClicked
+
+    private void listStatusValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listStatusValueChanged
+        // TODO add your handling code here:
+//        int lastIndex = evt.getLastIndex();
+//        System.out.println("VALUE INLIST");
+//
+//        System.out.println("VALUE INLIST:" + lastIndex);
+//
+//        // if (lastIndex >= lastIndexValueInList) {
+//        lastIndexValueInList = lastIndex;
+        //}
+    }//GEN-LAST:event_listStatusValueChanged
+
+    private void listStatusMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listStatusMouseMoved
+        // TODO add your handling code here:
+
+        int lastVisibleIndex = listStatus.getLastVisibleIndex();
+        System.out.println("LAST VISIBLE: " + lastVisibleIndex);
+
+        if ((lastVisibleIndex >= previousIndexScroll)) {
+            previousIndexScroll += 19;
+            loadMore(isNewsFeed, lastVisibleIndex + 1);
+
+            System.out.println("######### previousIndexScroll: " + previousIndexScroll);
+
+        }
+    }//GEN-LAST:event_listStatusMouseMoved
+
+    private void txtStatusKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtStatusKeyPressed
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+            showPost();
+        }
+    }//GEN-LAST:event_txtStatusKeyPressed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -478,8 +535,6 @@ public class AppGUI extends javax.swing.JFrame {
             public void run() {
                 AppGUI app = new AppGUI();
                 app.setVisible(true);
-
-
             }
         });
 
@@ -503,13 +558,24 @@ public class AppGUI extends javax.swing.JFrame {
         listStatus.setListData(listPostMessage);
     }
 
-    public static void showPost() {
+    public void loadMore(boolean isNewsFeed, int index) {
+        if (isNewsFeed) {
+            Request_NewsFeed requestFeed = new Request_NewsFeed(Mine.getPort(), Mine.getIPAddress(), index, LoginForm.currentUser.getIdUserLogin()); 
+            NetworkManager.writeToAll(requestFeed);
+        } else {
+            Request_Profile requestProfile = new Request_Profile(Mine.getPort(), Mine.getIPAddress(), index, idUserSelected);
+            NetworkManager.writeToAll(requestProfile);
+        }
+    }
+
+    public void showPost() {
+
         String textPost = txtStatus.getText();
         if (!textPost.trim().isEmpty()) {
             txtStatus.setText(null);
             String createdate = Utils.formatDate(new Date());
-            String friend = "9999999999999999~~0000000000000000~~1111111111111111~~5555555555555555~~8888888888888888~~4444444444444444~~3333333333333333~~2222222222222222~~6666666666666666";
-            String groupdSuperPeerID = "9999999999999999~~0000000000000000"; // ignore
+            String friend = "9999999999999999:0000000000000000:1111111111111111:5555555555555555:8888888888888888:4444444444444444:3333333333333333:2222222222222222:6666666666666666";
+            String groupdSuperPeerID = "9999999999999999:0000000000000000"; // ignore
             int liked = 0;
             int commented = 0;
 
@@ -519,6 +585,8 @@ public class AppGUI extends javax.swing.JFrame {
                 writePostPublic(LoginForm.currentUser.getIdUserLogin(), prPl, liked, commented, createdate.length(), friend.length(), groupdSuperPeerID.length(), userNameLoginString.length(), userNameLoginString, createdate, friend, groupdSuperPeerID, textPost);
 
             }
+        } else {
+            JOptionPane.showMessageDialog(this, "This status update appears to be blank.\n\n Please write something to update your status!", "Status Is Empty", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -625,6 +693,6 @@ public class AppGUI extends javax.swing.JFrame {
     public static javax.swing.JList listStatus;
     private static javax.swing.JRadioButton rdoPl;
     private static javax.swing.JRadioButton rdoPr;
-    public static javax.swing.JTextField txtStatus;
+    private javax.swing.JTextField txtStatus;
     // End of variables declaration//GEN-END:variables
 }

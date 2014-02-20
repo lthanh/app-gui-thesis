@@ -8,10 +8,10 @@ import GUI.AppGUI;
 import GUI.LoginForm;
 import GUI.StatusForm;
 import SuperPeerAction.SaveLikeCmtAction;
-import architecture.IPAddress;
-import architecture.NetworkManager;
-import architecture.Preferences;
-import architecture.SharedDirectory;
+import Architecture_Posting.IPAddress;
+import Architecture_Posting.NetworkManager;
+import Architecture_Posting.Preferences;
+import Architecture_Posting.SharedDirectory;
 import java.util.Vector;
 
 /**
