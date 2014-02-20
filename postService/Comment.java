@@ -5,9 +5,9 @@
 package postService;
 
 import GUI.AppGUI;
-import architecture.IPAddress;
-import architecture.Packet;
-import architecture.Utils;
+import Architecture_Posting.IPAddress;
+import Architecture_Posting.Packet;
+import Architecture_Posting.Utils;
 import java.nio.ByteBuffer;
 
 /**

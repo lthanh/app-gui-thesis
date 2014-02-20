@@ -4,8 +4,8 @@
  */
 package SuperPeerAction;
 
-import architecture.IPAddress;
-import architecture.Packet;
+import Architecture_Posting.IPAddress;
+import Architecture_Posting.Packet;
 
 /**
  *

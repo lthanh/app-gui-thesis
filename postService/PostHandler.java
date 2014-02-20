@@ -1,15 +1,19 @@
 package postService;
 
-import architecture.*;
+import Architecture_Posting.QueryHit;
+import Architecture_Posting.IPAddress;
+import Architecture_Posting.Pong;
+import Architecture_Posting.NetworkManager;
+import Architecture_Posting.ResultSet;
+import Architecture_Posting.Preferences;
 import postService.Post;
 import GUI.AppGUI;
 import GUI.LoginForm;
 import PeerAction.*;
 import SuperPeerAction.PostObject;
 import SuperPeerAction.Respond_Profile;
-import architecture.*;
-import static architecture.Preferences.friendList;
-import static architecture.Preferences.peerManageList;
+import static Architecture_Posting.Preferences.friendList;
+import static Architecture_Posting.Preferences.peerManageList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -54,7 +58,7 @@ public class PostHandler extends Thread {
     public void run() {
 
         String listFriendID = postMessage.getGroupFriendID();
-        String[] tempListFriendID = listFriendID.split("~~");
+        String[] tempListFriendID = listFriendID.split(":");
 
         //boolean isFriends = serverCheckListFriendorPeer(postMessage, Preferences.idFriendsListString);
         boolean isFriends = checkGroupFriendIDPost(LoginForm.currentUser.getIdUserLogin(), tempListFriendID);
@@ -79,7 +83,7 @@ public class PostHandler extends Thread {
             post.setGroupID(postMessage.getGroupFriendID());
             post.setCreatedDate(postMessage.getCreatedDate());
             post.setUserIDPost(postMessage.getUserID());
-            (new peerReceivePost()).receivePost(post);
+            (new PeerReceivePost()).receivePost(post);
         }
 
         if (isPeer) {

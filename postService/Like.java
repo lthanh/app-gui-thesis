@@ -4,8 +4,10 @@
  */
 package postService;
 
+import Architecture_Posting.Packet;
+import Architecture_Posting.IPAddress;
+import Architecture_Posting.Utils;
 import GUI.AppGUI;
-import architecture.*;
 
 /**
  *

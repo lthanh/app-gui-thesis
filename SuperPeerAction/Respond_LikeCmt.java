@@ -4,7 +4,7 @@
  */
 package SuperPeerAction;
 
-import architecture.Packet;
+import Architecture_Posting.Packet;
 import java.nio.ByteBuffer;
 
 /**

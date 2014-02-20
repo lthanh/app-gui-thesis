@@ -265,8 +265,8 @@
                   <Component id="rdoPl" pref="57" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="rdoPr" pref="63" max="32767" attributes="0"/>
-                  <EmptySpace min="-2" pref="103" max="-2" attributes="0"/>
-                  <Component id="btnPost" min="-2" pref="55" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="97" max="-2" attributes="0"/>
+                  <Component id="btnPost" min="-2" max="-2" attributes="0"/>
               </Group>
               <Component id="txtStatus" alignment="0" max="32767" attributes="0"/>
           </Group>
@@ -289,6 +289,9 @@
       <SubComponents>
         <Component class="javax.swing.JButton" name="btnPost">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Tahoma" size="12" style="1"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Post"/>
           </Properties>
           <Events>
@@ -324,9 +327,6 @@
           <Events>
             <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtStatusKeyPressed"/>
           </Events>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="9"/>
-          </AuxValues>
         </Component>
       </SubComponents>
     </Container>
@@ -347,7 +347,7 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="jScrollPane4" alignment="0" pref="241" max="32767" attributes="0"/>
+              <Component id="jScrollPane4" alignment="0" pref="240" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
@@ -371,6 +371,8 @@
               </Properties>
               <Events>
                 <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="listStatusMouseClicked"/>
+                <EventHandler event="mouseMoved" listener="java.awt.event.MouseMotionListener" parameters="java.awt.event.MouseEvent" handler="listStatusMouseMoved"/>
+                <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="listStatusValueChanged"/>
               </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="9"/>

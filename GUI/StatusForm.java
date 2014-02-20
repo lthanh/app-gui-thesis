@@ -1,9 +1,9 @@
 package GUI;
 
-import SuperPeerAction.ReqResLikeCmtHanlder;
+import SuperPeerAction.LikeCommentHanlder;
 import SuperPeerAction.SaveLikeCmtAction;
-import architecture.NetworkManager;
-import architecture.Preferences;
+import Architecture_Posting.NetworkManager;
+import Architecture_Posting.Preferences;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
@@ -74,7 +74,8 @@ public class StatusForm extends javax.swing.JFrame {
         txtComment = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(400, 362));
+        setMaximumSize(new java.awt.Dimension(439, 426));
+        setMinimumSize(new java.awt.Dimension(439, 426));
         setResizable(false);
 
         lbUseName.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
@@ -91,6 +92,11 @@ public class StatusForm extends javax.swing.JFrame {
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel4.setText("Like");
+        jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel4MouseClicked(evt);
+            }
+        });
 
         btnLike.setText("LIKE");
         btnLike.addActionListener(new java.awt.event.ActionListener() {
@@ -100,10 +106,14 @@ public class StatusForm extends javax.swing.JFrame {
         });
 
         lbComment.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lbComment.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         lbComment.setText("jLabel3");
+        lbComment.setAlignmentY(0.0F);
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel5.setText("Comment");
+        jLabel5.setAlignmentY(0.0F);
 
         btnComment.setText("COMMENT");
         btnComment.addActionListener(new java.awt.event.ActionListener() {
@@ -135,8 +145,6 @@ public class StatusForm extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addComponent(jScrollPane3)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lbUseName, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -147,27 +155,33 @@ public class StatusForm extends javax.swing.JFrame {
                         .addComponent(lbIDUserPost)
                         .addGap(35, 35, 35))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(68, 68, 68)
+                        .addGap(51, 51, 51)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btnLike, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(lbLike)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel4))
-                            .addComponent(btnLike, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel4)
+                                .addGap(11, 11, 11)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(loading)
                         .addGap(85, 85, 85)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
+                                .addGap(28, 28, 28)
                                 .addComponent(lbComment)
-                                .addGap(18, 18, 18)
+                                .addGap(27, 27, 27)
                                 .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE))
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnComment, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnComment, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE)
                                 .addGap(58, 58, 58))))
-                    .addComponent(txtComment))
-                .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtComment, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -182,18 +196,22 @@ public class StatusForm extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 22, Short.MAX_VALUE)
-                        .addComponent(loading))
-                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(lbLike)
-                                .addComponent(jLabel4))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(lbComment)
-                                .addComponent(jLabel5)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(loading))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(lbComment)
+                                    .addComponent(jLabel5))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(lbLike))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnComment)
                     .addComponent(btnLike))
@@ -265,8 +283,8 @@ public class StatusForm extends javax.swing.JFrame {
             Comment commentMessage = new Comment(postID.length(), userIDPost.length(), useIDLogin.length(), userNameLoginString.length(), postID, userIDPost, useIDLogin, userNameLoginString, txtComment.getText());
             (new SaveLikeCmtAction()).saveCommentSuperPeer(commentMessage);
             String commentCurrently = "< " + commentMessage.getNameComment() + " >:  " + commentMessage.getComment();
-            ReqResLikeCmtHanlder.comment.add(0, commentCurrently);
-            listComment.setListData(ReqResLikeCmtHanlder.comment);
+            LikeCommentHanlder.comment.add(0, commentCurrently);
+            listComment.setListData(LikeCommentHanlder.comment);
             //                         comment = comment + "< " + itemLine[5].substring(17) + " >:  " + itemLine[6].substring(20) + "\n\n";
 
 
@@ -287,8 +305,14 @@ public class StatusForm extends javax.swing.JFrame {
         int like = Integer.parseInt(lbLike.getText());
         if (like != 0) {
             JOptionPane.showMessageDialog(this, listUserNameLiked, "List of users liked your status!", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "No one like your status yet!", "List of users liked your status!", JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_lbLikeMouseClicked
+
+    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jLabel4MouseClicked
 
     /**
      * @param args the command line arguments
@@ -330,7 +354,9 @@ public class StatusForm extends javax.swing.JFrame {
         String[] userNameLIKED = userNameLike.split("\n\n");
 
         for (int i = 0; i < userNameLIKED.length; i++) {
-            listUserNameLiked += userNameLIKED[i] + "\n";
+            if (!userNameLIKED[i].equals("")) {
+                listUserNameLiked += userNameLIKED[i] + "\n";
+            }
         }
 
         boolean isLiked = checkLiked(userNameLIKED, userNameLoginString);
@@ -344,6 +370,7 @@ public class StatusForm extends javax.swing.JFrame {
         lbLike.setText(String.valueOf(numLike));
         lbComment.setText(String.valueOf(numComment));
         if (!comment.isEmpty()) {
+            //listComment.remove(0);
             listComment.setListData(comment);
         }
         lbLoading.setVisible(false);
@@ -354,7 +381,7 @@ public class StatusForm extends javax.swing.JFrame {
         System.out.println("###### RECEIVE After");
     }
 
-  public boolean checkLiked(String[] userNameLike, String userNameLogin) {
+    public boolean checkLiked(String[] userNameLike, String userNameLogin) {
         for (int i = 0; i < userNameLike.length; i++) {
             System.out.println("USER 1:" + userNameLike[i]);
             if (userNameLike[i].equals(userNameLogin)) {
@@ -363,6 +390,14 @@ public class StatusForm extends javax.swing.JFrame {
         }
         return false;
     }
+//    public void showLikeName() {
+//        int like = Integer.parseInt(lbLike.getText());
+//        if (like != 0) {
+//            JOptionPane.showMessageDialog(this, listUserNameLiked, "List of users liked your status!", JOptionPane.INFORMATION_MESSAGE);
+//        } else {
+//            JOptionPane.showMessageDialog(this, "Not already who liked your status!", "List of users liked your status!", JOptionPane.INFORMATION_MESSAGE);
+//        }
+//    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public static javax.swing.JButton btnComment;
     public static javax.swing.JButton btnLike;
