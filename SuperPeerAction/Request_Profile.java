@@ -14,6 +14,7 @@ import java.nio.ByteBuffer;
  */
 public class Request_Profile extends Packet {
 
+    IPAddress ip;
     int index = Packet.HEADER_LENGTH;
 
     public Request_Profile(int port, IPAddress ip, int indexProfile, String idUserIDReq) {
@@ -68,9 +69,17 @@ public class Request_Profile extends Packet {
         return (int) wrapped.getShort();
     }
 
-    public IPAddress getIP() {
-//        System.out.println("\nPONG: getIP receive - " + (new IPAddress((contents[index + 2] & 0xff), (contents[index + 3] & 0xff), (contents[index + 4] & 0xff), (contents[index + 5] & 0xff), getPort())));
-        return (new IPAddress((contents[index + 2] & 0xff), (contents[index + 3] & 0xff), (contents[index + 4] & 0xff), (contents[index + 5] & 0xff), getPort()));
+//    public IPAddress getIP() {
+////        System.out.println("\nPONG: getIP receive - " + (new IPAddress((contents[index + 2] & 0xff), (contents[index + 3] & 0xff), (contents[index + 4] & 0xff), (contents[index + 5] & 0xff), getPort())));
+//        return (new IPAddress((contents[index + 2] & 0xff), (contents[index + 3] & 0xff), (contents[index + 4] & 0xff), (contents[index + 5] & 0xff), getPort()));
+//    }
+
+    public IPAddress getProfileIP() {
+        return (ip);
+    }
+
+    public void setProfileIP(IPAddress ip) {
+        this.ip = ip;
     }
 
     public int getIndexProfile() {

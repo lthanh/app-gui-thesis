@@ -24,6 +24,7 @@ public class Packet {
     public static final byte HOPS = 0; // All new packets start at zero hops
     protected byte[] contents;
     public byte repayload;
+    private static long tempAdd = 1;
 
     public Packet(byte payload, int length) {
         repayload = payload;
@@ -54,7 +55,7 @@ public class Packet {
          */
 
         for (int i = 0; i < 16; i++) {
-            contents[i] = (byte) ((255 * Math.random()) - 128); // Unique Message ID, and more twos complement problems
+            contents[i] = (byte) ((255 * Math.random()) - 128 + (tempAdd++)); // Unique Message ID, and more twos complement problems
         }
 
         contents[16] = payload; //Payload descriptor
@@ -82,8 +83,8 @@ public class Packet {
     }
 
     public int totalLength() {
-        System.out.println("PACKET: LENGTH OF CONTENT - " + this.length());
-        System.out.println("\nPACKET: CONTENT + HEADER: " + (HEADER_LENGTH + this.length()));
+//        System.out.println("PACKET: LENGTH OF CONTENT - " + this.length());
+//        System.out.println("\nPACKET: CONTENT + HEADER: " + (HEADER_LENGTH + this.length()));
         return (this.length() + HEADER_LENGTH);
     }
 
@@ -124,7 +125,7 @@ public class Packet {
 
         ByteBuffer wrapped = ByteBuffer.wrap(messageID);
         long idMessage = wrapped.getLong(0);
-        System.out.println("Packet long : " + idMessage);
+//        System.out.println("Packet long : " + idMessage);
 
         return (idMessage);
     }

@@ -6,16 +6,16 @@ package SuperPeerAction;
 
 import GUI.AppGUI;
 import GUI.LoginForm;
-import PeerAction.PeerReceivePost;
 import Architecture_Posting.IPAddress;
 import Architecture_Posting.NetworkManager;
+import Architecture_Posting.Packet;
 import Architecture_Posting.Preferences;
 import Architecture_Posting.SharedDirectory;
 import Architecture_Posting.Utils;
-import java.util.List;
-import java.util.Vector;
-import static postService.PostHandler.recieveListPost;
-import static postService.PostHandler.showListPost;
+import static GUI.AppGUI.startShowLoading;
+import java.util.*;
+import static PostingService.PostHandler.recieveListPost;
+import static PostingService.PostHandler.showListPost;
 
 /**
  *
@@ -23,16 +23,22 @@ import static postService.PostHandler.showListPost;
  */
 public class NewsFeedHandler extends Thread {
 
+    public static Map request_NewsFeedTable;
+    public static Map respond_NewsFeedTable;
     IPAddress requestIP;
+    boolean isFileStoring;
+    Utils utils = new Utils();
     Request_NewsFeed request_NewsFeed;
     Respond_NewsFeed respond_NewsFeed;
+    Request_NewsFeed requestMatch;
     public static Vector<PostObject> listPostVector;
     public static Vector<String> listPostStringShow;
+    String userIDLogin = LoginForm.currentUser.getIdUserLogin();
 
-    public NewsFeedHandler(Request_NewsFeed request_NewsFeed, Respond_NewsFeed respond_NewsFeed) {
+    public NewsFeedHandler(IPAddress ip, Request_NewsFeed request_NewsFeed, Respond_NewsFeed respond_NewsFeed) {
         if (request_NewsFeed != null) {
             this.request_NewsFeed = request_NewsFeed;
-            this.requestIP = request_NewsFeed.getIP();
+            request_NewsFeed.setNewsFeedIP(ip);
 
         }
         if (respond_NewsFeed != null) {
@@ -40,46 +46,86 @@ public class NewsFeedHandler extends Thread {
         }
     }
 
+    public static void initRequestNewsFeedTable() {
+        request_NewsFeedTable = new Hashtable(5000);
+    }
+
+    public static void initRespondNewsFeedTable() {
+        respond_NewsFeedTable = new Hashtable(5000);
+    }
+
     public void run() {
         if (request_NewsFeed != null) {
-            if (SharedDirectory.listFileIDSaving.contains(request_NewsFeed.getIdUserIDReq() + "_NewsFeed.txt")) {
-                System.out.println("## REQUEST listFileIDSaving.contains OK ");
-                String listFeed = Preferences.readUserPOSTorNEWSFEED(Preferences.NEWSFEED, request_NewsFeed.getIdUserIDReq(), request_NewsFeed.getIndexPost());
-                Respond_NewsFeed respond = new Respond_NewsFeed(request_NewsFeed.getIndexPost(), request_NewsFeed.getIdUserIDReq(), listFeed);
-                NetworkManager.writeToOne(requestIP, respond);
+            if (!request_NewsFeedTable.containsKey(request_NewsFeed.getMessageID())) {
+                request_NewsFeedTable.put(request_NewsFeed.getMessageID(), request_NewsFeed);
+
+                isFileStoring = utils.checkFileSharing(request_NewsFeed.getIdUserIDReq() + "_NewsFeed.txt");
+
+                if (isFileStoring) { // check server store news feed of the user was requesting
+                    System.out.println("## REQUEST listFileIDSaving.contains OK ");
+                    String listFeed = Preferences.readUserPOSTorNEWSFEED(Preferences.NEWSFEED, request_NewsFeed.getIdUserIDReq(), request_NewsFeed.getIndexPost());
+                    Respond_NewsFeed respond = new Respond_NewsFeed(request_NewsFeed.getIndexPost(), request_NewsFeed.getIdUserIDReq(), listFeed, request_NewsFeed.getMessageID());
+                    NetworkManager.writeToOne(request_NewsFeed.getNewsFeedIP(), respond);
+
+                } else { // server not store news feed of the user was requesting
+                    NetworkManager.writeButOne(request_NewsFeed.getNewsFeedIP(), request_NewsFeed);
+                }
             }
         }
         if (respond_NewsFeed != null) {
-           // PeerReceivePost prc = new PeerReceivePost();
-            System.out.println("######## RESPOND");
+            if (!respond_NewsFeedTable.containsKey(respond_NewsFeed.getMessageID())) {
+                respond_NewsFeedTable.put(respond_NewsFeed.getMessageID(), respond_NewsFeed);
+                System.out.println("######## RESPOND");
 
-            String userIDInRes = respond_NewsFeed.getUserIDReq();//respond_ProfileMsg.getListPost().split("\n\n")[0].split("~~")[2].substring(9);
-            if (userIDInRes.equals(LoginForm.currentUser.getIdUserLogin())) {
+                String userIDInRes = respond_NewsFeed.getUserIDReq();
+                if (userIDInRes.equals(userIDLogin)) {
 
-                String listFeedRespond = respond_NewsFeed.getListPost();
+                    String listFeedRespond = respond_NewsFeed.getListPost();
 
-                System.out.println("######## RESPOND listPostRespond: " + listFeedRespond);
-                if (listFeedRespond.trim().length() != 0) {
-                    String[] tempListPost = listFeedRespond.split("\n\n");
+                    System.out.println("######## RESPOND listPostRespond: " + listFeedRespond);
+                    if (listFeedRespond.trim().length() != 0) {
+                        String[] tempListPost = listFeedRespond.split("\n\n");
 
-                    for (int i = 0; i < tempListPost.length; i++) {
-                        PostObject newsFeedObject = new PostObject();
-                        String[] line = tempListPost[i].split("~~");
-                        newsFeedObject.setPostID(Long.parseLong(line[1].substring(8)));
-                        newsFeedObject.setUserIDPost(line[2].substring(11));
-                        newsFeedObject.setNamePost(line[3].substring(14));
-                        newsFeedObject.setContentPost(line[4].substring(14));
-                        newsFeedObject.setCreatedDate(line[5].substring(12));
+                        for (int i = 0; i < tempListPost.length; i++) {
+                            PostObject newsFeedObject = new PostObject();
+                            String[] line = tempListPost[i].split("~~");
+                            newsFeedObject.setPostID(Long.parseLong(line[1].substring(8)));
+                            newsFeedObject.setUserIDPost(line[2].substring(11));
+                            newsFeedObject.setNamePost(line[3].substring(14));
+                            newsFeedObject.setContentPost(line[4].substring(14));
+                            newsFeedObject.setCreatedDate(line[5].substring(12));
 
-                        newsFeedObject.setGroupID("");
-//                        if (respond_NewsFeed.getIndexRequested() != -1) {
-                        recieveListPost.add(newsFeedObject);
-                        showListPost.add(Utils.formSHOWSTATUS(newsFeedObject.getNamePost(), newsFeedObject.getContentPost(), newsFeedObject.getCreatedDate()));
-                        AppGUI.inform(showListPost);
-//                        } else {
-//                            prc.receivePost(newsFeedObject);
-//                        }
+                            newsFeedObject.setGroupID("");
+                            recieveListPost.add(newsFeedObject);
+                            showListPost.add(Utils.formSHOWSTATUS(newsFeedObject.getNamePost(), newsFeedObject.getContentPost(), newsFeedObject.getCreatedDate()));
+
+                        }
+
+                        // need sleep 6 seconds before show status
+                        int count = 0;
+                        long timeout = 1500;
+                        while (true) {
+                            try {
+                                Thread.sleep(timeout);
+                            } catch (InterruptedException ie) {
+                                ie.printStackTrace();
+                            }
+
+                            count++;
+                            if (count == 2) {
+                                AppGUI.loadingForm.hide();
+                                startShowLoading = -1;
+                                AppGUI.inform(showListPost); // show list post
+                                break;
+                            }
+                        }
+
+
                     }
+                } else {
+                    requestMatch = (Request_NewsFeed) request_NewsFeedTable.get(respond_NewsFeed.getMessageID());
+                    requestIP = requestMatch.getNewsFeedIP();
+                    NetworkManager.writeToOne(requestIP, respond_NewsFeed);
                 }
             }
         }

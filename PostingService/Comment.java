@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package postService;
+package PostingService;
 
 import GUI.AppGUI;
 import Architecture_Posting.IPAddress;
@@ -82,18 +82,18 @@ public class Comment extends Packet {
 //        contents[(g + index + 4 + idPost.length() + idUserPost.length() + idUserComment.length() + nameComment.length())] = 0;
 
 //        AppGUI.numMessageSent++; // count number of message sent at one section to set message id
-        ip = null;
+      //  ip = null;
     }
 
     public Comment(byte[] rawdata) {
         super(rawdata);
     }
 
-    public IPAddress getIP() {
+    public IPAddress getCommentIP() {
         return (ip);
     }
 
-    public void setIP(IPAddress ip) {
+    public void setCommentIP(IPAddress ip) {
         this.ip = ip;
     }
 

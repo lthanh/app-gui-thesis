@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package postService;
+package PostingService;
 
 import Architecture_Posting.Packet;
 import Architecture_Posting.IPAddress;
@@ -105,7 +105,7 @@ public class Like extends Packet {
         System.out.println("Like -getNameLike: " + nameLikeD);
         
 //        AppGUI.numMessageSent++; // count number of message sent at one section to set message id
-        ip = null;
+     //   ip = null;
 
     }
 
@@ -113,11 +113,11 @@ public class Like extends Packet {
         super(rawdata);
     }
 
-    public IPAddress getIP() {
+    public IPAddress getLikeIP() {
         return (ip);
     }
 
-    public void setIP(IPAddress ip) {
+    public void setLikeIP(IPAddress ip) {
         this.ip = ip;
     }
 

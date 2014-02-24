@@ -7,6 +7,7 @@ import java.nio.IntBuffer;
 
 public class Pong extends Packet {
 
+    IPAddress ip;
     private int index = HEADER_LENGTH;
 
     public Pong(int port, IPAddress ip, String userID, int userNameLength, int listFileIDStoreLength, String listFileIDStore, String userNameOnline, long messageid) {
@@ -184,6 +185,14 @@ public class Pong extends Packet {
 
     public Pong(byte[] rawdata) {
         super(rawdata);
+    }
+
+    public void setPongRespondIP(IPAddress ip) { // Ip in connection when receive a pong message
+        this.ip = ip;
+    }
+
+    public IPAddress getPongRespondIP() {
+        return (ip);
     }
 
     public int getPort() {

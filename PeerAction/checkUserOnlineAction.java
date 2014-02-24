@@ -9,6 +9,7 @@ import Architecture_Posting.Friends;
 import Architecture_Posting.Pinger;
 import Architecture_Posting.PongHandler;
 import Architecture_Posting.Preferences;
+import Architecture_Posting.Utils;
 import java.util.List;
 import java.util.Vector;
 
@@ -24,11 +25,14 @@ public class CheckUserOnlineAction {
     public static Vector<String> showUserNameFriend = new Vector<String>(); // show friends in JList
     public static Vector<Friends> userInPong = new Vector<Friends>();
     public static Vector<Friends> friendObjectCheckOnline; // list friend object currently online
+    Vector<Friends> tempListFriend = Utils.listFriendsIgnoreUserLogin(Preferences.friendList);
 
     public void checkUserOnline() {
         Pinger.pingCounter = 0;
-//        System.out.println("\n checkUserOnlineAction: userInPongObject Pinger.pingCounter: " + Pinger.pingCounter);
-//        System.out.println("\n checkUserOnlineAction: userInPongObject PongHandler.listPong: " + PongHandler.listPong.toString());
+        Pinger.numberTimesCounter += 4;
+        if (Pinger.numberTimesCounter == 12) {
+            Pinger.numberTimesCounter = 4;
+        }
 
         if (!PongHandler.listPong.isEmpty()) {
             for (int i = 0; i < PongHandler.listPong.size(); i++) {
@@ -54,7 +58,7 @@ public class CheckUserOnlineAction {
 //        System.out.println("\n checkUserOnlineAction: LIST PONG userPongObject outside for: " + userPongObject.getUserName());
 //        System.out.println("\n checkUserOnlineAction: LIST PONG userPongObject outside for: " + userPongObject.getStatus());
 
-        Vector<Friends> newFriendList = checkFriendOnline(userInPong, Preferences.friendList); // check user in pong with list of friends
+        Vector<Friends> newFriendList = checkFriendOnline(userInPong, tempListFriend); // check user in pong with list of friends
 
 //        System.out.println("\n checkUserOnlineAction: newFriendList : " + newFriendList.toString());
         showUserNameFriend.removeAllElements();

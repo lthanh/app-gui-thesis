@@ -15,6 +15,7 @@ import java.nio.ByteBuffer;
 public class Request_NewsFeed extends Packet {
 
     int index = Packet.HEADER_LENGTH;
+    private IPAddress ip;
 
     public Request_NewsFeed(int port, IPAddress ip, int indexPost, String idUserIDReq) {
         super(Packet.REQ_NewsFeed, (8 + idUserIDReq.length()));
@@ -67,9 +68,17 @@ public class Request_NewsFeed extends Packet {
         return (int) wrapped.getShort();
     }
 
-    public IPAddress getIP() {
-//        System.out.println("\nPONG: getIP receive - " + (new IPAddress((contents[index + 2] & 0xff), (contents[index + 3] & 0xff), (contents[index + 4] & 0xff), (contents[index + 5] & 0xff), getPort())));
-        return (new IPAddress((contents[index + 2] & 0xff), (contents[index + 3] & 0xff), (contents[index + 4] & 0xff), (contents[index + 5] & 0xff), getPort()));
+//    public IPAddress getIP() {
+////        System.out.println("\nPONG: getIP receive - " + (new IPAddress((contents[index + 2] & 0xff), (contents[index + 3] & 0xff), (contents[index + 4] & 0xff), (contents[index + 5] & 0xff), getPort())));
+//        return (new IPAddress((contents[index + 2] & 0xff), (contents[index + 3] & 0xff), (contents[index + 4] & 0xff), (contents[index + 5] & 0xff), getPort()));
+//    }
+
+    public IPAddress getNewsFeedIP() {
+        return (ip);
+    }
+
+    public void setNewsFeedIP(IPAddress ip) {
+        this.ip = ip;
     }
 
     public int getIndexPost() {

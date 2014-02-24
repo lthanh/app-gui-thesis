@@ -1,5 +1,6 @@
 package GUI;
 
+import Architecture_Posting.Friends;
 import Architecture_Posting.QHandler;
 import Architecture_Posting.Mine;
 import Architecture_Posting.Utils;
@@ -11,12 +12,14 @@ import Architecture_Posting.Preferences;
 import Architecture_Posting.Login;
 import Architecture_Posting.PeriodicConnector;
 import Architecture_Posting.Listener;
+import Architecture_Posting.PongHandler;
 import static GUI.StatusForm.btnLike;
 import static GUI.StatusForm.postID;
 import static GUI.StatusForm.useIDLogin;
 import static GUI.StatusForm.userNameLoginString;
 import PeerAction.CheckUserOnlineAction;
 import PeerAction.PeerReceivePost;
+import PostingService.LikeCommentHandler;
 import SuperPeerAction.PostObject;
 import SuperPeerAction.Request_LikeCmt;
 import SuperPeerAction.Request_NewsFeed;
@@ -35,9 +38,21 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
-import postService.LikeCommentListObject;
-import postService.Post;
-import postService.PostHandler;
+import PostingService.LikeCommentListObject;
+import PostingService.Post;
+import PostingService.PostHandler;
+import SuperPeerAction.NewsFeedHandler;
+import SuperPeerAction.ProfileHandler;
+import SuperPeerAction.ReqRes_LikeCommentHanlder;
+import java.awt.Color;
+import java.awt.Font;
+import java.io.File;
+import java.io.IOException;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /*
  * To change this template, choose Tools | Templates
@@ -59,9 +74,19 @@ public class AppGUI extends javax.swing.JFrame {
     public static String userNameLiked = "";
     public static String userNameCommented = "";
     public static int numLikeCommented = 0;
-    //  public int lastIndexValueInList = 19;
     public int previousIndexScroll = 0;
     public static boolean isNewsFeed = true;  // TRUE = NEWSFEED session ; FALSE = PROFILE session
+    public static boolean isShowingStatusPopUp = false;
+    public static boolean isShowingFriendsGroupPopUp = false;
+    public static String useIDLogin = LoginForm.currentUser.getIdUserLogin();
+    public static String userNameLoginString = LoginForm.currentUser.getUserName();
+    public static JFrame loadingForm = (new LoadingPopUp()).loadingForm();
+    public static long startShowLoading; // use to counter time of loading
+    // Get elapsed time in seconds
+    float elapsedTimeSec;
+    Utils utils = new Utils();
+    boolean isServer = utils.checkServerName(userNameLoginString);
+    Vector<Friends> tempListFriend;
 
     public AppGUI() {
         initComponents();
@@ -70,39 +95,45 @@ public class AppGUI extends javax.swing.JFrame {
         setTitle("Posting Message Service");
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-//                Preferences.writeToUserFile(LoginForm.currentUser.getIdUserLogin(), LoginForm.currentUser.getUserName(), numMessageSent);
                 System.exit(0);
             }
         });
         groupRadio.add(rdoPl);
         groupRadio.add(rdoPr);
         rdoPl.setSelected(true);
-
-        // get UserID to byte array
-        lbUserName.setText(LoginForm.currentUser.getUserName());
+        lbUserName.setText(userNameLoginString);
 
         // Gnutella 
         System.out.println("Setting up hash tables...");
-        QHandler.initQueryTable();
         PingHandler.initPingTable();
+        PongHandler.initPongTable();
+        PostHandler.initPostTable();
+        NewsFeedHandler.initRequestNewsFeedTable();
+        NewsFeedHandler.initRespondNewsFeedTable();
+        ProfileHandler.initRequestProfileTable();
+        ProfileHandler.initRespondProfileTable();
+        LikeCommentHandler.initLikeTable();
+        LikeCommentHandler.initCommentTable();
+        ReqRes_LikeCommentHanlder.initRequestLikeCommentTable();
+        ReqRes_LikeCommentHanlder.initRespondLikeCommentTable();
         System.out.println("Determining network address...");
         Mine.updateAddress();
         System.out.println("Reading preferences file...");
-        //  new Searcher();
+        SharedDirectory.generateFileList(new File(Login.SHAREPATH)); // update list file sharing
         Preferences.readFromFile();
         Preferences.readFriendFile();
 
-        if (LoginForm.currentUser.getUserName().equals("Server") || LoginForm.currentUser.getUserName().equals("Server1")) {
+        if (isServer) {
             Preferences.readListPeerManage();
         }
 
-        for (int i = 0; i < Preferences.friendList.size(); i++) {
-            CheckUserOnlineAction.showUserNameFriend.add(Preferences.friendList.get(i).getUserName() + Preferences.friendList.get(i).getStatus());
+        tempListFriend = Utils.listFriendsIgnoreUserLogin(Preferences.friendList);
+        for (int i = 0; i < tempListFriend.size(); i++) {
+            CheckUserOnlineAction.showUserNameFriend.add(tempListFriend.get(i).getUserName() + tempListFriend.get(i).getStatus());
         }
         listFriends.setListData(CheckUserOnlineAction.showUserNameFriend);
 
         System.out.println("Setting up file table...");
-        new SharedDirectory(Login.SHAREPATH, Preferences.SAVEPATH);
         Listener listener = new Listener();
         listener.start(); // Beginning listening for network connections
         PeriodicConnector periodicconnector = new PeriodicConnector(Preferences.AUTO_CONNECT); // Begin actively trying to connect
@@ -110,6 +141,21 @@ public class AppGUI extends javax.swing.JFrame {
         Pinger pinger = new Pinger();
         pinger.start(); // Start sending out periodic pings.
 
+        for (int i = 0; i < Preferences.peerManageList.size(); i++) {
+            if (!SharedDirectory.listFileIDSaving.contains(Preferences.peerManageList.get(i))) {
+                try {
+                    File userFile = new File(Login.SHAREPATH + Preferences.peerManageList.get(i) + ".txt");
+                    File newsfeedFile = new File(Login.SHAREPATH + Preferences.peerManageList.get(i) + "_NewsFeed.txt");
+                    userFile.createNewFile(); // create peer's file if they are not exist
+                    newsfeedFile.createNewFile(); // create newsfeed peer's file
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
+        SharedDirectory.generateFileList(new File(Login.SHAREPATH)); // update list file sharing after check list file sharing
 
     }
 
@@ -126,7 +172,6 @@ public class AppGUI extends javax.swing.JFrame {
         lbUserName = new javax.swing.JLabel();
         btnNoti = new javax.swing.JButton();
         btnFeed = new javax.swing.JButton();
-        btnSetting = new javax.swing.JButton();
         btnProfile = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -138,6 +183,7 @@ public class AppGUI extends javax.swing.JFrame {
         rdoPr = new javax.swing.JRadioButton();
         rdoPl = new javax.swing.JRadioButton();
         txtStatus = new javax.swing.JTextField();
+        btnFriendsGroup = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         listStatus = new javax.swing.JList();
@@ -159,13 +205,6 @@ public class AppGUI extends javax.swing.JFrame {
         btnFeed.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnFeedActionPerformed(evt);
-            }
-        });
-
-        btnSetting.setText("Setting");
-        btnSetting.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSettingActionPerformed(evt);
             }
         });
 
@@ -214,7 +253,7 @@ public class AppGUI extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE))
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE))
         );
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Status"));
@@ -247,15 +286,25 @@ public class AppGUI extends javax.swing.JFrame {
             }
         });
 
+        btnFriendsGroup.setText("Friends Group");
+        btnFriendsGroup.setAlignmentY(2.5F);
+        btnFriendsGroup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFriendsGroupActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(rdoPl, javax.swing.GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
+                .addComponent(rdoPl, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(rdoPr, javax.swing.GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE)
-                .addGap(97, 97, 97)
+                .addComponent(rdoPr, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnFriendsGroup)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnPost))
             .addComponent(txtStatus)
         );
@@ -265,10 +314,11 @@ public class AppGUI extends javax.swing.JFrame {
                 .addComponent(txtStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(rdoPl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(rdoPr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnPost))
-                .addGap(6, 6, 6))
+                    .addComponent(rdoPl)
+                    .addComponent(rdoPr)
+                    .addComponent(btnPost)
+                    .addComponent(btnFriendsGroup))
+                .addGap(2, 2, 2))
         );
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Friends' status"));
@@ -300,7 +350,7 @@ public class AppGUI extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -313,33 +363,32 @@ public class AppGUI extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(14, 14, 14)
                         .addComponent(lbUserName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnNoti, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(20, 20, 20)
-                        .addComponent(btnFeed, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnProfile, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnSetting, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnNoti, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(33, 33, 33)
+                        .addComponent(btnFeed, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(37, 37, 37)
+                        .addComponent(btnProfile, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(lbUserName, javax.swing.GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)
-                    .addComponent(btnNoti, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnFeed, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnProfile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnSetting, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lbUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnProfile, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnFeed, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnNoti, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(3, 3, 3)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -362,6 +411,10 @@ public class AppGUI extends javax.swing.JFrame {
         numLikeCommented = 0;
         userNameLiked = "";
         userNameCommented = "";
+
+
+        loadingForm.hide();
+        startShowLoading = -1;
         JOptionPane.showMessageDialog(this, noti, "Notification", JOptionPane.INFORMATION_MESSAGE);
 
     }//GEN-LAST:event_btnNotiActionPerformed
@@ -378,17 +431,20 @@ public class AppGUI extends javax.swing.JFrame {
         Request_NewsFeed requestFeed = new Request_NewsFeed(Mine.getPort(), Mine.getIPAddress(), -1, LoginForm.currentUser.getIdUserLogin());
         NetworkManager.writeToAll(requestFeed);
         System.out.println("ONCLICK Feed After");
-
-        //  lastIndexValueInList = 19;
         previousIndexScroll = 19;
 
+        loadingForm.show();
+        startShowLoading = System.currentTimeMillis();
+        System.out.println("startShowLoading: " + startShowLoading);
     }//GEN-LAST:event_btnFeedActionPerformed
 
-    private void btnSettingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSettingActionPerformed
+    private void btnFriendsGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFriendsGroupActionPerformed
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "Quynh Dao\nKim Yen\nThanh Thao\nMinh Hieu\nVinh Khanh\nTien Thong\nServer\nServer1", "Group of Friends", JOptionPane.INFORMATION_MESSAGE);
-
-    }//GEN-LAST:event_btnSettingActionPerformed
+        if (isShowingFriendsGroupPopUp == false) {
+            btnFriendsGroup.setEnabled(false);
+            FriendsGroupForm a = new FriendsGroupForm();
+        }
+    }//GEN-LAST:event_btnFriendsGroupActionPerformed
 
     private void btnProfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProfileActionPerformed
         // TODO add your handling code here:
@@ -407,7 +463,9 @@ public class AppGUI extends javax.swing.JFrame {
         System.out.println("ONCLICK Profile After");
 
         previousIndexScroll = 19;
-
+        loadingForm.show();
+        startShowLoading = System.currentTimeMillis();
+        System.out.println("startShowLoading: " + startShowLoading);
 
     }//GEN-LAST:event_btnProfileActionPerformed
 
@@ -430,21 +488,29 @@ public class AppGUI extends javax.swing.JFrame {
         JList list = (JList) evt.getSource();
         if (evt.getClickCount() == 1) {
             int indexSelected = list.locationToIndex(evt.getPoint());
+            System.out.println("locationToIndex:" + indexSelected);
+            if (indexSelected != -1) {
+                // int indexSelected = listStatus.getSelectedIndex();
+                // Post postSelected = PostHandler.recieveListPost.get(indexSelected).getPostID();
+                PostObject postSelectedObject = PostHandler.recieveListPost.get(indexSelected);
+                postSelectedID = postSelectedObject.getPostID();
+                if (postSelectedObject.getUserIDPost() != "") {
+                    System.out.println("Send request before");
+                    if (isShowingStatusPopUp == false) {
+                        Request_LikeCmt req = new Request_LikeCmt(Mine.getPort(), Mine.getIPAddress(), postSelectedObject.getPostID(), postSelectedObject.getUserIDPost(), useIDLogin);
+                        NetworkManager.writeToAll(req);
+                        loadingForm.show();
+                        startShowLoading = System.currentTimeMillis();
 
-            // int indexSelected = listStatus.getSelectedIndex();
-            // Post postSelected = PostHandler.recieveListPost.get(indexSelected).getPostID();
-            PostObject postSelectedObject = PostHandler.recieveListPost.get(indexSelected);
-            postSelectedID = postSelectedObject.getPostID();
-
-            if (postSelectedObject.getUserIDPost() != "") {
-                System.out.println("Send request before");
-                Request_LikeCmt req = new Request_LikeCmt(Mine.getPort(), Mine.getIPAddress(), postSelectedObject.getPostID(), postSelectedObject.getUserIDPost());
-                NetworkManager.writeToAll(req);
-                System.out.println("Send request after");
-
-                Vector<String> tempComment = new Vector<String>();
-                statusPOPUP = new StatusForm(postSelectedObject.getNamePost(), postSelectedObject.getContentPost(), 0, 0, tempComment, postSelectedObject.getPostID(), postSelectedObject.getUserIDPost());
-                statusPOPUP.show();
+                        System.out.println("startShowLoading: " + startShowLoading);
+                        Vector<String> tempComment = new Vector<String>();
+                        statusPOPUP = new StatusForm(postSelectedObject.getNamePost(), postSelectedObject.getContentPost(), 0, 0, tempComment, postSelectedObject.getPostID(), postSelectedObject.getUserIDPost());
+//                        statusPOPUP.setEnabled(false);
+                        statusPOPUP.show();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "You are opening another Status window !\n\nPlease close it before you open another one.", "Warning!", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
             }
         }
     }//GEN-LAST:event_listStatusMouseClicked
@@ -453,8 +519,8 @@ public class AppGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         JList list = (JList) evt.getSource();
         if (evt.getClickCount() == 1) {
-            System.out.println("ONCLICK Friends Before");
 
+            isNewsFeed = false;
             PostHandler.recieveListPost.removeAllElements();
             PostHandler.showListPost.removeAllElements();
             listStatus.setListData(new Object[0]);
@@ -465,28 +531,31 @@ public class AppGUI extends javax.swing.JFrame {
 
             Request_Profile requestProfile = new Request_Profile(Mine.getPort(), Mine.getIPAddress(), -1, idUserSelected);
             NetworkManager.writeToAll(requestProfile);
-            System.out.println("ONCLICK Friends After");
 
             previousIndexScroll = 19;
+            loadingForm.show();
+            startShowLoading = System.currentTimeMillis();
+            System.out.println("startShowLoading: " + startShowLoading);
 
         }
 
     }//GEN-LAST:event_listFriendsMouseClicked
 
+    // do not do anything
     private void listStatusValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listStatusValueChanged
-        // TODO add your handling code here:
-//        int lastIndex = evt.getLastIndex();
-//        System.out.println("VALUE INLIST");
-//
-//        System.out.println("VALUE INLIST:" + lastIndex);
-//
-//        // if (lastIndex >= lastIndexValueInList) {
-//        lastIndexValueInList = lastIndex;
-        //}
     }//GEN-LAST:event_listStatusValueChanged
 
     private void listStatusMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listStatusMouseMoved
         // TODO add your handling code here:
+
+
+        elapsedTimeSec = (System.currentTimeMillis() - startShowLoading) / 1000F; // get time to close loading when they can not auto close, in case of message does not respond.
+        if (startShowLoading != -1 && elapsedTimeSec > 15) {
+            loadingForm.hide();
+            startShowLoading = -1;
+        }
+        System.out.println("elapsedTimeSec: " + elapsedTimeSec);
+
 
         int lastVisibleIndex = listStatus.getLastVisibleIndex();
         System.out.println("LAST VISIBLE: " + lastVisibleIndex);
@@ -534,7 +603,12 @@ public class AppGUI extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 AppGUI app = new AppGUI();
+//                JPanel p = new FriendsGroup();
+//                app.getContentPane().add(p);
+                // app.add(loadingForm);
+                app.pack();
                 app.setVisible(true);
+
             }
         });
 
@@ -551,20 +625,23 @@ public class AppGUI extends javax.swing.JFrame {
     }
 
     public static void inform(Vector<String> listPostMessage) {
-
-        //Integer port = new Integer(ip.getPort());
-        // String myip = ip.toString();
         System.out.println("\n AppGUI - Post: " + listPostMessage.toString());
         listStatus.setListData(listPostMessage);
     }
 
     public void loadMore(boolean isNewsFeed, int index) {
         if (isNewsFeed) {
-            Request_NewsFeed requestFeed = new Request_NewsFeed(Mine.getPort(), Mine.getIPAddress(), index, LoginForm.currentUser.getIdUserLogin()); 
+            Request_NewsFeed requestFeed = new Request_NewsFeed(Mine.getPort(), Mine.getIPAddress(), index, LoginForm.currentUser.getIdUserLogin());
             NetworkManager.writeToAll(requestFeed);
+            loadingForm.show();
+            startShowLoading = System.currentTimeMillis();
+            System.out.println("startShowLoading: " + startShowLoading);
         } else {
             Request_Profile requestProfile = new Request_Profile(Mine.getPort(), Mine.getIPAddress(), index, idUserSelected);
             NetworkManager.writeToAll(requestProfile);
+            loadingForm.show();
+            startShowLoading = System.currentTimeMillis();
+            System.out.println("startShowLoading: " + startShowLoading);
         }
     }
 
@@ -574,10 +651,16 @@ public class AppGUI extends javax.swing.JFrame {
         if (!textPost.trim().isEmpty()) {
             txtStatus.setText(null);
             String createdate = Utils.formatDate(new Date());
-            String friend = "9999999999999999:0000000000000000:1111111111111111:5555555555555555:8888888888888888:4444444444444444:3333333333333333:2222222222222222:6666666666666666";
-            String groupdSuperPeerID = "9999999999999999:0000000000000000"; // ignore
+            String friend = "";
+            String groupdSuperPeerID = "9999999999999999:0000000000000000:1212121212121212:2323232323232323:3434343434343434"; // 5 server form Server1 to 5
             int liked = 0;
             int commented = 0;
+
+            for (int i = 0; i < Preferences.friendList.size(); i++) {
+                if (Preferences.friendList.get(i).getCheckFriendsGroup().equals(Preferences.CHECKED)) {
+                    friend += Preferences.friendList.get(i).getIdUserLogin() + ":";
+                }
+            }
 
             if (prPl == 0) {
                 privateWritePost(textPost, createdate, friend, groupdSuperPeerID, liked, commented);
@@ -676,10 +759,10 @@ public class AppGUI extends javax.swing.JFrame {
     //////////// END POST MESSAGE
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private static javax.swing.JButton btnFeed;
+    public static javax.swing.JButton btnFriendsGroup;
     private static javax.swing.JButton btnNoti;
     private static javax.swing.JButton btnPost;
     private static javax.swing.JButton btnProfile;
-    private static javax.swing.JButton btnSetting;
     private javax.swing.ButtonGroup groupRadio;
     private javax.swing.JPanel jPanel1;
     public static javax.swing.JPanel jPanel2;
