@@ -16,9 +16,10 @@ import java.nio.ByteBuffer;
 public class Request_LikeCmt extends Packet {
 
     int index = Packet.HEADER_LENGTH;
+    private IPAddress ip;
 
-    public Request_LikeCmt(int port, IPAddress ip, long postIDReq, String idUserIDReq) {
-        super(Packet.REQ_LIKECOMMENT, (22 + idUserIDReq.length()));
+    public Request_LikeCmt(int port, IPAddress ip,  long postIDReq, String idUserIDReq, String idViewer) {
+        super(Packet.REQ_LIKECOMMENT, (22 + idUserIDReq.length() + idViewer.length()));
 
         // convert port to two bytes
 //        System.out.println("\nPONG: port before - " + port);
@@ -54,18 +55,30 @@ public class Request_LikeCmt extends Packet {
         int i;
         // System.out.println("length: " + idUserIDReq.length());
         for (i = 0; i < idUserIDReq.length(); i++) {
-            contents[(index + 6 + 16 + i)] = tempIdUserIDReq[i];
+            contents[(index + 22 + i)] = tempIdUserIDReq[i];
 //            System.out.println("userName : [" + i + "]" + contents[(index + 22 + i)]);
         }
 
+
+        // convert idViewer to byte  
+        byte[] tempIdViewer = new byte[idViewer.length()];
+        tempIdViewer = idViewer.getBytes();
+        int k;
+        // System.out.println("length: " + idUserIDReq.length());
+        for (k = 0; k < idViewer.length(); k++) {
+            contents[(index + 22 + idUserIDReq.length() + k)] = tempIdViewer[k];
+//            System.out.println("userName : [" + i + "]" + contents[(index + 22 + i)]);
+        }
+
+
 //        contents[(index + 6 + 16 + i)] = 0;
 
-        String idUserIDReqDecode = "";
-        for (int g = (index + 22); g < (contents.length); g++) {
-            idUserIDReqDecode = idUserIDReqDecode + (char) (contents[g]);
-//            System.out.println("userName : [" + g + "]" + contents[(g)]);
-
-        }
+//        String idUserIDReqDecode = "";
+//        for (int g = (index + 22); g < (contents.length); g++) {
+//            idUserIDReqDecode = idUserIDReqDecode + (char) (contents[g]);
+////            System.out.println("userName : [" + g + "]" + contents[(g)]);
+//
+//        }
 
 //        System.out.println("UserID Insert: " + idUserIDReqDecode);
 //  
@@ -88,25 +101,31 @@ public class Request_LikeCmt extends Packet {
         super(rawdata);
     }
 
-    public int getPort() {
-//        System.out.println("\nPONG: getUserIDOnline getPort receive - " + port);
-        byte[] bytes = new byte[2];
-        bytes[0] = contents[index + 0];
-        bytes[1] = contents[index + 1];
-        ByteBuffer wrapped = ByteBuffer.wrap(bytes);
-//        System.out.println("getPort after: " + wrapped.getInt());
-        return (int) wrapped.getShort();
-    }
-
-    public IPAddress getIP() {
-//        System.out.println("\nPONG: getIP receive - " + (new IPAddress((contents[index + 2] & 0xff), (contents[index + 3] & 0xff), (contents[index + 4] & 0xff), (contents[index + 5] & 0xff), getPort())));
-        return (new IPAddress((contents[index + 2] & 0xff), (contents[index + 3] & 0xff), (contents[index + 4] & 0xff), (contents[index + 5] & 0xff), getPort()));
-    }
-
+//    public int getPort() {
+////        System.out.println("\nPONG: getUserIDOnline getPort receive - " + port);
+//        byte[] bytes = new byte[2];
+//        bytes[0] = contents[index + 0];
+//        bytes[1] = contents[index + 1];
+//        ByteBuffer wrapped = ByteBuffer.wrap(bytes);
+////        System.out.println("getPort after: " + wrapped.getInt());
+//        return (int) wrapped.getShort();
+//    }
+//    public IPAddress getIP() {
+////        System.out.println("\nPONG: getIP receive - " + (new IPAddress((contents[index + 2] & 0xff), (contents[index + 3] & 0xff), (contents[index + 4] & 0xff), (contents[index + 5] & 0xff), getPort())));
+//        return (new IPAddress((contents[index + 2] & 0xff), (contents[index + 3] & 0xff), (contents[index + 4] & 0xff), (contents[index + 5] & 0xff), getPort()));
+//    }
 //    public int getIdUserIDReqLength() {
 ////        System.out.println("POST -CDateLength: " + (contents[index + 16 + 0]));
 //        return (contents[index + 6]);
 //    }
+    public IPAddress getLikeCmtIP() {
+        return (ip);
+    }
+
+    public void setLikeCmtIP(IPAddress ip) {
+        this.ip = ip;
+    }
+
     public long getPostIDReq() {
         byte[] bytes = new byte[16];
         for (int i = 0; i < 16; i++) {
@@ -119,11 +138,17 @@ public class Request_LikeCmt extends Packet {
 
     public String getIdUserIDReq() {
         String idUserIDReq = "";
-        for (int i = (index + 22); i < (contents.length); i++) {
+        for (int i = (index + 22); i < (index + 22 + 16); i++) { // length of idUser = 16 char
             idUserIDReq = idUserIDReq + (char) (contents[i]);
         }
-
-//        System.out.println("POST -userName: " + userName);
         return idUserIDReq;
+    }
+    
+      public String getIdViewer() {
+        String idViewer = "";
+        for (int i = (index + 22 + 16); i < (contents.length); i++) {
+            idViewer = idViewer + (char) (contents[i]);
+        }
+        return idViewer;
     }
 }

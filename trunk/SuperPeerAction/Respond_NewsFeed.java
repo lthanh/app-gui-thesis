@@ -15,15 +15,17 @@ public class Respond_NewsFeed extends Packet {
 
     int index = Packet.HEADER_LENGTH;
 
-    public Respond_NewsFeed(int indexRequested, String userIDReq, String listPost) {
+    public Respond_NewsFeed(int indexRequested, String userIDReq, String listPost, long requestID) {
         super(Packet.RES_NewsFeed, (16 + listPost.length()));
 
-//        ByteBuffer bBfromPost = ByteBuffer.allocate(2);
-//        bBfromPost.putShort((short) indexRequested);
-//        byte[] bytefromPost = bBfromPost.array();
-//
-//        contents[index + 0] = bytefromPost[0];
-//        contents[index + 1] = bytefromPost[1];
+        // convert requestID to respondID
+        ByteBuffer bBRequestIDReq = ByteBuffer.allocate(16); // Respond Like comment need to have the same message ID as the generating Request Like comment, so we need to pass it to the constructor.
+        bBRequestIDReq.putLong(requestID);
+        byte[] byteMessageReqid = bBRequestIDReq.array();
+        for (int i = 0; i < 16; i++) {
+            contents[i] = byteMessageReqid[i];
+        }
+
 
         // convert userIDPost to byte  
         byte[] tempuserIDPost = new byte[16];

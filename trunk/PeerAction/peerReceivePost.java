@@ -7,10 +7,10 @@ package PeerAction;
 import GUI.AppGUI;
 import SuperPeerAction.PostObject;
 import Architecture_Posting.Utils;
-import postService.Post;
-import static postService.PostHandler.myIP;
-import static postService.PostHandler.recieveListPost;
-import static postService.PostHandler.showListPost;
+import PostingService.Post;
+import static PostingService.PostHandler.myIP;
+import static PostingService.PostHandler.recieveListPost;
+import static PostingService.PostHandler.showListPost;
 
 /**
  *

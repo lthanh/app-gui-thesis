@@ -5,7 +5,6 @@ package Architecture_Posting;
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author admin
@@ -15,7 +14,8 @@ public class Friends extends UserLoginObject {
     public Friends() {
     }
     IPAddress ip;
-    public int countOffline;
+    private int countOffline;
+    private String checkFriendsGroup;
 
     public IPAddress getIp() {
         return ip;
@@ -31,5 +31,13 @@ public class Friends extends UserLoginObject {
 
     public void setCountOffline(int countOffline) {
         this.countOffline = countOffline;
+    }
+
+    public String getCheckFriendsGroup() {
+        return checkFriendsGroup;
+    }
+
+    public void setCheckFriendsGroup(String checkFriendsGroup) {
+        this.checkFriendsGroup = checkFriendsGroup;
     }
 }

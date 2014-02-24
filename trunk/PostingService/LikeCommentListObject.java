@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package postService;
+package PostingService;
 
 import java.util.Vector;
 
@@ -19,6 +19,15 @@ public class LikeCommentListObject {
     private String userNameLike;
     private String comment;
     private String idUserLike;
+    private boolean isContainPost;
+
+    public boolean isIsContainPost() {
+        return isContainPost;
+    }
+
+    public void setIsContainPost(boolean isContainPost) {
+        this.isContainPost = isContainPost;
+    }
 
     public String getIdUserLike() {
         return idUserLike;

@@ -6,6 +6,7 @@ package SuperPeerAction;
 
 import Architecture_Posting.IPAddress;
 import Architecture_Posting.Packet;
+import java.nio.ByteBuffer;
 
 /**
  *
@@ -15,8 +16,16 @@ public class Respond_Profile extends Packet {
 
     int index = Packet.HEADER_LENGTH;
 
-    public Respond_Profile(String userIDPost, String listPost) {
+    public Respond_Profile(String userIDPost, String listPost, long requestProfileID) {
         super(Packet.RES_PROFILE, (16 + listPost.length()));
+
+        // convert requestID to respondID
+        ByteBuffer bBRequestIDReq = ByteBuffer.allocate(16); // Respond Like comment need to have the same message ID as the generating Request Like comment, so we need to pass it to the constructor.
+        bBRequestIDReq.putLong(requestProfileID);
+        byte[] byteMessageReqid = bBRequestIDReq.array();
+        for (int i = 0; i < 16; i++) {
+            contents[i] = byteMessageReqid[i];
+        }
 
         // convert userIDPost to byte  
         byte[] tempuserIDPost = new byte[16];
@@ -32,7 +41,7 @@ public class Respond_Profile extends Packet {
         int i;
         // System.out.println("length: " + idUserIDReq.length());
         for (i = 0; i < listPost.length(); i++) {
-            contents[(index + 16 +i)] = tempListPost[i];
+            contents[(index + 16 + i)] = tempListPost[i];
 //            System.out.println("userName : [" + i + "]" + contents[(index + 22 + i)]);
         }
     }
@@ -41,7 +50,7 @@ public class Respond_Profile extends Packet {
         super(rawdata);
     }
 
-   public String getUserIDPost() {
+    public String getUserIDPost() {
         //  byte[] temp = new byte[16];
         String temp = "";
         //StringBuilder userID = new StringBuilder();
@@ -52,8 +61,8 @@ public class Respond_Profile extends Packet {
 //        System.out.println("POST -userID: " + userID);
         return temp;
     }
-    
-      public String getListPost() {
+
+    public String getListPost() {
         String listPost = "";
         for (int i = (index + 16); i < (contents.length); i++) {
             listPost = listPost + (char) (contents[i]);

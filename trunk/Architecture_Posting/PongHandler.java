@@ -2,7 +2,7 @@ package Architecture_Posting;
 
 import GUI.*;
 import java.util.*;
-import postService.PostHandler;
+import PostingService.PostHandler;
 
 /**
  * Similar to QHitHandler, PongHandler will process pongs that match pings
@@ -10,6 +10,7 @@ import postService.PostHandler;
  */
 public class PongHandler extends Thread {
 
+    public static Map pongTable;  //pong table     
     Pong pong;
     IPAddress pingIP;
     IPAddress ip;
@@ -20,48 +21,48 @@ public class PongHandler extends Thread {
 
     public PongHandler(IPAddress ip, Pong pong) {
         this.pong = pong;
-        this.ip = ip;
+        pong.setPongRespondIP(ip);
+    }
+
+    public static void initPongTable() {
+        pongTable = new Hashtable(5000);
     }
 
     public void run() {
-        String ipname = pong.getIP().toString();
-        int port = pong.getPort();
-
-//        System.out.println("#### PingHandler: PONG -- OUTCOMMING " + pong.toString());
-//        System.out.println("#### PingHandler: PONG -- " + pong.getUserIDOnline());
-//        System.out.println("#### PingHandler: PONG -- " + pong.getUserNameOnline());
-//        System.out.println("#### PingHandler: PONG -- " + pong.getListFileIDStore());
-//        System.out.println("#### PingHandler: PONG -- " + pong.getIP());
-//        System.out.println("#### PingHandler: PONG -- " + pong.getPort());
+        if (!pongTable.containsKey(pong.getMessageID())) //check that postMessage is not already in table
+        {
+            pongTable.put(pong.getMessageID(), pong);
+            boolean isPeerFriends = PostHandler.checkListFriendORPeerInPong(pong, Preferences.friendList);
+            boolean isSuperPeer = checkSuperPeer(pong.getIP(), pong.getPort());
 
 
-        Host newhost = new Host(ipname, port);
-        HostCache.addHost(newhost);
+            if (isPeerFriends || isSuperPeer) {
+                listPong.add(pong);
+                String ipname = pong.getIP().toString();
+                int port = pong.getPort();
 
-        boolean isPeerFriends = PostHandler.checkListFriendORPeerInPong(pong, Preferences.idFriendsListString);
+                Host newhost = new Host(ipname, port);
+                HostCache.addHost(newhost);
+            }
 
-        if (isPeerFriends) {
-            listPong.add(pong);
+            if (PingHandler.pingTable.containsKey(pong.getMessageID())) {
+                pingMatch = (Ping) PingHandler.pingTable.get(pong.getMessageID());
+                /**
+                 * Matching pong is used as key to obtain original ping.
+                 */
+                pingIP = pingMatch.getIP();
+                NetworkManager.writeToOne(pingIP, pong);
+            } else {
+                NetworkManager.writeButOne(pong.getPongRespondIP(), pong);
+            }
         }
+    }
 
-
-        if (PingHandler.pt.containsKey(pong)) {
-            pingMatch = (Ping) PingHandler.pt.get((Packet) pong);
-            /**
-             * Matching pong is used as key to obtain original ping.
-             */
-            pingIP = pingMatch.getIP();
-            NetworkManager.writeToOne(pingIP, pong);
-            //System.out.println("PONG LENGHTH: " + po);
-
-//            Vector<IPAddress> check = HostArray.cacheConnection;
-//            String ipRePing = pingIP.toString();
-//            for (int i = 0; i < HostArray.cacheConnection.size(); i++) {
-//                if (!ipRePing.equals(check.get(i).toString())) {
-//                    NetworkManager.writeToOne(pingIP, pong);
-//                }
-//            }
-
+    public boolean checkSuperPeer(IPAddress ip, int port) {
+        String address = ip.toString() + ":" + port;
+        if (Preferences.ipSuperPeer.contains(address)) {
+            return true;
         }
+        return false;
     }
 }

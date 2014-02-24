@@ -4,15 +4,12 @@
  */
 package SuperPeerAction;
 
-import static SuperPeerAction.SaveLikeCmtAction.checkCommentID;
-import static SuperPeerAction.SaveLikeCmtAction.checkNameLiked;
-import static SuperPeerAction.SaveLikeCmtAction.serverCheckLikeCommentForPeer;
 import Architecture_Posting.Preferences;
-import Architecture_Posting.SharedDirectory;
+import Architecture_Posting.Utils;
 import java.util.Vector;
-import postService.Comment;
-import postService.Like;
-import postService.LikeCommentListObject;
+import PostingService.Comment;
+import PostingService.Like;
+import PostingService.LikeCommentListObject;
 
 /**
  *
@@ -22,6 +19,8 @@ public class SaveLikeCmtAction {
 
     private Like like;
     private Comment comment;
+    Utils utils = new Utils();
+    boolean isFileStoring;
 
     public SaveLikeCmtAction() {
 //        this.like = like;
@@ -33,6 +32,7 @@ public class SaveLikeCmtAction {
         String idUserPost = like.getIdUserPost();
         String idUserLike = like.getIdUserLike();
         String nameLike = like.getNameLike();
+        isFileStoring = utils.checkFileSharing(idUserPost + ".txt");
 
         boolean isLikeOfUser = serverCheckLikeCommentForPeer(Preferences.peerManageList, like, null);
         if (isLikeOfUser) {
@@ -40,7 +40,7 @@ public class SaveLikeCmtAction {
             likeComment = Preferences.readUserFile(like.getIdPost(), like.getIdUserPost());
             System.out.println("ID:" + like.getIdUserLike());
             boolean isLike = checkNameLiked(like.getMessageID(), like.getIdUserLike(), likeComment);
-            if ((likeComment.getIdUserLike().equals("") || isLike == true) && (SharedDirectory.listFileIDSaving.contains(idUserPost))) {
+            if ((likeComment.getIdUserLike().equals("") || isLike == true) && (isFileStoring)) {
                 //saveLikeSuperPeer(likeMessage);
                 Preferences.likeWriteToFileSuperPeer(like.getLikeTypeString(like.getPayload()), idPost, like.getMessageID(), idUserPost, idUserLike, nameLike);
             }
@@ -55,52 +55,51 @@ public class SaveLikeCmtAction {
         String commentContent = comment.getComment();
 
         boolean isCommentOfUser = serverCheckLikeCommentForPeer(Preferences.peerManageList, null, comment);
+        isFileStoring = utils.checkFileSharing(idUserPost + ".txt");
+
         if (isCommentOfUser) {
             LikeCommentListObject likeComment = new LikeCommentListObject();
             likeComment = Preferences.readUserFile(comment.getIdPost(), comment.getIdUserPost());
             boolean isComment = checkCommentID(comment.getMessageID(), likeComment);
-            if (isComment && (SharedDirectory.listFileIDSaving.contains(idUserPost))) {
-//                saveCommentSuperPeer(commentMessage);
+            if (isComment && isFileStoring) {
                 Preferences.commentWriteToFileSuperPeer(comment.getCommentTypeString(comment.getPayload()), idPost, comment.getMessageID(), idUserPost, idUserComment, nameComment, commentContent);
 
             }
         }
-
-
-
-//        if (SharedDirectory.listFileIDSaving.contains(idUserPost)) {
-//            Preferences.commentWriteToFileSuperPeer(comment.getCommentTypeString(comment.getPayload()), idPost, commentMessage.getMessageID(), idUserPost, idUserComment, nameComment, commentContent);
-//        }
     }
 
-    public static boolean checkNameLiked(long likeID, String userIDLike, LikeCommentListObject likeComment) {
+    public boolean checkNameLiked(long likeID, String userIDLike, LikeCommentListObject likeComment) {
         System.out.println("likeID: " + String.valueOf(likeID));
         System.out.println("userIDLike: " + userIDLike);
         System.out.println("likeComment iduserLike :" + likeComment.getIdUserLike());
-        System.out.println("LIKE ID: "+ likeComment.getIdLike());
-        if (likeComment.getIdLike().contains(String.valueOf(likeID))){// || likeComment.getIdUserLike().contains(userIDLike)) {  // still like many times.
+        System.out.println("LIKE ID: " + likeComment.getIdLike());
+        if (likeComment.getIdLike().contains(String.valueOf(likeID))) {// || likeComment.getIdUserLike().contains(userIDLike)) {  // still like many times.
             return false;
         }
         return true;
     }
 
-    public static boolean checkCommentID(long commentID, LikeCommentListObject likeComment) {
+    public boolean checkCommentID(long commentID, LikeCommentListObject likeComment) {
         if (likeComment.getIdComment().contains(String.valueOf(String.valueOf(commentID)))) {
             return false;
         }
         return true;
     }
 
-    public static boolean serverCheckLikeCommentForPeer(Vector<String> listPeerOrFriend, Like like, Comment comment) {
+    public boolean serverCheckLikeCommentForPeer(Vector<String> listPeerOrFriend, Like like, Comment comment) {
         String userPostID = "";
+
         if (like != null) {
             userPostID = like.getIdUserPost();
         }
         if (comment != null) {
             userPostID = comment.getIdUserPost();
         }
+
+        isFileStoring = utils.checkFileSharing(userPostID + ".txt");
+
         for (int i = 0; i < listPeerOrFriend.size(); i++) {
-            if (SharedDirectory.listFileIDSaving.contains(userPostID) || userPostID.equals(listPeerOrFriend.get(i))) {
+            if (isFileStoring || userPostID.equals(listPeerOrFriend.get(i))) {
                 return true;
             }
         }
