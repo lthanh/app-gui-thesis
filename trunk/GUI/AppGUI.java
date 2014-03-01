@@ -724,11 +724,11 @@ public class AppGUI extends javax.swing.JFrame {
 
         for (int i = 0; i < likeCmt.size(); i++) {
             if (!"".equals(likeCmt.get(i).getUserNameLiked())) {
-                like += likeCmt.get(i).getUserNameLiked() + " like your status: \" " + likeCmt.get(i).getPostContent() + "\"" + "\n";
+                like += likeCmt.get(i).getUserNameLiked() + " likes your status : \" " + likeCmt.get(i).getPostContent() + " \"" + "\n";
             }
 
             if (!"".equals(likeCmt.get(i).getUserNameComment())) {
-                comment += likeCmt.get(i).getUserNameComment() + " commented on your status: \" " + likeCmt.get(i).getPostContent() + "\"" + "\n";
+                comment += likeCmt.get(i).getUserNameComment() + " commented on your status : \" " + likeCmt.get(i).getPostContent() + " \"" + "\n";
             }
         }
         return like + "\n" + comment;
