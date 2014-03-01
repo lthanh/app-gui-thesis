@@ -1,10 +1,7 @@
 package Architecture_Posting;
 
-import GUI.AppGUI;
 import GUI.LoginForm;
-import PeerAction.PeerReceivePost;
 import SuperPeerAction.NewsFeedHandler;
-import SuperPeerAction.PostObject;
 import SuperPeerAction.ReqRes_LikeCommentHanlder;
 import SuperPeerAction.ProfileHandler;
 import SuperPeerAction.Request_LikeCmt;
@@ -16,12 +13,9 @@ import SuperPeerAction.Respond_Profile;
 import PostingService.PostHandler;
 import PostingService.Post;
 import java.io.*;
-import java.net.*;
 import PostingService.Comment;
 import PostingService.Like;
 import PostingService.LikeCommentHandler;
-import static PostingService.PostHandler.checkGroupFriendIDPost;
-import static PostingService.PostHandler.serverCheckListFriendorPeer;
 
 class Server extends Thread {
 
@@ -81,61 +75,34 @@ class Server extends Thread {
                 {
                     Ping ping = new Ping(newpacket);
                     PingHandler handler = new PingHandler(mine, ping);
-                    System.out.println("\n ### Server : Packet == PING -- " + newpacket.toString());
-
-                    // Cat chuoi IP byte ra dang decimal *****************************************************
-                    byte[] test = new byte[newpacket.length];
-
-                    for (int i = 0; i < newpacket.length; i++) {
-                        test[i] = newpacket[i];
-                    }
-                    int[] ipints = new int[23];
-                    for (int i = 0; i < newpacket.length; i++) {
-                        ipints[i] = ((int) (test[i]) & 0xff);
-                    }
-                    // end cat chuoi
                     handler.start();
                     continue;
                 }
 
                 if (header.identify() == Packet.PONG) {
                     Pong pong = new Pong(newpacket);
-
-                    System.out.println("\n ### Server : Packet == PONG -- " + newpacket.toString());
-                    Host h = new Host(mine.toString(), mine.getPort());
-                    HostCache.addHost(h);
+//                    Host h = new Host(mine.toString(), mine.getPort());
+//                    HostCache.addHost(h);
                     PongHandler handler = new PongHandler(mine, pong);
                     handler.start();
                     continue;
                 } else if (header.identify() == Packet.POST) {
                     Post postMessage = new Post(newpacket);
-                    System.out.println("\n ### Server : Packet == POST -- " + newpacket.toString());
-                    // forward post message to all connecting
                     PostHandler handler = new PostHandler(mine, postMessage);
                     handler.start();
                     continue;
                 } else if (header.identify() == Packet.LIKE) {
                     Like likeMessage = new Like(newpacket);
-                    System.out.println("\n ### Server : Packet == LIKE -- " + newpacket.toString());
-//                    if (userNameLogin.equals("Server") || userNameLogin.equals("Server1")) {
-
                     LikeCommentHandler likeAction = new LikeCommentHandler(mine, likeMessage, null);
                     likeAction.start();
                     continue;
-
                 } else if (header.identify() == Packet.COMMENT) {
                     Comment commentMessage = new Comment(newpacket);
-                    System.out.println("\n ### Server : Packet == COMMENT -- " + newpacket.toString());
-//                    if (userNameLogin.equals("Server") || userNameLogin.equals("Server1")) {
-
                     LikeCommentHandler commentAction = new LikeCommentHandler(mine, null, commentMessage);
                     commentAction.start();
                     continue;
-
                 } else if (header.identify() == Packet.REQ_LIKECOMMENT) {
                     Request_LikeCmt requestMessage = new Request_LikeCmt(newpacket);
-                    System.out.println("\n ### Server : Packet == REQ_LIKECOMMENT -- " + newpacket.toString());
-//                    if (userNameLogin.equals("Server") || userNameLogin.equals("Server1")) {
                     if (isServer) {
                         ReqRes_LikeCommentHanlder requestMessageAction = new ReqRes_LikeCommentHanlder(mine, requestMessage, null);
                         requestMessageAction.start();
@@ -143,17 +110,11 @@ class Server extends Thread {
                     }
                 } else if (header.identify() == Packet.RES_LIKECOMMENT) {
                     Respond_LikeCmt respondMessage = new Respond_LikeCmt(newpacket);
-                    System.out.println("\n ### Server : Packet == RES_LIKECOMMENT -- " + newpacket.toString());
-//                    if (LoginForm.currentUser.getUserName().equals("Server") || LoginForm.currentUser.getUserName().equals("Server1")) {
-
                     ReqRes_LikeCommentHanlder respondMessageAction = new ReqRes_LikeCommentHanlder(mine, null, respondMessage);
                     respondMessageAction.start();
                     continue;
-//                    }
                 } else if (header.identify() == Packet.REQ_PROFILE) {
                     Request_Profile requestMessage = new Request_Profile(newpacket);
-                    System.out.println("\n ### Server : Packet == REQ_PROFILE -- " + newpacket.toString());
-//                    if (userNameLogin.equals("Server") || userNameLogin.equals("Server1")) {
                     if (isServer) {
                         ProfileHandler requestProfileAction = new ProfileHandler(mine, requestMessage, null);
                         requestProfileAction.start();
@@ -161,15 +122,11 @@ class Server extends Thread {
                     }
                 } else if (header.identify() == Packet.RES_PROFILE) {
                     Respond_Profile respondMessage = new Respond_Profile(newpacket);
-                    System.out.println("\n ### Server : Packet == RES_PROFILE -- " + newpacket.toString());
-
                     ProfileHandler respondProfileAction = new ProfileHandler(mine, null, respondMessage);
                     respondProfileAction.start();
                     continue;
                 } else if (header.identify() == Packet.REQ_NewsFeed) {
                     Request_NewsFeed requestMessage = new Request_NewsFeed(newpacket);
-                    System.out.println("\n ### Server : Packet == REQ_NewsFeed -- " + newpacket.toString());
-//                    if (userNameLogin.equals("Server") || userNameLogin.equals("Server1")) {
                     if (isServer) {
                         NewsFeedHandler requestProfileAction = new NewsFeedHandler(mine, requestMessage, null);
                         requestProfileAction.start();
@@ -177,11 +134,8 @@ class Server extends Thread {
                     }
                 } else if (header.identify() == Packet.RES_NewsFeed) {
                     Respond_NewsFeed respondMessage = new Respond_NewsFeed(newpacket);
-                    System.out.println("\n ### Server : Packet == RES_NewsFeed -- " + newpacket.toString());
-
                     NewsFeedHandler respondProfileAction = new NewsFeedHandler(mine, null, respondMessage);
                     respondProfileAction.start();
-                    // continue;
                 }
             } catch (Exception e) // If there's a problem, we just die.
             {

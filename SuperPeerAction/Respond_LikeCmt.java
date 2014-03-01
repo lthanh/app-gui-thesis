@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 
 /**
  *
- * @author admin
+ * @author Thanh Le Quoc
  */
 public class Respond_LikeCmt extends Packet {
 
@@ -17,7 +17,6 @@ public class Respond_LikeCmt extends Packet {
 
     public Respond_LikeCmt(long postIDReq, int numLike, int numComment, int userIDReqLength, int listUserNameLikeLength, int listCommentLength, String userIDReq, String listUserNameLike, String listComment, String idViewer, long requestID) {
         super(Packet.RES_LIKECOMMENT, (25 + userIDReq.length() + listUserNameLike.length() + listComment.length() + idViewer.length()));
-
 
         // convert requestID to respondID
         ByteBuffer bBRequestIDReq = ByteBuffer.allocate(16); // Respond Like comment need to have the same message ID as the generating Request Like comment, so we need to pass it to the constructor.
@@ -67,38 +66,30 @@ public class Respond_LikeCmt extends Packet {
 
         // convert userIDReq to byte 
         byte[] tempuserIDReq = new byte[userIDReq.length()];
-        //System.out.println("PONG: userNameOnline send : " + userNameOnline);
         tempuserIDReq = userIDReq.getBytes();
         int q;
         for (q = 0; q < userIDReq.length(); q++) {
             contents[index + 16 + 9 + q] = tempuserIDReq[q];
         }
-//        contents[index + 16 + 7 + q] = 0;
 
         // convert listUserNameLike to byte 
         byte[] templistUserNameLike = new byte[listUserNameLike.length()];
-        //System.out.println("PONG: userNameOnline send : " + userNameOnline);
         templistUserNameLike = listUserNameLike.getBytes();
         int t;
         for (t = 0; t < listUserNameLike.length(); t++) {
             contents[index + 16 + 9 + userIDReq.length() + t] = templistUserNameLike[t];
         }
-//        contents[index + 16 + 7 + userIDReq.length() + t] = 0;
-
 
         // convert listComment to byte 
         byte[] templistComment = new byte[listComment.length()];
-        //System.out.println("PONG: userNameOnline send : " + userNameOnline);
         templistComment = listComment.getBytes();
         int y;
         for (y = 0; y < listComment.length(); y++) {
             contents[index + 16 + 9 + userIDReq.length() + listUserNameLike.length() + y] = templistComment[y];
         }
-//        contents[index + 16 + 7 + userIDReq.length() + listUserNameLike.length() + y] = 0;
 
         // convert idViewer to byte 
         byte[] tempIdViewer = new byte[idViewer.length()];
-        //System.out.println("PONG: userNameOnline send : " + userNameOnline);
         tempIdViewer = idViewer.getBytes();
         int p;
         for (p = 0; p < idViewer.length(); p++) {
@@ -115,31 +106,24 @@ public class Respond_LikeCmt extends Packet {
         for (int i = 0; i < 16; i++) {
             messageID[i] = contents[index + i];
         }
-
         ByteBuffer wrapped = ByteBuffer.wrap(messageID);
         long idMessage = wrapped.getLong(0);
-//        System.out.println("Packet long : " + idMessage);
-
         return (idMessage);
     }
 
     public int getNumLike() {
-//        System.out.println("\nPONG: getUserIDOnline getPort receive - " + port);
         byte[] bytes = new byte[2];
         bytes[0] = contents[index + 16 + 0];
         bytes[1] = contents[index + 16 + 1];
         ByteBuffer wrapped = ByteBuffer.wrap(bytes);
-//        System.out.println("getPort after: " + wrapped.getInt());
         return (int) wrapped.getShort();
     }
 
     public int getNumComment() {
-//        System.out.println("\nPONG: getUserIDOnline getPort receive - " + port);
         byte[] bytes = new byte[2];
         bytes[0] = contents[index + 16 + 2];
         bytes[1] = contents[index + 16 + 3];
         ByteBuffer wrapped = ByteBuffer.wrap(bytes);
-//        System.out.println("getPort after: " + wrapped.getInt());
         return (int) wrapped.getShort();
     }
 
@@ -148,44 +132,34 @@ public class Respond_LikeCmt extends Packet {
     }
 
     public int getListUserNameLikeLength() {
-//        System.out.println("\nPONG: getUserIDOnline getPort receive - " + port);
         byte[] bytes = new byte[2];
         bytes[0] = contents[index + 16 + 5];
         bytes[1] = contents[index + 16 + 6];
         ByteBuffer wrapped = ByteBuffer.wrap(bytes);
-//        System.out.println("getPort after: " + wrapped.getInt());
         return (int) wrapped.getShort();
     }
 
     public int getListCommentLength() {
-//        System.out.println("\nPONG: getUserIDOnline getPort receive - " + port);
         byte[] bytes = new byte[2];
         bytes[0] = contents[index + 16 + 7];
         bytes[1] = contents[index + 16 + 8];
         ByteBuffer wrapped = ByteBuffer.wrap(bytes);
-//        System.out.println("getPort after: " + wrapped.getInt());
         return (int) wrapped.getShort();
     }
 
     public String getUserIDReq() {
-        //   byte[] temp = new byte[16];
         String temp = "";
         for (int i = 0; i < getUserIDReqLength(); i++) {
             temp = temp + (char) (contents[index + 16 + 9 + i]);
         }
-        // String userID = new String(temp);
-//        System.out.println("\nPONG: getUserIDOnline receive - " + userID);
         return temp;
     }
 
     public String getListUserNameLike() {
-        //   byte[] temp = new byte[16];
         String temp = "";
         for (int i = 0; i < getListUserNameLikeLength(); i++) {
             temp = temp + (char) (contents[index + 16 + 9 + getUserIDReqLength() + i]);
         }
-        // String userID = new String(temp);
-//        System.out.println("\nPONG: getUserIDOnline receive - " + userID);
         return temp;
     }
 
@@ -194,7 +168,6 @@ public class Respond_LikeCmt extends Packet {
         for (int i = 0; i < getListCommentLength(); i++) {
             temp = temp + (char) (contents[index + 16 + 9 + getUserIDReqLength() + getListUserNameLikeLength() + i]);
         }
-
         return temp;
     }
 

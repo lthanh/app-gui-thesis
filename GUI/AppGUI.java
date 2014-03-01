@@ -1,7 +1,6 @@
 package GUI;
 
 import Architecture_Posting.Friends;
-import Architecture_Posting.QHandler;
 import Architecture_Posting.Mine;
 import Architecture_Posting.Utils;
 import Architecture_Posting.SharedDirectory;
@@ -13,46 +12,27 @@ import Architecture_Posting.Login;
 import Architecture_Posting.PeriodicConnector;
 import Architecture_Posting.Listener;
 import Architecture_Posting.PongHandler;
-import static GUI.StatusForm.btnLike;
-import static GUI.StatusForm.postID;
-import static GUI.StatusForm.useIDLogin;
-import static GUI.StatusForm.userNameLoginString;
 import PeerAction.CheckUserOnlineAction;
-import PeerAction.PeerReceivePost;
 import PostingService.LikeCommentHandler;
+import PostingService.LikeCommentObject;
 import SuperPeerAction.PostObject;
 import SuperPeerAction.Request_LikeCmt;
 import SuperPeerAction.Request_NewsFeed;
 import SuperPeerAction.Request_Profile;
-import SuperPeerAction.RespondStatusFormObject;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.DefaultListModel;
+import java.util.*;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Element;
-import PostingService.LikeCommentListObject;
 import PostingService.Post;
 import PostingService.PostHandler;
+import static PostingService.PostHandler.checkNewsFeedForPeer;
 import SuperPeerAction.NewsFeedHandler;
 import SuperPeerAction.ProfileHandler;
 import SuperPeerAction.ReqRes_LikeCommentHanlder;
-import java.awt.Color;
-import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 /*
  * To change this template, choose Tools | Templates
@@ -60,7 +40,7 @@ import javax.swing.JPanel;
  */
 /**
  *
- * @author admin
+ * @author Thanh Le Quoc
  */
 public class AppGUI extends javax.swing.JFrame {
 
@@ -81,12 +61,13 @@ public class AppGUI extends javax.swing.JFrame {
     public static String useIDLogin = LoginForm.currentUser.getIdUserLogin();
     public static String userNameLoginString = LoginForm.currentUser.getUserName();
     public static JFrame loadingForm = (new LoadingPopUp()).loadingForm();
-    public static long startShowLoading; // use to counter time of loading
+    public static long startShowLoading = -1; // use to counter time of loading
     // Get elapsed time in seconds
     float elapsedTimeSec;
     Utils utils = new Utils();
     boolean isServer = utils.checkServerName(userNameLoginString);
-    Vector<Friends> tempListFriend;
+    public static Vector<Friends> tempListFriend;
+    public static Vector<LikeCommentObject> listNotifications = new Vector<LikeCommentObject>();
 
     public AppGUI() {
         initComponents();
@@ -107,6 +88,7 @@ public class AppGUI extends javax.swing.JFrame {
         System.out.println("Setting up hash tables...");
         PingHandler.initPingTable();
         PongHandler.initPongTable();
+        PongHandler.listPongTable();
         PostHandler.initPostTable();
         NewsFeedHandler.initRequestNewsFeedTable();
         NewsFeedHandler.initRespondNewsFeedTable();
@@ -119,7 +101,7 @@ public class AppGUI extends javax.swing.JFrame {
         System.out.println("Determining network address...");
         Mine.updateAddress();
         System.out.println("Reading preferences file...");
-        SharedDirectory.generateFileList(new File(Login.SHAREPATH)); // update list file sharing
+        SharedDirectory.generateFileList(new File(Login.SHAREPATH)); // initialize list file sharing
         Preferences.readFromFile();
         Preferences.readFriendFile();
 
@@ -194,7 +176,7 @@ public class AppGUI extends javax.swing.JFrame {
         lbUserName.setForeground(new java.awt.Color(0, 0, 255));
         lbUserName.setText("User");
 
-        btnNoti.setText("Notification");
+        btnNoti.setText("Notifications");
         btnNoti.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnNotiActionPerformed(evt);
@@ -286,6 +268,7 @@ public class AppGUI extends javax.swing.JFrame {
             }
         });
 
+        btnFriendsGroup.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         btnFriendsGroup.setText("Friends Group");
         btnFriendsGroup.setAlignmentY(2.5F);
         btnFriendsGroup.addActionListener(new java.awt.event.ActionListener() {
@@ -403,43 +386,44 @@ public class AppGUI extends javax.swing.JFrame {
 
     private void btnNotiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotiActionPerformed
         // TODO add your handling code here:
-        String noti = showDialogNotification(userNameLiked, userNameCommented);
-        if (noti.equals("\n") || noti.equals("\n\n")) {
-            noti = "0 - Notification";
+        String notification;
+        if (listNotifications.size() > 0) {
+            notification = showDialogNotification(listNotifications);
+            listNotifications.removeAllElements();
+        } else {
+            notification = "0 - Notification";
         }
-        btnNoti.setText("Notification");
+        btnNoti.setText("Notifications");
         numLikeCommented = 0;
         userNameLiked = "";
         userNameCommented = "";
-
-
         loadingForm.hide();
         startShowLoading = -1;
-        JOptionPane.showMessageDialog(this, noti, "Notification", JOptionPane.INFORMATION_MESSAGE);
-
+        JOptionPane.showMessageDialog(this, notification, "Notifications", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_btnNotiActionPerformed
 
     private void btnFeedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFeedActionPerformed
-        // TODO add your handling code here:
         System.out.println("ONCLICK Feed Before");
+        ProfileHandler.isLoadedPrivate = false;
+        Request_NewsFeed requestFeed = new Request_NewsFeed(Mine.getPort(), Mine.getIPAddress(), -1, useIDLogin);
 
-        isNewsFeed = true;
-        PostHandler.recieveListPost.removeAllElements();
-        PostHandler.showListPost.removeAllElements();
-        listStatus.setListData(new Object[0]);
-
-        Request_NewsFeed requestFeed = new Request_NewsFeed(Mine.getPort(), Mine.getIPAddress(), -1, LoginForm.currentUser.getIdUserLogin());
-        NetworkManager.writeToAll(requestFeed);
-        System.out.println("ONCLICK Feed After");
-        previousIndexScroll = 19;
-
-        loadingForm.show();
-        startShowLoading = System.currentTimeMillis();
-        System.out.println("startShowLoading: " + startShowLoading);
+        if (utils.checkServerConnectedInGUI()) { // check list server connecting,if at least one super peer exist, then the post message will be send, and vice versa.
+            NetworkManager.writeToAll(requestFeed);
+            NewsFeedHandler.request_NewsFeedTable.put(requestFeed.getMessageID(), requestFeed);
+            isNewsFeed = true;
+            PostHandler.recieveListPost.removeAllElements();
+            PostHandler.showListPost.removeAllElements();
+            listStatus.setListData(new Object[0]);
+            previousIndexScroll = 19;
+            loadingForm.show();
+            startShowLoading = System.currentTimeMillis();
+        } else {
+            JOptionPane.showMessageDialog(this, "You are not connecting to any Super Peer !\n\n Please wait for few seconds to connect to a Super Peer\n and re-send another Request NewsFeed ...", "Request NewsFeed ...", JOptionPane.INFORMATION_MESSAGE);
+        }
+//        System.out.println("startShowLoading: " + startShowLoading);
     }//GEN-LAST:event_btnFeedActionPerformed
 
     private void btnFriendsGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFriendsGroupActionPerformed
-        // TODO add your handling code here:
         if (isShowingFriendsGroupPopUp == false) {
             btnFriendsGroup.setEnabled(false);
             FriendsGroupForm a = new FriendsGroupForm();
@@ -447,40 +431,36 @@ public class AppGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_btnFriendsGroupActionPerformed
 
     private void btnProfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProfileActionPerformed
-        // TODO add your handling code here:
         System.out.println("ONCLICK Profile Before");
-
-        isNewsFeed = false;
-        PostHandler.recieveListPost.removeAllElements();
-        PostHandler.showListPost.removeAllElements();
-        listStatus.setListData(new Object[0]);
-
+        ProfileHandler.isLoadedPrivate = false;
         nameUserSelected = LoginForm.currentUser.getUserName();
         idUserSelected = LoginForm.currentUser.getIdUserLogin();
-
         Request_Profile requestProfile = new Request_Profile(Mine.getPort(), Mine.getIPAddress(), -1, idUserSelected);
-        NetworkManager.writeToAll(requestProfile);
-        System.out.println("ONCLICK Profile After");
-
-        previousIndexScroll = 19;
-        loadingForm.show();
-        startShowLoading = System.currentTimeMillis();
-        System.out.println("startShowLoading: " + startShowLoading);
-
+        if (utils.checkServerConnectedInGUI()) { // check list server connecting,if at least one super peer exist, then the post message will be send, and vice versa.
+            NetworkManager.writeToAll(requestProfile);
+            ProfileHandler.request_ProfileTable.put(requestProfile.getMessageID(), requestProfile);
+            isNewsFeed = false;
+            PostHandler.recieveListPost.removeAllElements();
+            PostHandler.showListPost.removeAllElements();
+            listStatus.setListData(new Object[0]);
+            previousIndexScroll = 19;
+            loadingForm.show();
+            startShowLoading = System.currentTimeMillis();
+        } else {
+            JOptionPane.showMessageDialog(this, "You are not connecting to any Super Peer !\n\n Please wait for few seconds to connect to a Super Peer\n and re-send another Request Profile ...", "Request Profile ...", JOptionPane.INFORMATION_MESSAGE);
+        }
+//        System.out.println("startShowLoading: " + startShowLoading);
     }//GEN-LAST:event_btnProfileActionPerformed
 
     private void btnPostActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPostActionPerformed
-        // TODO add your handling code here:
         showPost();
     }//GEN-LAST:event_btnPostActionPerformed
 
     private void rdoPlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoPlActionPerformed
-        // TODO add your handling code here:
         prPl = 1;
     }//GEN-LAST:event_rdoPlActionPerformed
 
     private void rdoPrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoPrActionPerformed
-        // TODO add your handling code here:
         prPl = 0;
     }//GEN-LAST:event_rdoPrActionPerformed
 
@@ -488,25 +468,28 @@ public class AppGUI extends javax.swing.JFrame {
         JList list = (JList) evt.getSource();
         if (evt.getClickCount() == 1) {
             int indexSelected = list.locationToIndex(evt.getPoint());
-            System.out.println("locationToIndex:" + indexSelected);
+//            System.out.println("locationToIndex:" + indexSelected);
             if (indexSelected != -1) {
                 // int indexSelected = listStatus.getSelectedIndex();
                 // Post postSelected = PostHandler.recieveListPost.get(indexSelected).getPostID();
                 PostObject postSelectedObject = PostHandler.recieveListPost.get(indexSelected);
                 postSelectedID = postSelectedObject.getPostID();
                 if (postSelectedObject.getUserIDPost() != "") {
-                    System.out.println("Send request before");
+//                    System.out.println("Send request before");
                     if (isShowingStatusPopUp == false) {
                         Request_LikeCmt req = new Request_LikeCmt(Mine.getPort(), Mine.getIPAddress(), postSelectedObject.getPostID(), postSelectedObject.getUserIDPost(), useIDLogin);
-                        NetworkManager.writeToAll(req);
-                        loadingForm.show();
-                        startShowLoading = System.currentTimeMillis();
-
-                        System.out.println("startShowLoading: " + startShowLoading);
-                        Vector<String> tempComment = new Vector<String>();
-                        statusPOPUP = new StatusForm(postSelectedObject.getNamePost(), postSelectedObject.getContentPost(), 0, 0, tempComment, postSelectedObject.getPostID(), postSelectedObject.getUserIDPost());
-//                        statusPOPUP.setEnabled(false);
-                        statusPOPUP.show();
+                        if (utils.checkServerConnectedInGUI()) { // check list server connecting,if at least one super peer exist, then the post message will be send, and vice versa.
+                            NetworkManager.writeToAll(req);
+                            ReqRes_LikeCommentHanlder.requestLikeCommentTable.put(req.getMessageID(), req);
+                            loadingForm.show();
+                            startShowLoading = System.currentTimeMillis();
+//                            System.out.println("startShowLoading: " + startShowLoading);
+                            Vector<String> tempComment = new Vector<String>();
+                            statusPOPUP = new StatusForm(postSelectedObject.getNamePost(), postSelectedObject.getContentPost(), 0, 0, tempComment, postSelectedObject.getPostID(), postSelectedObject.getUserIDPost());
+                            statusPOPUP.show();
+                        } else {
+                            JOptionPane.showMessageDialog(this, "You are not connecting to any Super Peer !\n\n Please wait for few seconds to connect to a Super Peer\n and re-send another Request Like and Comment ...", "Request Like and Comment ...", JOptionPane.INFORMATION_MESSAGE);
+                        }
                     } else {
                         JOptionPane.showMessageDialog(this, "You are opening another Status window !\n\nPlease close it before you open another one.", "Warning!", JOptionPane.WARNING_MESSAGE);
                     }
@@ -516,29 +499,26 @@ public class AppGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_listStatusMouseClicked
 
     private void listFriendsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listFriendsMouseClicked
-        // TODO add your handling code here:
         JList list = (JList) evt.getSource();
         if (evt.getClickCount() == 1) {
-
-            isNewsFeed = false;
-            PostHandler.recieveListPost.removeAllElements();
-            PostHandler.showListPost.removeAllElements();
-            listStatus.setListData(new Object[0]);
-
             int indexSelected = list.locationToIndex(evt.getPoint());
-            nameUserSelected = Preferences.friendList.get(indexSelected).getUserName();
-            idUserSelected = Preferences.friendList.get(indexSelected).getIdUserLogin();
-
+            nameUserSelected = tempListFriend.get(indexSelected).getUserName();
+            idUserSelected = tempListFriend.get(indexSelected).getIdUserLogin();
             Request_Profile requestProfile = new Request_Profile(Mine.getPort(), Mine.getIPAddress(), -1, idUserSelected);
-            NetworkManager.writeToAll(requestProfile);
-
-            previousIndexScroll = 19;
-            loadingForm.show();
-            startShowLoading = System.currentTimeMillis();
-            System.out.println("startShowLoading: " + startShowLoading);
-
+            if (utils.checkServerConnectedInGUI()) { // check list server connecting,if at least one super peer exist, then the post message will be send, and vice versa.
+                NetworkManager.writeToAll(requestProfile);
+                ProfileHandler.request_ProfileTable.put(requestProfile.getMessageID(), requestProfile);
+                isNewsFeed = false;
+                PostHandler.recieveListPost.removeAllElements();
+                PostHandler.showListPost.removeAllElements();
+                listStatus.setListData(new Object[0]);
+                previousIndexScroll = 19;
+                loadingForm.show();
+                startShowLoading = System.currentTimeMillis();
+            } else {
+                JOptionPane.showMessageDialog(this, "You are not connecting to any Super Peer !\n\n Please wait for few seconds to connect to a Super Peer\n and re-send another Request Profile ...", "Request Profile ...", JOptionPane.INFORMATION_MESSAGE);
+            }
         }
-
     }//GEN-LAST:event_listFriendsMouseClicked
 
     // do not do anything
@@ -546,27 +526,31 @@ public class AppGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_listStatusValueChanged
 
     private void listStatusMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listStatusMouseMoved
-        // TODO add your handling code here:
-
-
         elapsedTimeSec = (System.currentTimeMillis() - startShowLoading) / 1000F; // get time to close loading when they can not auto close, in case of message does not respond.
         if (startShowLoading != -1 && elapsedTimeSec > 15) {
             loadingForm.hide();
             startShowLoading = -1;
+            JOptionPane.showMessageDialog(this, "Connection timeout ! \n\n Please try again ...", "Timeout ...", JOptionPane.INFORMATION_MESSAGE);
         }
-        System.out.println("elapsedTimeSec: " + elapsedTimeSec);
-
-
         int lastVisibleIndex = listStatus.getLastVisibleIndex();
-        System.out.println("LAST VISIBLE: " + lastVisibleIndex);
 
-        if ((lastVisibleIndex >= previousIndexScroll)) {
-            previousIndexScroll += 19;
-            loadMore(isNewsFeed, lastVisibleIndex + 1);
-
-            System.out.println("######### previousIndexScroll: " + previousIndexScroll);
-
+        if (ProfileHandler.isLoadedPrivate) {
+            lastVisibleIndex = lastVisibleIndex - ProfileHandler.lengthOfListPrivatePost;
         }
+
+        System.out.println("INDEX: " + lastVisibleIndex);
+        System.out.println("previousIndexScroll: " + previousIndexScroll);
+
+
+        if ((lastVisibleIndex == previousIndexScroll)) {
+            previousIndexScroll += 20;
+            loadMore(isNewsFeed, lastVisibleIndex + 1);
+        }
+
+//            if (isNewsFeed == false) {  // load private profile
+//                utils.getPrivateMessage();
+//            }
+
     }//GEN-LAST:event_listStatusMouseMoved
 
     private void txtStatusKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtStatusKeyPressed
@@ -611,62 +595,55 @@ public class AppGUI extends javax.swing.JFrame {
 
             }
         });
-
-
-
-
-    }
-    //////////// POST MESSAGE
-    static LinkedList post = new LinkedList();
-
-    public static void addPOST(Post postMessage) // Called when the user presses the "Search" button
-    {
-        post.add(postMessage);
     }
 
     public static void inform(Vector<String> listPostMessage) {
-        System.out.println("\n AppGUI - Post: " + listPostMessage.toString());
         listStatus.setListData(listPostMessage);
     }
 
     public void loadMore(boolean isNewsFeed, int index) {
         if (isNewsFeed) {
             Request_NewsFeed requestFeed = new Request_NewsFeed(Mine.getPort(), Mine.getIPAddress(), index, LoginForm.currentUser.getIdUserLogin());
-            NetworkManager.writeToAll(requestFeed);
-            loadingForm.show();
-            startShowLoading = System.currentTimeMillis();
-            System.out.println("startShowLoading: " + startShowLoading);
+            if (utils.checkServerConnectedInGUI()) { // check list server connecting,if at least one super peer exist, then the post message will be send, and vice versa.
+                NetworkManager.writeToAll(requestFeed);
+                NewsFeedHandler.request_NewsFeedTable.put(requestFeed.getMessageID(), requestFeed);
+                loadingForm.show();
+                startShowLoading = System.currentTimeMillis();
+//                System.out.println("startShowLoading: " + startShowLoading);
+            } else {
+                JOptionPane.showMessageDialog(this, "You are not connecting to any Super Peer !\n\n Please wait for few seconds to connect to a Super Peer\n and re-send another Request Profile ...", "Request Profile ...", JOptionPane.INFORMATION_MESSAGE);
+            }
         } else {
             Request_Profile requestProfile = new Request_Profile(Mine.getPort(), Mine.getIPAddress(), index, idUserSelected);
-            NetworkManager.writeToAll(requestProfile);
-            loadingForm.show();
-            startShowLoading = System.currentTimeMillis();
-            System.out.println("startShowLoading: " + startShowLoading);
+            if (utils.checkServerConnectedInGUI()) { // check list server connecting,if at least one super peer exist, then the post message will be send, and vice versa.
+                NetworkManager.writeToAll(requestProfile);
+                ProfileHandler.request_ProfileTable.put(requestProfile.getMessageID(), requestProfile);
+                loadingForm.show();
+                startShowLoading = System.currentTimeMillis();
+//                System.out.println("startShowLoading: " + startShowLoading);
+            } else {
+                JOptionPane.showMessageDialog(this, "You are not connecting to any Super Peer !\n\n Please wait for few seconds to connect to a Super Peer\n and re-send another Request Profile ...", "Request Profile ...", JOptionPane.INFORMATION_MESSAGE);
+            }
         }
     }
 
     public void showPost() {
-
         String textPost = txtStatus.getText();
         if (!textPost.trim().isEmpty()) {
-            txtStatus.setText(null);
             String createdate = Utils.formatDate(new Date());
             String friend = "";
             String groupdSuperPeerID = "9999999999999999:0000000000000000:1212121212121212:2323232323232323:3434343434343434"; // 5 server form Server1 to 5
             int liked = 0;
             int commented = 0;
-
-            for (int i = 0; i < Preferences.friendList.size(); i++) {
-                if (Preferences.friendList.get(i).getCheckFriendsGroup().equals(Preferences.CHECKED)) {
-                    friend += Preferences.friendList.get(i).getIdUserLogin() + ":";
+            for (int i = 0; i < tempListFriend.size(); i++) {
+                if (tempListFriend.get(i).getCheckFriendsGroup().equals(Preferences.CHECKED)) {
+                    friend += tempListFriend.get(i).getIdUserLogin() + ":";
                 }
             }
-
             if (prPl == 0) {
                 privateWritePost(textPost, createdate, friend, groupdSuperPeerID, liked, commented);
             } else {
                 writePostPublic(LoginForm.currentUser.getIdUserLogin(), prPl, liked, commented, createdate.length(), friend.length(), groupdSuperPeerID.length(), userNameLoginString.length(), userNameLoginString, createdate, friend, groupdSuperPeerID, textPost);
-
             }
         } else {
             JOptionPane.showMessageDialog(this, "This status update appears to be blank.\n\n Please write something to update your status!", "Status Is Empty", JOptionPane.INFORMATION_MESSAGE);
@@ -674,10 +651,10 @@ public class AppGUI extends javax.swing.JFrame {
     }
 
     // send post to other one via Network and save into database
-    public static void writePostPublic(String userID, byte prpl, int like, int comment, int cDateLength, int groupdFriendIDLength, int groupdSuperPeerIDLength, int useNameLength, String userNamePost, String cDate, String idGroupFriends, String idGroupSP, String post) {
+    public void writePostPublic(String userID, byte prpl, int like, int comment, int cDateLength, int groupdFriendIDLength, int groupdSuperPeerIDLength, int useNameLength, String userNamePost, String cDate, String idGroupFriends, String idGroupSP, String post) {
         Post postMessage = new Post(userID, cDateLength, groupdFriendIDLength, groupdSuperPeerIDLength, useNameLength, userNamePost, cDate, idGroupFriends, idGroupSP, post);
-        System.out.println("POST MESSAGEID : " + postMessage.getMessageID());
-        System.out.println("POST MESSAGE GET CONTENT BYTE: " + postMessage.contents());
+        String[] tempListFriendID = postMessage.getGroupFriendID().split(":");
+
         // show status on news feed of user logging in when they have just written the status
         PostObject postWrite = new PostObject();
         postWrite.setNamePost(postMessage.getUserName());
@@ -687,25 +664,31 @@ public class AppGUI extends javax.swing.JFrame {
         postWrite.setCreatedDate(postMessage.getCreatedDate());
         postWrite.setUserIDPost(postMessage.getUserID());
 
-        PostHandler.recieveListPost.add(0, postWrite);
-        PostHandler.showListPost.add(0, Utils.formSHOWSTATUS(postWrite.getNamePost(), postWrite.getContentPost(), postWrite.getCreatedDate()));
-        AppGUI.inform(PostHandler.showListPost);
+        if (utils.checkServerConnectedInGUI()) { // check list server connecting,if at least one super peer exist, then the post message will be send, and vice versa.
+            NetworkManager.writeToAll(postMessage);
+            txtStatus.setText(null);
+            PostHandler.postTable.put(postMessage.getMessageID(), postMessage); // add post to hash table to avoid receive this post back.
+            PostHandler.recieveListPost.add(0, postWrite);
+            PostHandler.showListPost.add(0, Utils.formSHOWSTATUS(postWrite.getNamePost(), postWrite.getContentPost(), postWrite.getCreatedDate()));
+            AppGUI.inform(PostHandler.showListPost);
 
-//        byte[] temp = new byte[16];
-//        for (int i = 0; i < 16; i++) {
-//            temp[i] = userIDLoginToByte[i];
-//        }
-//
-//        String usenID = new String(temp);
-
-        // check user to store data
-        Preferences.statusWriteToFilePeer(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prpl, like, comment, cDate, idGroupFriends, idGroupSP, post);
-
-        NetworkManager.writeToAll(postMessage);
-        addPOST(postMessage);
+            if (isServer) {
+                Preferences.writeNewsFeed(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getMessageID(), useIDLogin, postMessage.getUserID(), postMessage.getUserName(), postMessage.getPostStatusContent(), postMessage.getCreatedDate());
+                for (int i = 0; i < tempListFriendID.length; i++) {
+                    boolean isNewsFeedOfPeer = checkNewsFeedForPeer(tempListFriendID[i], Preferences.peerManageList);
+                    if (isNewsFeedOfPeer) {
+                        Preferences.writeNewsFeed(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getMessageID(), tempListFriendID[i], postMessage.getUserID(), postMessage.getUserName(), postMessage.getPostStatusContent(), postMessage.getCreatedDate());
+                    }
+                }
+            }
+            // check user to store data
+            Preferences.statusWriteToFilePeer(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prpl, like, comment, cDate, idGroupFriends, idGroupSP, post);
+        } else {
+            JOptionPane.showMessageDialog(this, "You are not connecting to any Super Peer !\n\n Please wait for few seconds to connect to a Super Peer\n and re-send another status ...", "Posting Message ...", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
-    public static void privateWritePost(String postText, String createdate, String friend, String groupdSuperPeerID, int liked, int commented) {
+    public void privateWritePost(String postText, String createdate, String friend, String groupdSuperPeerID, int liked, int commented) {
         Post postMessage = new Post(LoginForm.currentUser.getIdUserLogin(), createdate.length(), friend.length(), groupdSuperPeerID.length(), userNameLoginString.length(), userNameLoginString, createdate, friend, groupdSuperPeerID, postText);
         PostObject postWrite = new PostObject();
         postWrite.setNamePost(postMessage.getUserName());
@@ -717,44 +700,40 @@ public class AppGUI extends javax.swing.JFrame {
         PostHandler.recieveListPost.add(0, postWrite);
         PostHandler.showListPost.add(0, Utils.formSHOWSTATUS(postWrite.getNamePost(), postWrite.getContentPost(), postWrite.getCreatedDate()));
         AppGUI.inform(PostHandler.showListPost);
-
         Preferences.statusWriteToFilePeer(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prPl, liked, commented, createdate, friend, groupdSuperPeerID, "<Private>    " + postText);
-
     }
 
-//    public static void updateStatusForm(int numLike, int numComment, String userLike, Vector<String> comment) {
-//        System.out.println("###### RECEIVE REPOSND");
-//        StatusForm.btnLike.setVisible(true);
-//        StatusForm.btnComment.setVisible(true);
-//        StatusForm.txtComment.setVisible(true);
-//        StatusForm.lbLike.setText(String.valueOf(numLike));
-//        StatusForm.lbComment.setText(String.valueOf(numComment));
-//        if (!comment.isEmpty()) {
-//            StatusForm.listComment.setListData(comment);
-//        }
-//        StatusForm.lbLoading.setVisible(false);
-//    }
-    public static void updateNotification(int numLikeComment, String userNameLike, String userNameComment) {
+    public static void updateNotification(int numLikeComment, String userNameLike, String userNameComment, String postContent) {
         numLikeCommented += numLikeComment;
-        if (userNameLike != "") {
+        LikeCommentObject likeCmt = new LikeCommentObject();
+        likeCmt.setPostContent(postContent);
+        if (!"".equals(userNameLike)) {
             userNameLiked = userNameLike;
+            likeCmt.setUserNameLiked(userNameLike);
+            likeCmt.setUserNameComment("");
         }
-        if (userNameComment != "") {
-            userNameCommented = userNameComment;
+        if (!"".equals(userNameComment)) {
+            likeCmt.setUserNameComment(userNameComment);
+            likeCmt.setUserNameLiked("");
         }
-        btnNoti.setText("<" + numLikeCommented + "> Notification");
+        listNotifications.add(0, likeCmt);
+        btnNoti.setText("<" + numLikeCommented + "> Notifications");
     }
 
-    public String showDialogNotification(String userNameLike, String userNameComment) {
+    public String showDialogNotification(Vector<LikeCommentObject> likeCmt) {
         String like = "";
         String comment = "";
-        if (userNameLike != "") {
-            like = "Like: " + userNameLike + " liked your status!";
+
+        for (int i = 0; i < likeCmt.size(); i++) {
+            if (!"".equals(likeCmt.get(i).getUserNameLiked())) {
+                like += likeCmt.get(i).getUserNameLiked() + " like your status: \" " + likeCmt.get(i).getPostContent() + "\"" + "\n";
+            }
+
+            if (!"".equals(likeCmt.get(i).getUserNameComment())) {
+                comment += likeCmt.get(i).getUserNameComment() + " commented on your status: \" " + likeCmt.get(i).getPostContent() + "\"" + "\n";
+            }
         }
-        if (userNameComment != "") {
-            comment = "Comment: " + userNameComment + " commented on your status!";
-        }
-        return like + "\n\n" + comment;
+        return like + "\n" + comment;
     }
     //////////// END POST MESSAGE
     // Variables declaration - do not modify//GEN-BEGIN:variables

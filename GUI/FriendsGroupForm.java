@@ -7,35 +7,26 @@ package GUI;
 import Architecture_Posting.Friends;
 import Architecture_Posting.Preferences;
 import static Architecture_Posting.Preferences.friendList;
-import Architecture_Posting.Utils;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import static java.awt.Component.CENTER_ALIGNMENT;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
 /**
  *
- * @author admin
+ * @author Thanh Le Quoc
  */
 public class FriendsGroupForm extends JFrame {
 
     Map tempList = new Hashtable();
-    Vector<Friends> tempListFriend = Utils.listFriendsIgnoreUserLogin(Preferences.friendList);
+    Vector<Friends> tempListFriend = AppGUI.tempListFriend;
 
     public FriendsGroupForm() {
         JFrame f = new JFrame();
@@ -62,13 +53,9 @@ public class FriendsGroupForm extends JFrame {
             }
         });
 
-
-
         for (int i = 0; i < tempListFriend.size(); i++) {
             tempList.put(tempListFriend.get(i).getUserName(), tempListFriend.get(i).getCheckFriendsGroup());
         }
-
-
 
         ActionListener actionPrinter = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -85,11 +72,7 @@ public class FriendsGroupForm extends JFrame {
             }
         };
 
-
-
-
         Box box = Box.createVerticalBox();
-        //  Box box = new Box(BoxLayout.Y_AXIS);
         JCheckBox e;
         for (int i = 0; i < tempListFriend.size(); i++) {
             e = new JCheckBox(tempListFriend.get(i).getUserName());
@@ -101,13 +84,10 @@ public class FriendsGroupForm extends JFrame {
             }
             box.add(e);
         }
-
         JScrollPane jscrlpBox = new JScrollPane(box);
         jscrlpBox.setPreferredSize(new Dimension(280, 400));
         f.add(jscrlpBox);
-
         f.setVisible(true);
-
     }
 
     public static void main(String args[]) {

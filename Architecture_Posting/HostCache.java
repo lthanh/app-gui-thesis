@@ -4,7 +4,6 @@ package Architecture_Posting;
 /*
  Host cache - list of IP addresses to load on start up
  */
-
 import java.util.Arrays;
 
 public class HostCache {
@@ -49,15 +48,13 @@ public class HostCache {
         if (isNull()) {
             hosts = new Host[1];
             hosts[0] = h;
-            System.out.println("Host added in HostCache " + h.getName() + " total hosts " + getCount());
-            //   Searcher.updateHostCache(h, true);
+//            System.out.println("Host added in HostCache " + h.getName() + " total hosts " + getCount());
         } else if (!isPresent(h)) {
             Host[] temp = new Host[hosts.length + 1];
             System.arraycopy(hosts, 0, temp, 0, hosts.length);
             temp[hosts.length] = h;
             hosts = temp;
-            System.out.println("Host added in HostCache " + h.getName() + " total hosts " + getCount());
-            //    Searcher.updateHostCache(h, true);
+//            System.out.println("Host added in HostCache " + h.getName() + " total hosts " + getCount());
         }
     }
 
@@ -78,8 +75,7 @@ public class HostCache {
                 j++;
             }
             hosts = temp;
-            System.out.println("Host removed in HostCache " + h.getName() + " Hosts left " + getCount());
-            //   Searcher.updateHostCache(h, false);
+//            System.out.println("Host removed in HostCache " + h.getName() + " Hosts left " + getCount());
         }
     }
 
@@ -94,8 +90,8 @@ public class HostCache {
 
     public static void connectHost(int i) {
         if (!isNull()) {
-            System.out.println("Hosts in cache = " + getCount());
-            System.out.println("Attempting to connect to " + getIP(i) + ":" + getPort(i));
+//            System.out.println("Hosts in cache = " + getCount());
+//            System.out.println("Attempting to connect to " + getIP(i) + ":" + getPort(i));
             try {
                 Connector connector = new Connector(getIP(i), getPort(i), 20000);
                 connector.start();

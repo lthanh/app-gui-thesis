@@ -1,9 +1,7 @@
 package Architecture_Posting;
 
-
 import java.net.*;
 import java.io.*;
-import java.util.Arrays;
 
 public class Listener extends Thread {
 
@@ -27,10 +25,6 @@ public class Listener extends Thread {
                 String incoming = connection.getTextReader().readLine();
                 System.out.println("incoming " + incoming + "\n\n");
                 if (incoming == null) {
-                    continue;
-                } else if (incoming.indexOf(GREETING) == -1) {
-                    DownloadServer downloadserver = new DownloadServer(connection, incoming);
-                    downloadserver.start();
                     continue;
                 } else if (HostArray.getCount() >= Preferences.MAX_LIVE) {
                     connection.getTextReader().readLine(); // Gets rid of the extra newline

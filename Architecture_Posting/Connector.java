@@ -4,7 +4,6 @@ package Architecture_Posting;
 
 import java.net.*;
 import java.io.*;
-import java.util.Arrays;
 
 public class Connector extends Thread {
 

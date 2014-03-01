@@ -6,7 +6,7 @@ package SuperPeerAction;
 
 /**
  *
- * @author admin
+ * @author Thanh Le Quoc
  */
 public class PostObject {
 

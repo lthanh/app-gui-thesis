@@ -3,9 +3,7 @@ package Architecture_Posting;
 /*
  Network Manager - started by main
  */
-import java.net.*;
 import java.io.*;
-import java.util.Arrays;
 
 public class NetworkManager {
 
@@ -20,7 +18,7 @@ public class NetworkManager {
                     connection.getSocket().close();
                     HostArray.removeConnection(ip);
                 } catch (IOException exception) {
-                    e.printStackTrace();
+                    exception.printStackTrace();
                 }
             }
         }
@@ -30,27 +28,15 @@ public class NetworkManager {
         for (int i = 0; i < HostArray.getCount(); i++) {
             Connection c = HostArray.getConnection(i);
             try {
-//                if (packet.getPayload() == 2) {
-//                    System.out.println("POST CONTENT: Payload - " + packet.getPayload() + " Content: " + packet.contents().toString());
-//                    System.out.println("POST Content LENGTH: " + packet.contents.length);
-//                    System.out.println("POST TOTAL LENGTH: " + packet.totalLength());
-//                }
-//                if (packet.getPayload() == 3) {
-//                    System.out.println("LIKE CONTENT: Payload - " + packet.getPayload() + " Content: " + packet.contents().toString());
-//                    System.out.println("LIKE Content LENGTH: " + packet.contents.length);
-//                    System.out.println("LIKE TOTAL LENGTH: " + packet.totalLength());
-//                }
-
                 c.getByteWriter().write(packet.contents(), 0, packet.totalLength());
                 c.getByteWriter().flush();
             } catch (Exception e) {
                 e.printStackTrace();
                 try {
                     c.getSocket().close();
-//                    c.getSocket().shutdownOutput();
                     HostArray.removeConnection(c);
                 } catch (IOException exception) {
-                    e.printStackTrace();
+                    exception.printStackTrace();
                 }
             }
         }
@@ -68,7 +54,7 @@ public class NetworkManager {
                         c.getSocket().close();
                         HostArray.removeConnection(c);
                     } catch (IOException exception) {
-                        e.printStackTrace();
+                        exception.printStackTrace();
                     }
                 }
             }

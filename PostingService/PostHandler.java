@@ -1,11 +1,7 @@
 package PostingService;
 
-import Architecture_Posting.Friends;
-import Architecture_Posting.QueryHit;
 import Architecture_Posting.IPAddress;
-import Architecture_Posting.Pong;
 import Architecture_Posting.NetworkManager;
-import Architecture_Posting.ResultSet;
 import Architecture_Posting.Preferences;
 import GUI.LoginForm;
 import PeerAction.*;
@@ -20,22 +16,12 @@ import java.util.*;
  */
 /**
  *
- * @author admin
+ * @author Thanh Le Quoc
  */
 public class PostHandler extends Thread {
 
     public static Map postTable;  //post table     
     Post postMessage;
-    QueryHit queryHit;
-    public static IPAddress myIP;
-    IPAddress queryIP;
-    ResultSet searchResult;
-    int numHits;
-    int port;
-    int speed;
-    ResultSet result;
-    byte[] serventID;
-    byte[] queryID;
     public static Vector<PostObject> recieveListPost = new Vector<PostObject>(); // receive listPost from friends
     public static Vector<String> showListPost = new Vector<String>();
     Utils utils = new Utils();
@@ -44,7 +30,9 @@ public class PostHandler extends Thread {
 
     public PostHandler(IPAddress ip, Post postMessage) {
         this.postMessage = postMessage;
-        postMessage.setPostIP(ip);  //set IPAddress of query
+        postMessage.setPostIP(ip);  //set IPAddress of post
+        System.out.println("\n ### Server : Packet == POST -- " + postMessage.getMessageID());
+
     }
 
     public static void initPostTable() {
@@ -79,7 +67,10 @@ public class PostHandler extends Thread {
                 isServerID = utils.checkServerID(LoginForm.currentUser.getIdUserLogin(), listServerID);
                 if (isPeer && isServerID) { // if id of user post is managing by SP and the post is requiring SP store this message based on List Super Peer in Post 
                     Preferences.statusWriteToFileSuperPeer(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), postMessage.getGroupFriendID(), postMessage.getPostStatusContent(), postMessage.getCreatedDate());
+                    Preferences.writeNewsFeed(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getMessageID(), postMessage.getUserID(), postMessage.getUserID(), postMessage.getUserName(), postMessage.getPostStatusContent(), postMessage.getCreatedDate());
                 }
+
+                NetworkManager.writeButOne(postMessage.getPostIP(), postMessage);  // Post is forwarded to all connected nodes except one from which query came.
             }
 
             if (isFriends) { // if friend,show on news feed.
@@ -92,8 +83,6 @@ public class PostHandler extends Thread {
                 post.setUserIDPost(postMessage.getUserID());
                 (new PeerReceivePost()).receivePost(post);
             }
-
-            NetworkManager.writeButOne(postMessage.getPostIP(), postMessage);  // Query is forwarded to all connected nodes except one from which query came.
         }
     }
 
@@ -115,16 +104,6 @@ public class PostHandler extends Thread {
 //            if (userPostID.equals(listPeerOrFriend.get(i))) {
             return true;
 //            }
-        }
-        return false;
-    }
-
-    public static boolean checkListFriendORPeerInPong(Pong pong, Vector<Friends> listPeerOrFriend) {
-        String userPongID = pong.getUserIDOnline();
-        for (int i = 0; i < listPeerOrFriend.size(); i++) {
-            if (userPongID.equals(listPeerOrFriend.get(i).getIdUserLogin())) {
-                return true;
-            }
         }
         return false;
     }

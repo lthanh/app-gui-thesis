@@ -1,7 +1,5 @@
 package Architecture_Posting;
 
-import GUI.AppGUI;
-import GUI.LoginForm;
 import java.nio.ByteBuffer;
 
 public class Packet {
@@ -30,30 +28,6 @@ public class Packet {
         repayload = payload;
 
         contents = new byte[length + HEADER_LENGTH]; // Length does _not_ include the length of the descriptor, so we have to put it in here.
-
-//        System.out.println("Packet long before: " + LoginForm.currentUser.getIdUserLogin() + AppGUI.numMessageSent);
-//
-//        String messageIDString = LoginForm.currentUser.getIdUserLogin() + AppGUI.numMessageSent;
-//        ByteBuffer bBMessageid = ByteBuffer.allocate(16);
-//        bBMessageid.putLong(Long.parseLong(LoginForm.currentUser.getIdUserLogin() + AppGUI.numMessageSent));
-//        byte[] byteMessageid = bBMessageid.array();
-//        for (int i = 0; i < 16; i++) {
-//            contents[i] = byteMessageid[i];
-//        }
-
-        /*
-         byte[] listFileID = new byte[messageIDString.length()];
-         listFileID = messageIDString.getBytes();
-         int i;
-         for (i = 0; i < listFileIDStore.length(); i++) {
-         contents[i] = listFileID[i];
-         //            System.out.println("\nPONG: listFileIDStore send - [" + i + "] " + contents[(index + i + 29)]);
-         //             System.out.println("listFileIDStore Index: " + (index + i + 28));
-         }
-         contents[i] = 0;
-        
-         */
-
         for (int i = 0; i < 16; i++) {
             contents[i] = (byte) ((255 * Math.random()) - 128 + (tempAdd++)); // Unique Message ID, and more twos complement problems
         }
@@ -83,8 +57,6 @@ public class Packet {
     }
 
     public int totalLength() {
-//        System.out.println("PACKET: LENGTH OF CONTENT - " + this.length());
-//        System.out.println("\nPACKET: CONTENT + HEADER: " + (HEADER_LENGTH + this.length()));
         return (this.length() + HEADER_LENGTH);
     }
 
@@ -107,16 +79,8 @@ public class Packet {
     public byte[] contents() {
         return (contents);
     }
-
-//    public boolean compare(Packet tocompare) {
-//        for (int i = 0; i < 16; i++) {
-//            if (contents[i] != tocompare.contents[i]) {
-//                return (false);
-//            }
-//        }
-//        return (true);
-//    }
     //method to obtain messageID from packet
+
     public long getMessageID() {
         byte[] messageID = new byte[16];
         for (int i = 0; i < 16; i++) {
@@ -125,11 +89,8 @@ public class Packet {
 
         ByteBuffer wrapped = ByteBuffer.wrap(messageID);
         long idMessage = wrapped.getLong(0);
-//        System.out.println("Packet long : " + idMessage);
-
         return (idMessage);
     }
-    //	messageID = System.arraycopy(contents, 0, messageID, 0, 16);
 
     public int hashcode() {
         int hashcode = 0;

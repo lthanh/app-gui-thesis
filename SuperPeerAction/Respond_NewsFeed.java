@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 
 /**
  *
- * @author admin
+ * @author Thanh Le Quoc
  */
 public class Respond_NewsFeed extends Packet {
 
@@ -26,7 +26,6 @@ public class Respond_NewsFeed extends Packet {
             contents[i] = byteMessageReqid[i];
         }
 
-
         // convert userIDPost to byte  
         byte[] tempuserIDPost = new byte[16];
         tempuserIDPost = userIDReq.getBytes();
@@ -39,10 +38,8 @@ public class Respond_NewsFeed extends Packet {
         byte[] tempListPost = new byte[listPost.length()];
         tempListPost = listPost.getBytes();
         int i;
-        // System.out.println("length: " + idUserIDReq.length());
         for (i = 0; i < listPost.length(); i++) {
             contents[(index + 16 + i)] = tempListPost[i];
-//            System.out.println("userName : [" + i + "]" + contents[(index + 22 + i)]);
         }
     }
 
@@ -50,24 +47,11 @@ public class Respond_NewsFeed extends Packet {
         super(rawdata);
     }
 
-//    public int getIndexRequested() {
-////        System.out.println("\nPONG: getUserIDOnline getPort receive - " + port);
-//        byte[] bytes = new byte[2];
-//        bytes[0] = contents[index + 0];
-//        bytes[1] = contents[index + 1];
-//        ByteBuffer wrapped = ByteBuffer.wrap(bytes);
-////        System.out.println("getPort after: " + wrapped.getInt());
-//        return (int) wrapped.getShort();
-//    }
     public String getUserIDReq() {
-        //  byte[] temp = new byte[16];
         String temp = "";
-        //StringBuilder userID = new StringBuilder();
         for (int i = 0; i < 16; i++) {
-            //temp[i] = contents[index + i];
             temp = temp + (char) (contents[index + i]);
         }
-//        System.out.println("POST -userID: " + userID);
         return temp;
     }
 
@@ -76,8 +60,6 @@ public class Respond_NewsFeed extends Packet {
         for (int i = (index + 16); i < (contents.length); i++) {
             listPost = listPost + (char) (contents[i]);
         }
-
-//        System.out.println("POST -userName: " + userName);
         return listPost;
     }
 }

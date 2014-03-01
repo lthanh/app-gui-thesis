@@ -26,7 +26,8 @@ public class PingHandler extends Thread {
             pingTable.put(ping.getMessageID(), ping);
 
             Pong response = new Pong(Mine.getPort(), Mine.getIPAddress(), useIDOnlineString, userNameOnlineString.length(), SharedDirectory.getListFileIDSaving().length(), SharedDirectory.getListFileIDSaving(), userNameOnlineString, ping.getMessageID());
-            NetworkManager.writeToOne(ping.getIP(), response);
+//            NetworkManager.writeToOne(ping.getIP(), response);
+            NetworkManager.writeToAll(response);
         }
     }
 }

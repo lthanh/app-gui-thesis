@@ -11,8 +11,6 @@ public class Ping extends Packet {
      */
     public Ping() {
         super(Packet.PING, 0);
-//        AppGUI.numMessageSent++; // count number of message sent at one section to set message id
-
     }
 
     public Ping(byte[] rawdata) {

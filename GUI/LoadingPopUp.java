@@ -13,11 +13,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRootPane;
 
 /**
  *
- * @author admin
+ * @author Thanh Le Quoc
  */
 public class LoadingPopUp {
 
@@ -33,9 +32,7 @@ public class LoadingPopUp {
         loadingFrame.setMaximumSize(new Dimension(200, 150));
         loadingFrame.setResizable(false);
         loadingFrame.setLocationRelativeTo(null);
-        // loadingFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         loadingFrame.setUndecorated(true);
-//        loadingFrame.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
         loadingFrame.setBackground(new Color(0, 0, 0, 0));
 
         JPanel panel = new JPanel();

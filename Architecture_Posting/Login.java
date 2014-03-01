@@ -12,7 +12,7 @@ import java.util.List;
  */
 /**
  *
- * @author admin
+ * @author Thanh Le Quoc
  */
 public class Login {
 
@@ -21,28 +21,15 @@ public class Login {
 
     public static void readFileUserID() {
         try {
-            //NHi - C:\Users\phatn_000\Desktop\src\  Trang - F:\Users\dangphat50\Desktop\src\   Thanh C:\Users\admin\Desktop\src\
             BufferedReader fileIn = new BufferedReader(new FileReader(SHAREPATH + "userLogin.txt"));
             String line;
-
             while ((line = fileIn.readLine()) != null) {
-                if (line.startsWith("Shared-Directory: ")) {
-                    //  Login.SHAREPATH = line.substring(18);
-                    System.out.println("Shared-Directory is " + Login.SHAREPATH);
-                    continue;
-                } else {
-                    UserLoginObject user = new UserLoginObject();
-                    // System.out.println("User line: " + line);
-                    String[] userNameID = line.split("~~");
-
-                    user.setIdUserLogin(userNameID[0]);
-                    user.setUserName(userNameID[1]);
-//                    user.setNumMessageSent(Long.parseLong(userNameID[2]));
-                    userLogin.add(user);
-                    continue;
-                }
+                UserLoginObject user = new UserLoginObject();
+                String[] userNameID = line.split("~~");
+                user.setIdUserLogin(userNameID[0]);
+                user.setUserName(userNameID[1]);
+                userLogin.add(user);
             }
-
             fileIn.close();
         } catch (IOException e) {
             e.printStackTrace();

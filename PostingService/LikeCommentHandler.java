@@ -6,19 +6,16 @@ package PostingService;
 
 import GUI.AppGUI;
 import GUI.LoginForm;
-import GUI.StatusForm;
 import SuperPeerAction.SaveLikeCmtAction;
 import Architecture_Posting.IPAddress;
 import Architecture_Posting.NetworkManager;
-import Architecture_Posting.Packet;
 import Architecture_Posting.Preferences;
-import Architecture_Posting.SharedDirectory;
 import Architecture_Posting.Utils;
 import java.util.*;
 
 /**
  *
- * @author admin
+ * @author Thanh Le Quoc
  */
 public class LikeCommentHandler extends Thread {
 
@@ -37,11 +34,14 @@ public class LikeCommentHandler extends Thread {
         if (likeMessage != null) {
             this.likeMessage = likeMessage;
             likeMessage.setLikeIP(ip);
+            System.out.println("\n ### Server : Packet == LIKE -- " + likeMessage.getMessageID());
 
         }
         if (commentMessage != null) {
             this.commentMessage = commentMessage;
             commentMessage.setCommentIP(ip);
+            System.out.println("\n ### Server : Packet == COMMENT -- " + commentMessage.getMessageID());
+
         }
     }
 
@@ -54,22 +54,20 @@ public class LikeCommentHandler extends Thread {
     }
 
     public void run() {
-
         if (likeMessage != null) {
             if (!likeTabble.containsKey(likeMessage.getMessageID())) {
                 likeTabble.put(likeMessage.getMessageID(), likeMessage);
 
                 if (isServer) {
                     isFileStoring = utils.checkFileSharing(likeMessage.getIdUserPost() + ".txt");
-
                     if (isFileStoring) {
                         (new SaveLikeCmtAction()).saveLikeSuperPeer(likeMessage);
                     }
+                    NetworkManager.writeButOne(likeMessage.getLikeIP(), likeMessage); // Query
                 }
                 if (likeMessage.getIdUserPost().equals(useIDLogin)) {
-                    AppGUI.updateNotification(1, likeMessage.getNameLike(), "");
+                    AppGUI.updateNotification(1, likeMessage.getNameLike(), "", likeMessage.getPostContent());
                 }
-                NetworkManager.writeButOne(likeMessage.getLikeIP(), likeMessage); // Query
             }
         }
 
@@ -78,16 +76,15 @@ public class LikeCommentHandler extends Thread {
                 commentTable.put(commentMessage.getMessageID(), commentMessage);
                 if (isServer) {
                     isFileStoring = utils.checkFileSharing(commentMessage.getIdUserPost() + ".txt");
-
                     if (isFileStoring) {
                         (new SaveLikeCmtAction()).saveCommentSuperPeer(commentMessage);
                     }
+                    NetworkManager.writeButOne(commentMessage.getCommentIP(), commentMessage);
                 }
 
                 if (commentMessage.getIdUserPost().equals(useIDLogin)) {
-                    AppGUI.updateNotification(1, "", commentMessage.getNameComment());
+                    AppGUI.updateNotification(1, "", commentMessage.getNameComment(), commentMessage.getPostContent());
                 }
-                NetworkManager.writeButOne(commentMessage.getCommentIP(), commentMessage);
             }
         }
     }
