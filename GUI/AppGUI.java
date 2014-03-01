@@ -533,24 +533,14 @@ public class AppGUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Connection timeout ! \n\n Please try again ...", "Timeout ...", JOptionPane.INFORMATION_MESSAGE);
         }
         int lastVisibleIndex = listStatus.getLastVisibleIndex();
-
         if (ProfileHandler.isLoadedPrivate) {
             lastVisibleIndex = lastVisibleIndex - ProfileHandler.lengthOfListPrivatePost;
         }
-
-        System.out.println("INDEX: " + lastVisibleIndex);
-        System.out.println("previousIndexScroll: " + previousIndexScroll);
-
 
         if ((lastVisibleIndex == previousIndexScroll)) {
             previousIndexScroll += 20;
             loadMore(isNewsFeed, lastVisibleIndex + 1);
         }
-
-//            if (isNewsFeed == false) {  // load private profile
-//                utils.getPrivateMessage();
-//            }
-
     }//GEN-LAST:event_listStatusMouseMoved
 
     private void txtStatusKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtStatusKeyPressed
@@ -653,21 +643,22 @@ public class AppGUI extends javax.swing.JFrame {
     // send post to other one via Network and save into database
     public void writePostPublic(String userID, byte prpl, int like, int comment, int cDateLength, int groupdFriendIDLength, int groupdSuperPeerIDLength, int useNameLength, String userNamePost, String cDate, String idGroupFriends, String idGroupSP, String post) {
         Post postMessage = new Post(userID, cDateLength, groupdFriendIDLength, groupdSuperPeerIDLength, useNameLength, userNamePost, cDate, idGroupFriends, idGroupSP, post);
-        String[] tempListFriendID = postMessage.getGroupFriendID().split(":");
 
-        // show status on news feed of user logging in when they have just written the status
-        PostObject postWrite = new PostObject();
-        postWrite.setNamePost(postMessage.getUserName());
-        postWrite.setPostID(postMessage.getMessageID());
-        postWrite.setContentPost(postMessage.getPostStatusContent());
-        postWrite.setGroupID(postMessage.getGroupFriendID());
-        postWrite.setCreatedDate(postMessage.getCreatedDate());
-        postWrite.setUserIDPost(postMessage.getUserID());
 
         if (utils.checkServerConnectedInGUI()) { // check list server connecting,if at least one super peer exist, then the post message will be send, and vice versa.
             NetworkManager.writeToAll(postMessage);
             txtStatus.setText(null);
             PostHandler.postTable.put(postMessage.getMessageID(), postMessage); // add post to hash table to avoid receive this post back.
+            String[] tempListFriendID = postMessage.getGroupFriendID().split(":");
+
+            // show status on news feed of user logging in when they have just written the status
+            PostObject postWrite = new PostObject();
+            postWrite.setNamePost(postMessage.getUserName());
+            postWrite.setPostID(postMessage.getMessageID());
+            postWrite.setContentPost(postMessage.getPostStatusContent());
+            postWrite.setGroupID(postMessage.getGroupFriendID());
+            postWrite.setCreatedDate(postMessage.getCreatedDate());
+            postWrite.setUserIDPost(postMessage.getUserID());
             PostHandler.recieveListPost.add(0, postWrite);
             PostHandler.showListPost.add(0, Utils.formSHOWSTATUS(postWrite.getNamePost(), postWrite.getContentPost(), postWrite.getCreatedDate()));
             AppGUI.inform(PostHandler.showListPost);
@@ -690,17 +681,24 @@ public class AppGUI extends javax.swing.JFrame {
 
     public void privateWritePost(String postText, String createdate, String friend, String groupdSuperPeerID, int liked, int commented) {
         Post postMessage = new Post(LoginForm.currentUser.getIdUserLogin(), createdate.length(), friend.length(), groupdSuperPeerID.length(), userNameLoginString.length(), userNameLoginString, createdate, friend, groupdSuperPeerID, postText);
-        PostObject postWrite = new PostObject();
-        postWrite.setNamePost(postMessage.getUserName());
-        postWrite.setPostID(postMessage.getMessageID());
-        postWrite.setContentPost("<Private> " + postMessage.getPostStatusContent());
-        postWrite.setGroupID(postMessage.getGroupFriendID());
-        postWrite.setCreatedDate(postMessage.getCreatedDate());
-        postWrite.setUserIDPost(postMessage.getUserID());
-        PostHandler.recieveListPost.add(0, postWrite);
-        PostHandler.showListPost.add(0, Utils.formSHOWSTATUS(postWrite.getNamePost(), postWrite.getContentPost(), postWrite.getCreatedDate()));
-        AppGUI.inform(PostHandler.showListPost);
-        Preferences.statusWriteToFilePeer(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prPl, liked, commented, createdate, friend, groupdSuperPeerID, "<Private>    " + postText);
+
+        if (utils.checkServerConnectedInGUI()) {
+            txtStatus.setText(null);
+            PostObject postWrite = new PostObject();
+            postWrite.setNamePost(postMessage.getUserName());
+            postWrite.setPostID(postMessage.getMessageID());
+            postWrite.setContentPost("<Private> " + postMessage.getPostStatusContent());
+            postWrite.setGroupID(postMessage.getGroupFriendID());
+            postWrite.setCreatedDate(postMessage.getCreatedDate());
+            postWrite.setUserIDPost(postMessage.getUserID());
+            PostHandler.recieveListPost.add(0, postWrite);
+            PostHandler.showListPost.add(0, Utils.formSHOWSTATUS(postWrite.getNamePost(), postWrite.getContentPost(), postWrite.getCreatedDate()));
+            AppGUI.inform(PostHandler.showListPost);
+            Preferences.statusWriteToFilePeer(postMessage.getPostTypeString(postMessage.getPayload()), postMessage.getUserID(), postMessage.getUserName(), postMessage.getMessageID(), prPl, liked, commented, createdate, friend, groupdSuperPeerID, "<Private>    " + postText);
+
+        } else {
+            JOptionPane.showMessageDialog(this, "You are not connecting to any Super Peer !\n\n Please wait for few seconds to connect to a Super Peer\n and re-send another status ...", "Posting Message ...", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     public static void updateNotification(int numLikeComment, String userNameLike, String userNameComment, String postContent) {
