@@ -3,7 +3,6 @@ package Architecture_Posting;
 /*
  Tries to connect periodically to the hosts int the HostCache
  */
-
 public class PeriodicConnector extends Thread {
 
     private static boolean execute;
@@ -20,7 +19,7 @@ public class PeriodicConnector extends Thread {
 
             for (int i = 0; i < HostCache.getCount(); i++) {
                 String ipString = HostCache.getIP(i);
-                System.out.println("ipString: " + ipString);
+//                System.out.println("ipString: " + ipString);
                 if (!(HostArray.isLive(ipString))) {
                     HostCache.connectHost(i);
                 }

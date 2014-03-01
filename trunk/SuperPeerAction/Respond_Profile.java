@@ -4,13 +4,12 @@
  */
 package SuperPeerAction;
 
-import Architecture_Posting.IPAddress;
-import Architecture_Posting.Packet;
+import Architecture_Posting.*;
 import java.nio.ByteBuffer;
 
 /**
  *
- * @author admin
+ * @author Thanh Le Quoc
  */
 public class Respond_Profile extends Packet {
 
@@ -39,10 +38,8 @@ public class Respond_Profile extends Packet {
         byte[] tempListPost = new byte[listPost.length()];
         tempListPost = listPost.getBytes();
         int i;
-        // System.out.println("length: " + idUserIDReq.length());
         for (i = 0; i < listPost.length(); i++) {
             contents[(index + 16 + i)] = tempListPost[i];
-//            System.out.println("userName : [" + i + "]" + contents[(index + 22 + i)]);
         }
     }
 
@@ -51,14 +48,10 @@ public class Respond_Profile extends Packet {
     }
 
     public String getUserIDPost() {
-        //  byte[] temp = new byte[16];
         String temp = "";
-        //StringBuilder userID = new StringBuilder();
         for (int i = 0; i < 16; i++) {
-            //temp[i] = contents[index + i];
             temp = temp + (char) (contents[index + i]);
         }
-//        System.out.println("POST -userID: " + userID);
         return temp;
     }
 
@@ -67,8 +60,6 @@ public class Respond_Profile extends Packet {
         for (int i = (index + 16); i < (contents.length); i++) {
             listPost = listPost + (char) (contents[i]);
         }
-
-//        System.out.println("POST -userName: " + userName);
         return listPost;
     }
 }

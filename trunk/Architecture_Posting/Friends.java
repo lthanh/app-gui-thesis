@@ -7,7 +7,7 @@ package Architecture_Posting;
  */
 /**
  *
- * @author admin
+ * @author Thanh Le Quoc
  */
 public class Friends extends UserLoginObject {
 

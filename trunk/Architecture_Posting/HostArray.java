@@ -1,18 +1,15 @@
 package Architecture_Posting;
 
 import GUI.AppGUI;
-import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 public class HostArray {
 
     private static Connection[] hosts;
     public static Vector<IPAddress> cacheConnection = new Vector<IPAddress>();  // store list of IP connection
     public static Vector<String> showListServer = new Vector<String>();
+    public static String listPeerConnected;
 
     public static boolean isNull() {
         if (hosts == null) {
@@ -35,17 +32,15 @@ public class HostArray {
             hosts = new Connection[1];
             hosts[0] = c;
             //////////////////////////////////////////////////////////////// Thanh
-            //String showIP = c.getIPAddress().toString() + ":" + c.getIPAddress().getPort() + " - Online";
-            //  String showIP = showIPGUI(c.getIPAddress(), c.getTypeString());
             boolean checkConnection = checkConnection(cacheConnection, c.getIPAddress());
             if (checkConnection == true) {
-                System.out.println("IIIIIIIIIIIPPPPPPPPPPP: " + showListServer);
+//                System.out.println("IIIIIIIIIIIPPPPPPPPPPP: " + showListServer);
                 cacheConnection.add(c.getIPAddress());
                 showListServer.add(showIPGUI(c.getIPAddress(), c.getTypeString()));
 
             }
 
-            System.out.println("\n\nADD CACHECONNECTION 1: " + cacheConnection.toString() + "SHOWIP: " + showListServer.toString());
+//            System.out.println("\n\nADD CACHECONNECTION 1: " + cacheConnection.toString() + "SHOWIP: " + showListServer.toString());
             AppGUI.listServer.setListData(showListServer);
 
         } else if (!isLive(c)) {
@@ -54,17 +49,14 @@ public class HostArray {
             temp[hosts.length] = c;
             hosts = temp;
             //////////////////////////////////////////////////////////////// Thanh
-            //String showIP = c.getIPAddress().toString() + ":" + c.getIPAddress().getPort() + " - Online";
-
-            //  String showIP = showIPGUI(c.getIPAddress(), c.getTypeString());
             boolean checkConnection = checkConnection(cacheConnection, c.getIPAddress());
             if (checkConnection == true) {
-                System.out.println("IIIIIIIIIIIPPPPPPPPPPP: " + showListServer);
+//                System.out.println("IIIIIIIIIIIPPPPPPPPPPP: " + showListServer);
                 cacheConnection.add(c.getIPAddress());
                 showListServer.add(showIPGUI(c.getIPAddress(), c.getTypeString()));
 
             }
-            System.out.println("\n\nADD CACHECONNECTION 2: " + cacheConnection.toString() + "SHOWIP: " + showListServer.toString());
+//            System.out.println("\n\nADD CACHECONNECTION 2: " + cacheConnection.toString() + "SHOWIP: " + showListServer.toString());
             AppGUI.listServer.setListData(showListServer);
         }
     }
@@ -85,7 +77,7 @@ public class HostArray {
                 j++;
             }
             hosts = temp;
-            System.out.println("\n\nADD CACHECONNECTION 3: " + cacheConnection.toString() + "SHOWIP: " + showListServer.toString());
+//            System.out.println("\n\nADD CACHECONNECTION 3: " + cacheConnection.toString() + "SHOWIP: " + showListServer.toString());
 
             AppGUI.listServer.setListData(updateRemovedConnection(ip));
         }
@@ -149,7 +141,7 @@ public class HostArray {
             if (removeIP.equals(cacheConnection.get(i).toString())) {
                 cacheConnection.remove(i);
                 showListServer.remove(i);
-                System.out.println("\n\nREMOVE CACHECONNECTION : " + cacheConnection.toString() + "SHOWIP: " + showListServer.toString());
+//                System.out.println("\n\nREMOVE CACHECONNECTION : " + cacheConnection.toString() + "SHOWIP: " + showListServer.toString());
             }
         }
         return showListServer;
@@ -165,24 +157,10 @@ public class HostArray {
         return true;
     }
 
-//    public static Vector<String> removeFriendInList(IPAddress ip) {
-//        for (int i = 0; i < checkUserOnlineAction.friendObjectCheckOnline.size(); i++) {
-//            if (ip.toString().equals(checkUserOnlineAction.friendObjectCheckOnline.get(i).getIp().toString())) {
-//                checkUserOnlineAction.friendObjectCheckOnline.remove(i);
-//                showListServer.remove(i);
-//                System.out.println("HOST ARRAY - friendObject: " + checkUserOnlineAction.friendObjectCheckOnline.get(i));
-//                System.out.println("HOST ARRAY - showListServer: " + showListServer.get(i));
-//            }
-//        }
-//        return showListServer;
-//    }
     public static String showIPGUI(IPAddress ip, String type) {
         Vector<String> peer = Preferences.ipSuperPeer;
 
         for (int i = 0; i < peer.size(); i++) {
-            System.out.println("\n HostArray IP PEER:" + peer.get(i));
-
-
             if (peer.get(i).contains(ip.toString())) {
                 return "Super Peer - " + ip.toString() + ":" + ip.getPort();
             }

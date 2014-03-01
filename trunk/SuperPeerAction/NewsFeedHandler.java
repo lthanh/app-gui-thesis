@@ -6,20 +6,16 @@ package SuperPeerAction;
 
 import GUI.AppGUI;
 import GUI.LoginForm;
-import Architecture_Posting.IPAddress;
-import Architecture_Posting.NetworkManager;
-import Architecture_Posting.Packet;
-import Architecture_Posting.Preferences;
-import Architecture_Posting.SharedDirectory;
-import Architecture_Posting.Utils;
+import Architecture_Posting.*;
 import static GUI.AppGUI.startShowLoading;
 import java.util.*;
 import static PostingService.PostHandler.recieveListPost;
 import static PostingService.PostHandler.showListPost;
+import javax.swing.JOptionPane;
 
 /**
  *
- * @author admin
+ * @author Thanh Le Quoc
  */
 public class NewsFeedHandler extends Thread {
 
@@ -39,10 +35,12 @@ public class NewsFeedHandler extends Thread {
         if (request_NewsFeed != null) {
             this.request_NewsFeed = request_NewsFeed;
             request_NewsFeed.setNewsFeedIP(ip);
-
+//            System.out.println("\n ### Server : Packet == REQ_NewsFeed -- " + request_NewsFeed.getMessageID());
         }
         if (respond_NewsFeed != null) {
             this.respond_NewsFeed = respond_NewsFeed;
+//            System.out.println("\n ### Server : Packet == RES_NewsFeed -- " + respond_NewsFeed.getMessageID());
+
         }
     }
 
@@ -62,7 +60,7 @@ public class NewsFeedHandler extends Thread {
                 isFileStoring = utils.checkFileSharing(request_NewsFeed.getIdUserIDReq() + "_NewsFeed.txt");
 
                 if (isFileStoring) { // check server store news feed of the user was requesting
-                    System.out.println("## REQUEST listFileIDSaving.contains OK ");
+//                    System.out.println("## REQUEST listFileIDSaving.contains OK ");
                     String listFeed = Preferences.readUserPOSTorNEWSFEED(Preferences.NEWSFEED, request_NewsFeed.getIdUserIDReq(), request_NewsFeed.getIndexPost());
                     Respond_NewsFeed respond = new Respond_NewsFeed(request_NewsFeed.getIndexPost(), request_NewsFeed.getIdUserIDReq(), listFeed, request_NewsFeed.getMessageID());
                     NetworkManager.writeToOne(request_NewsFeed.getNewsFeedIP(), respond);
@@ -75,17 +73,13 @@ public class NewsFeedHandler extends Thread {
         if (respond_NewsFeed != null) {
             if (!respond_NewsFeedTable.containsKey(respond_NewsFeed.getMessageID())) {
                 respond_NewsFeedTable.put(respond_NewsFeed.getMessageID(), respond_NewsFeed);
-                System.out.println("######## RESPOND");
 
                 String userIDInRes = respond_NewsFeed.getUserIDReq();
                 if (userIDInRes.equals(userIDLogin)) {
-
                     String listFeedRespond = respond_NewsFeed.getListPost();
 
-                    System.out.println("######## RESPOND listPostRespond: " + listFeedRespond);
                     if (listFeedRespond.trim().length() != 0) {
                         String[] tempListPost = listFeedRespond.split("\n\n");
-
                         for (int i = 0; i < tempListPost.length; i++) {
                             PostObject newsFeedObject = new PostObject();
                             String[] line = tempListPost[i].split("~~");
@@ -94,13 +88,10 @@ public class NewsFeedHandler extends Thread {
                             newsFeedObject.setNamePost(line[3].substring(14));
                             newsFeedObject.setContentPost(line[4].substring(14));
                             newsFeedObject.setCreatedDate(line[5].substring(12));
-
                             newsFeedObject.setGroupID("");
                             recieveListPost.add(newsFeedObject);
                             showListPost.add(Utils.formSHOWSTATUS(newsFeedObject.getNamePost(), newsFeedObject.getContentPost(), newsFeedObject.getCreatedDate()));
-
                         }
-
                         // need sleep 6 seconds before show status
                         int count = 0;
                         long timeout = 1500;
@@ -110,7 +101,6 @@ public class NewsFeedHandler extends Thread {
                             } catch (InterruptedException ie) {
                                 ie.printStackTrace();
                             }
-
                             count++;
                             if (count == 2) {
                                 AppGUI.loadingForm.hide();
@@ -119,8 +109,9 @@ public class NewsFeedHandler extends Thread {
                                 break;
                             }
                         }
-
-
+                    } else {
+                        AppGUI.loadingForm.hide();
+                        utils.endOfFile();
                     }
                 } else {
                     requestMatch = (Request_NewsFeed) request_NewsFeedTable.get(respond_NewsFeed.getMessageID());

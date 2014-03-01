@@ -4,15 +4,14 @@
  */
 package PostingService;
 
-import java.util.Vector;
 
 /**
  *
- * @author admin
+ * @author Thanh Le Quoc
  */
-public class LikeCommentListObject {
+public class ReqRes_LikeCommentListObject {
 
-    public LikeCommentListObject() {
+    public ReqRes_LikeCommentListObject() {
     }
     private int numLike;
     private int numComment;

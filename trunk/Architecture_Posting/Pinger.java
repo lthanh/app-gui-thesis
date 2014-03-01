@@ -1,40 +1,18 @@
 package Architecture_Posting;
 
-import GUI.AppGUI;
-import GUI.LoginForm;
 import PeerAction.CheckUserOnlineAction;
-import SuperPeerAction.PostObject;
-import java.util.Date;
-import PostingService.Post;
-import PostingService.PostHandler;
 
 public class Pinger extends Thread {
 
-    static int hosts = 0;
-    static int totalkb = 0;
-    static int totalfiles = 0;
+//    static int hosts = 0;
+//    static int totalkb = 0;
+//    static int totalfiles = 0;
     static Ping myping;
     IPAddress ip;
-    public static int pingCounter = 0;
-    public static int numberTimesCounter = 4;
+//    public static int pingCounter = 0;
+    public static int numberTimesCounter = 2;
     public static int i = 550;
     CheckUserOnlineAction check = new CheckUserOnlineAction();
-    /*
-     int port = 6346;
-     byte[] ipbytes = socket.getInetAddress().getAddress();
-    
-     // Cat chuoi IP byte ra dang decimal *****************************************************
-     int[] ipints = new int[4];
-     for (int i = 0; i < 4; i++)
-     ipints[i] = ((int)(ipbytes[i]) & 0xff);
-    
-     // end cat chuoi
-    
-    
-     ip = new IPAddress(ipints[0], ipints[1], ipints[2], ipints[3], port);
-    
-    
-     */
 
     public void run() {
         while (true) {
@@ -43,18 +21,16 @@ public class Pinger extends Thread {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            // Searcher.updateInfo(hosts, totalkb, totalfiles);
+
+            check.checkUserOnline();
             myping = new Ping();
-            pingCounter++;
-
-            System.out.println("\n pingCounter times: " + pingCounter);
-            System.out.println("\n numberTimesCounter times: " + numberTimesCounter);
-
-
-            if (pingCounter == numberTimesCounter) {
-                check.checkUserOnline();
-            }
             NetworkManager.writeToAll(myping);
+//            pingCounter++;
+//            if (pingCounter == numberTimesCounter) {
+////                System.out.println("\n numberTimesCounter times: " + 3);
+//
+//                check.checkUserOnline();
+//            }
 
 
             /*

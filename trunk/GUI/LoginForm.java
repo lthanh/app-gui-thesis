@@ -11,7 +11,7 @@ import java.util.List;
  */
 /**
  *
- * @author admin
+ * @author Thanh Le Quoc
  */
 public class LoginForm extends javax.swing.JFrame {
 
@@ -140,7 +140,6 @@ public class LoginForm extends javax.swing.JFrame {
             if (user.equals(temp.get(i).getUserName())) {
                 currentUser.setUserName(temp.get(i).getUserName());
                 currentUser.setIdUserLogin(temp.get(i).getIdUserLogin());
-                
                 setVisible(false);
                 (new AppGUI()).show();
             }

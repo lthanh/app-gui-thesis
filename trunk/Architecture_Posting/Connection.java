@@ -11,8 +11,8 @@ public class Connection {
 
     public static int INCOMING = 1;
     public static int OUTGOING = 2;
-    public static int DOWNLOADING = 3;
-    public static int UPLOADING = 4;
+  //  public static int DOWNLOADING = 3;
+//    public static int UPLOADING = 4;
     private Socket socket;
     private int type;
     private IPAddress ip;
@@ -27,9 +27,6 @@ public class Connection {
 //    int port = socket.getPort();
         int port = 6346;
         byte[] ipbytes = socket.getInetAddress().getAddress();
-
-        System.out.println("InetAddress: " + socket.getInetAddress());
-        System.out.println("InetAddress getAddress" + socket.getInetAddress().getAddress());
 
         // Cat chuoi IP byte ra dang decimal *****************************************************
         int[] ipints = new int[4];
@@ -48,13 +45,13 @@ public class Connection {
 
     public String getTypeString() {
         if (type == 1) {
-            return "Incoming - ";
+            return "Peer - In  - ";
         } else if (type == 2) {
-            return "Outgoing - ";
+            return "Peer - Out - ";
         } else if (type == 3) {
-            return "Downloading - ";
+            return "Peer - Down - ";
         } else if (type == 4) {
-            return "Uploading - ";
+            return "Peer - Up  - ";
         } else {
             return "";
         }

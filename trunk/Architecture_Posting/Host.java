@@ -4,7 +4,6 @@ package Architecture_Posting;
 /**
    Host has a string IP address and int port
 */
-import java.net.*;
 
 public class Host
 {

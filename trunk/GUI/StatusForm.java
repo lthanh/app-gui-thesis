@@ -3,22 +3,17 @@ package GUI;
 import SuperPeerAction.ReqRes_LikeCommentHanlder;
 import SuperPeerAction.SaveLikeCmtAction;
 import Architecture_Posting.NetworkManager;
-import Architecture_Posting.Preferences;
+import Architecture_Posting.Utils;
 import static GUI.AppGUI.loadingForm;
 import static GUI.AppGUI.startShowLoading;
 import static GUI.AppGUI.statusPOPUP;
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Vector;
-import javax.swing.JLabel;
+import java.util.*;
 import javax.swing.JOptionPane;
 import PostingService.Comment;
 import PostingService.Like;
-import PostingService.LikeCommentListObject;
-import java.awt.Component;
-import static java.lang.Thread.sleep;
+import PostingService.LikeCommentHandler;
 
 /*
  * To change this template, choose Tools | Templates
@@ -26,7 +21,7 @@ import static java.lang.Thread.sleep;
  */
 /**
  *
- * @author admin
+ * @author Thanh Le Quoc
  */
 public class StatusForm extends javax.swing.JFrame {
 
@@ -35,7 +30,9 @@ public class StatusForm extends javax.swing.JFrame {
     public static String userNameLoginString = LoginForm.currentUser.getUserName();
     public static String postID = "";
     public static String userIDPost = "";
-    private String listUserNameLiked = "";
+    private static String listUserNameLiked = "";
+    Utils utils = new Utils();
+    public SaveLikeCmtAction save = new SaveLikeCmtAction();
 
     public StatusForm(String namePost, String contentPost, int numLike, int comment, Vector<String> tempComment, long postID, String userIDPost) {
         initComponents();
@@ -54,7 +51,6 @@ public class StatusForm extends javax.swing.JFrame {
         txtContentPopUp.setText(contentPost);
         lbLike.setText(String.valueOf(numLike));
         lbComment.setText(String.valueOf(comment));
-        //listComment.setListData(tempComment);
         lbIDUserPost.hide();
         lbIDUserPost.setText(userIDPost);
         lbMessageID.hide();
@@ -85,7 +81,6 @@ public class StatusForm extends javax.swing.JFrame {
         txtComment = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(new java.awt.Dimension(439, 426));
         setMinimumSize(new java.awt.Dimension(439, 426));
         setResizable(false);
 
@@ -222,81 +217,69 @@ public class StatusForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLikeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLikeActionPerformed
-        // TODO add your handling code here:
-        if (btnLike.isEnabled()) {
-            btnLike.setEnabled(false);
-        }
-
-        int like = Integer.parseInt(lbLike.getText());
-        lbLike.setText(String.valueOf(like + 1));
-
+        String postShow = "";
         postID = lbMessageID.getText();
         userIDPost = lbIDUserPost.getText(); //LIKE : postID- [B@75225918
+        String post = txtContentPopUp.getText();
+        if (post.length() > 30) {
+            postShow = post.substring(0, 30) + " ...";
+        } else {
+            postShow = post + " ...";
+        }
 
-        System.out.println("LIKE : postIDBYTE - " + postID);
-        System.out.println("LIKE : userIDPostBYTE - " + userIDPost);
-        System.out.println("LIKE : userIDLOGINBYTE - " + useIDLogin);
-        System.out.println("LIKE : userNameLoginString - " + userNameLoginString);
+        Like likeMessage = new Like(postID.length(), userIDPost.length(), useIDLogin.length(), userNameLoginString.length(), postID, userIDPost, useIDLogin, userNameLoginString, postShow);
 
+        if (utils.checkServerConnectedInGUI()) { // check list server connecting,if at least one super peer exist, then the post message will be send, and vice versa.
+            NetworkManager.writeToAll(likeMessage);
+            LikeCommentHandler.likeTabble.put(likeMessage.getMessageID(), likeMessage);
 
-
-        Like likeMessage = new Like(postID.length(), userIDPost.length(), useIDLogin.length(), postID, userIDPost, useIDLogin, userNameLoginString);
-        (new SaveLikeCmtAction()).saveLikeSuperPeer(likeMessage);
-
-        System.out.println("######### LIKE before: " + likeMessage);
-        System.out.println("######### LIKE getIdPost: " + likeMessage.getIdPost());
-        System.out.println("######### LIKE getIdUserLike: " + likeMessage.getIdUserLike());
-        System.out.println("######### LIKE getIdUserPost: " + likeMessage.getIdUserPost());
-        System.out.println("######### LIKE getNameLike: " + likeMessage.getNameLike());
-        System.out.println("######### LIKE getLikeTypeString: " + likeMessage.getLikeTypeString(likeMessage.getPayload()));
-
-
-        NetworkManager.writeToAll(likeMessage);
-
+            if (btnLike.isEnabled()) {
+                btnLike.setEnabled(false);
+            }
+            int like = Integer.parseInt(lbLike.getText());
+            lbLike.setText(String.valueOf(like + 1));
+            save.saveLikeSuperPeer(likeMessage);
+        } else {
+            JOptionPane.showMessageDialog(this, "You are not connecting to any Super Peer !\n\n Please wait for few seconds to connect to a Super Peer\n and re-send another Like ...", "Posting Message", JOptionPane.INFORMATION_MESSAGE);
+        }
     }//GEN-LAST:event_btnLikeActionPerformed
 
     private void btnCommentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCommentActionPerformed
-        // TODO add your handling code here:
         txtComment.requestFocus();
     }//GEN-LAST:event_btnCommentActionPerformed
 
     private void txtCommentKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCommentKeyPressed
-        // TODO add your handling code here:
         if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-
-            int comment = Integer.parseInt(lbComment.getText());
-            lbComment.setText(String.valueOf(comment + 1));
-
             postID = lbMessageID.getText();
             userIDPost = lbIDUserPost.getText();
+            String postShow = "";
+            String post = txtContentPopUp.getText();
+            if (post.length() > 30) {
+                postShow = post.substring(0, 30) + " ...";
+            } else {
+                postShow = post + " ...";
+            }
 
-            System.out.println("COMMENT : postIDBYTE - " + postID);
-            System.out.println("COMMENT : userIDPostBYTE - " + userIDPost);
-            System.out.println("COMMENT : userIDLOGINBYTE - " + useIDLogin);
-            System.out.println("COMMENT : userNameLoginString - " + userNameLoginString);
+            Comment commentMessage = new Comment(postID.length(), userIDPost.length(), useIDLogin.length(), userNameLoginString.length(), txtComment.getText().length(), postID, userIDPost, useIDLogin, userNameLoginString, txtComment.getText(), postShow);
 
-            Comment commentMessage = new Comment(postID.length(), userIDPost.length(), useIDLogin.length(), userNameLoginString.length(), postID, userIDPost, useIDLogin, userNameLoginString, txtComment.getText());
-            (new SaveLikeCmtAction()).saveCommentSuperPeer(commentMessage);
-            String commentCurrently = "< " + commentMessage.getNameComment() + " >:  " + commentMessage.getComment();
-            ReqRes_LikeCommentHanlder.comment.add(0, commentCurrently);
-            listComment.setListData(ReqRes_LikeCommentHanlder.comment);
-            //                         comment = comment + "< " + itemLine[5].substring(17) + " >:  " + itemLine[6].substring(20) + "\n\n";
+            if (utils.checkServerConnectedInGUI()) { // check list server connecting,if at least one super peer exist, then the post message will be send, and vice versa.
+                NetworkManager.writeToAll(commentMessage);
+                LikeCommentHandler.commentTable.put(commentMessage.getMessageID(), commentMessage);
 
-
-            System.out.println("######### COMMENT before: " + commentMessage);
-            System.out.println("######### COMMENT getIdPost: " + commentMessage.getIdPost());
-            System.out.println("######### COMMENT getIdUserLike: " + commentMessage.getIdUserComment());
-            System.out.println("######### COMMENT getIdUserPost: " + commentMessage.getIdUserPost());
-            System.out.println("######### COMMENT getNameLike: " + commentMessage.getNameComment());
-            System.out.println("######### COMMENT getLikeTypeString: " + commentMessage.getCommentTypeString(commentMessage.getPayload()));
-
-            NetworkManager.writeToAll(commentMessage);
-            txtComment.setText("");
+                int comment = Integer.parseInt(lbComment.getText());
+                lbComment.setText(String.valueOf(comment + 1));
+                save.saveCommentSuperPeer(commentMessage);
+                String commentCurrently = "< " + commentMessage.getNameComment() + " >:  " + commentMessage.getComment();
+                ReqRes_LikeCommentHanlder.comment.add(0, commentCurrently);
+                listComment.setListData(ReqRes_LikeCommentHanlder.comment);
+                txtComment.setText("");
+            } else {
+                JOptionPane.showMessageDialog(this, "You are not connecting to any Super Peer !\n\n Please wait for few seconds to connect to a Super Peer\n and re-send another Comment ...", "Posting Message", JOptionPane.INFORMATION_MESSAGE);
+            }
         }
     }//GEN-LAST:event_txtCommentKeyPressed
 
     private void lbLikeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbLikeMouseClicked
-        // TODO add your handling code here:
         int like = Integer.parseInt(lbLike.getText());
         if (like != 0) {
             JOptionPane.showMessageDialog(this, listUserNameLiked, "List of users liked your status!", JOptionPane.INFORMATION_MESSAGE);
@@ -306,7 +289,6 @@ public class StatusForm extends javax.swing.JFrame {
     }//GEN-LAST:event_lbLikeMouseClicked
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
-        // TODO add your handling code here:
     }//GEN-LAST:event_jLabel4MouseClicked
 
     /**
@@ -355,10 +337,7 @@ public class StatusForm extends javax.swing.JFrame {
 
             count++;
             if (count == 2) {
-                System.out.println("###### RECEIVE REPOSND");
-
                 String[] userNameLIKED = userNameLike.split("\n\n");
-
                 for (int i = 0; i < userNameLIKED.length; i++) {
                     if (!userNameLIKED[i].equals("")) {
                         listUserNameLiked += userNameLIKED[i] + "\n";
@@ -369,8 +348,6 @@ public class StatusForm extends javax.swing.JFrame {
                 if (isLiked == false) {
                     btnLike.setEnabled(true);
                 }
-
-
                 btnComment.setEnabled(true);
                 txtComment.setEnabled(true);
                 lbLike.setText(String.valueOf(numLike));
@@ -398,37 +375,21 @@ public class StatusForm extends javax.swing.JFrame {
 //                statusPOPUP.validate();
 //                statusPOPUP.repaint();
 
-              
                 loadingForm.hide();
                 startShowLoading = -1;
                 break;
             }
         }
-
-
-
-
-
-        //  System.out.println("###### RECEIVE After");
     }
 
     public boolean checkLiked(String[] userNameLike, String userNameLogin) {
         for (int i = 0; i < userNameLike.length; i++) {
-            System.out.println("USER 1:" + userNameLike[i]);
             if (userNameLike[i].equals(userNameLogin)) {
                 return true;
             }
         }
         return false;
     }
-//    public void showLikeName() {
-//        int like = Integer.parseInt(lbLike.getText());
-//        if (like != 0) {
-//            JOptionPane.showMessageDialog(this, listUserNameLiked, "List of users liked your status!", JOptionPane.INFORMATION_MESSAGE);
-//        } else {
-//            JOptionPane.showMessageDialog(this, "Not already who liked your status!", "List of users liked your status!", JOptionPane.INFORMATION_MESSAGE);
-//        }
-//    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public static javax.swing.JButton btnComment;
     public static javax.swing.JButton btnLike;
