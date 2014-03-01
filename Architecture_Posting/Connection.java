@@ -11,8 +11,6 @@ public class Connection {
 
     public static int INCOMING = 1;
     public static int OUTGOING = 2;
-  //  public static int DOWNLOADING = 3;
-//    public static int UPLOADING = 4;
     private Socket socket;
     private int type;
     private IPAddress ip;
@@ -48,10 +46,6 @@ public class Connection {
             return "Peer - In  - ";
         } else if (type == 2) {
             return "Peer - Out - ";
-        } else if (type == 3) {
-            return "Peer - Down - ";
-        } else if (type == 4) {
-            return "Peer - Up  - ";
         } else {
             return "";
         }
