@@ -73,7 +73,7 @@ public class Like extends Packet {
 
         // convert postContent to byte  
         byte[] tempPostContent = new byte[postContent.length()];
-        tempPostContent = postContent.getBytes(); // [B@37113859
+        tempPostContent = postContent.getBytes(); 
         int q;
         for (q = 0; q < postContent.length(); q++) {
             contents[(q + index + 5 + idPost.length() + idUserPost.length() + idUserLike.length() + nameLike.length())] = tempPostContent[q];
