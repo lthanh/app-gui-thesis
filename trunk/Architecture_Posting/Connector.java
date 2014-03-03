@@ -37,7 +37,6 @@ public class Connector extends Thread {
             connection.getByteWriter().flush();
 
             String incoming = connection.getTextReader().readLine();
-            String newline = connection.getTextReader().readLine();
 
             if (incoming == null || incoming.indexOf(READY) == -1) {
                 return;

@@ -10,10 +10,6 @@ import java.util.*;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
  *
  * @author Thanh Le Quoc
@@ -27,7 +23,6 @@ public class Utils {
         String formattedDate = "";
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("HH:mm MMMM dd, yyyy");
-            //SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
             formattedDate = formatter.format(d);
         } catch (Exception e) {
             e.printStackTrace();
@@ -120,7 +115,7 @@ public class Utils {
     }
 
     public void endOfFile() {
-        JOptionPane.showMessageDialog((new JFrame()), "End of data ...", "End of data ...", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog((new JFrame()), "No more data ...", "End of loading !", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public List<PostObject> getPrivateMessage() {

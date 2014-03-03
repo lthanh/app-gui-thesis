@@ -54,7 +54,7 @@ public class AppGUI extends javax.swing.JFrame {
     public static String userNameLiked = "";
     public static String userNameCommented = "";
     public static int numLikeCommented = 0;
-    public int previousIndexScroll = 0;
+    public int previousIndexScroll = 19;
     public static boolean isNewsFeed = true;  // TRUE = NEWSFEED session ; FALSE = PROFILE session
     public static boolean isShowingStatusPopUp = false;
     public static boolean isShowingFriendsGroupPopUp = false;
@@ -405,7 +405,7 @@ public class AppGUI extends javax.swing.JFrame {
     private void btnFeedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFeedActionPerformed
         System.out.println("ONCLICK Feed Before");
         ProfileHandler.isLoadedPrivate = false;
-        Request_NewsFeed requestFeed = new Request_NewsFeed(Mine.getPort(), Mine.getIPAddress(), -1, useIDLogin);
+        Request_NewsFeed requestFeed = new Request_NewsFeed(-1, useIDLogin);
 
         if (utils.checkServerConnectedInGUI()) { // check list server connecting,if at least one super peer exist, then the post message will be send, and vice versa.
             NetworkManager.writeToAll(requestFeed);
@@ -435,7 +435,7 @@ public class AppGUI extends javax.swing.JFrame {
         ProfileHandler.isLoadedPrivate = false;
         nameUserSelected = LoginForm.currentUser.getUserName();
         idUserSelected = LoginForm.currentUser.getIdUserLogin();
-        Request_Profile requestProfile = new Request_Profile(Mine.getPort(), Mine.getIPAddress(), -1, idUserSelected);
+        Request_Profile requestProfile = new Request_Profile(-1, idUserSelected);
         if (utils.checkServerConnectedInGUI()) { // check list server connecting,if at least one super peer exist, then the post message will be send, and vice versa.
             NetworkManager.writeToAll(requestProfile);
             ProfileHandler.request_ProfileTable.put(requestProfile.getMessageID(), requestProfile);
@@ -468,16 +468,12 @@ public class AppGUI extends javax.swing.JFrame {
         JList list = (JList) evt.getSource();
         if (evt.getClickCount() == 1) {
             int indexSelected = list.locationToIndex(evt.getPoint());
-//            System.out.println("locationToIndex:" + indexSelected);
             if (indexSelected != -1) {
-                // int indexSelected = listStatus.getSelectedIndex();
-                // Post postSelected = PostHandler.recieveListPost.get(indexSelected).getPostID();
                 PostObject postSelectedObject = PostHandler.recieveListPost.get(indexSelected);
                 postSelectedID = postSelectedObject.getPostID();
                 if (postSelectedObject.getUserIDPost() != "") {
-//                    System.out.println("Send request before");
                     if (isShowingStatusPopUp == false) {
-                        Request_LikeCmt req = new Request_LikeCmt(Mine.getPort(), Mine.getIPAddress(), postSelectedObject.getPostID(), postSelectedObject.getUserIDPost(), useIDLogin);
+                        Request_LikeCmt req = new Request_LikeCmt(postSelectedObject.getPostID(), postSelectedObject.getUserIDPost(), useIDLogin);
                         if (utils.checkServerConnectedInGUI()) { // check list server connecting,if at least one super peer exist, then the post message will be send, and vice versa.
                             NetworkManager.writeToAll(req);
                             ReqRes_LikeCommentHanlder.requestLikeCommentTable.put(req.getMessageID(), req);
@@ -504,7 +500,7 @@ public class AppGUI extends javax.swing.JFrame {
             int indexSelected = list.locationToIndex(evt.getPoint());
             nameUserSelected = tempListFriend.get(indexSelected).getUserName();
             idUserSelected = tempListFriend.get(indexSelected).getIdUserLogin();
-            Request_Profile requestProfile = new Request_Profile(Mine.getPort(), Mine.getIPAddress(), -1, idUserSelected);
+            Request_Profile requestProfile = new Request_Profile(-1, idUserSelected);
             if (utils.checkServerConnectedInGUI()) { // check list server connecting,if at least one super peer exist, then the post message will be send, and vice versa.
                 NetworkManager.writeToAll(requestProfile);
                 ProfileHandler.request_ProfileTable.put(requestProfile.getMessageID(), requestProfile);
@@ -577,9 +573,6 @@ public class AppGUI extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 AppGUI app = new AppGUI();
-//                JPanel p = new FriendsGroup();
-//                app.getContentPane().add(p);
-                // app.add(loadingForm);
                 app.pack();
                 app.setVisible(true);
 
@@ -593,7 +586,7 @@ public class AppGUI extends javax.swing.JFrame {
 
     public void loadMore(boolean isNewsFeed, int index) {
         if (isNewsFeed) {
-            Request_NewsFeed requestFeed = new Request_NewsFeed(Mine.getPort(), Mine.getIPAddress(), index, LoginForm.currentUser.getIdUserLogin());
+            Request_NewsFeed requestFeed = new Request_NewsFeed(index, LoginForm.currentUser.getIdUserLogin());
             if (utils.checkServerConnectedInGUI()) { // check list server connecting,if at least one super peer exist, then the post message will be send, and vice versa.
                 NetworkManager.writeToAll(requestFeed);
                 NewsFeedHandler.request_NewsFeedTable.put(requestFeed.getMessageID(), requestFeed);
@@ -604,7 +597,7 @@ public class AppGUI extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "You are not connecting to any Super Peer !\n\n Please wait for few seconds to connect to a Super Peer\n and re-send another Request Profile ...", "Request Profile ...", JOptionPane.INFORMATION_MESSAGE);
             }
         } else {
-            Request_Profile requestProfile = new Request_Profile(Mine.getPort(), Mine.getIPAddress(), index, idUserSelected);
+            Request_Profile requestProfile = new Request_Profile(index, idUserSelected);
             if (utils.checkServerConnectedInGUI()) { // check list server connecting,if at least one super peer exist, then the post message will be send, and vice versa.
                 NetworkManager.writeToAll(requestProfile);
                 ProfileHandler.request_ProfileTable.put(requestProfile.getMessageID(), requestProfile);
