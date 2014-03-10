@@ -15,7 +15,7 @@ public class Respond_NewsFeed extends Packet {
 
     int index = Packet.HEADER_LENGTH;
 
-    public Respond_NewsFeed(int indexRequested, String userIDReq, String listPost, long requestID) {
+    public Respond_NewsFeed(String userIDReq, String listPost, long requestID) {
         super(Packet.RES_NewsFeed, (16 + listPost.length()));
 
         // convert requestID to respondID

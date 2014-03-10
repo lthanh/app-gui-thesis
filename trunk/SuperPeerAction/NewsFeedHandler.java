@@ -62,7 +62,7 @@ public class NewsFeedHandler extends Thread {
                 if (isFileStoring) { // check server store news feed of the user was requesting
 //                    System.out.println("## REQUEST listFileIDSaving.contains OK ");
                     String listFeed = Preferences.readUserPOSTorNEWSFEED(Preferences.NEWSFEED, request_NewsFeed.getIdUserIDReq(), request_NewsFeed.getIndexPost());
-                    Respond_NewsFeed respond = new Respond_NewsFeed(request_NewsFeed.getIndexPost(), request_NewsFeed.getIdUserIDReq(), listFeed, request_NewsFeed.getMessageID());
+                    Respond_NewsFeed respond = new Respond_NewsFeed(request_NewsFeed.getIdUserIDReq(), listFeed, request_NewsFeed.getMessageID());
                     NetworkManager.writeToOne(request_NewsFeed.getNewsFeedIP(), respond);
 
                 } else { // server not store news feed of the user was requesting

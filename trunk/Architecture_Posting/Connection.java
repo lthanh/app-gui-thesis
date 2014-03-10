@@ -45,7 +45,8 @@ public class Connection {
         if (type == 1) {
             return "Peer - In  - ";
         } else if (type == 2) {
-            return "Peer - Out - ";
+            return "Peer - In  - ";
+//            return "Peer - Out - ";
         } else {
             return "";
         }
